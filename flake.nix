@@ -92,6 +92,7 @@
 
       flake = let
         lib = import ./lib/mkSystem.nix {inherit inputs;};
+        sdLib = import ./lib/mkSdImage.nix {inherit inputs;};
       in {
         nixosConfigurations = {
           faye = lib.mkNixos {
@@ -108,6 +109,15 @@
           ed = lib.mkNixos {
             hostname = "ed";
             system = "aarch64-linux";
+            extraModules = [
+              inputs.sops-nix.nixosModules.sops
+            ];
+          };
+        };
+
+        images = {
+          ed = sdLib.mkSdImage {
+            hostname = "ed";
             extraModules = [
               inputs.sops-nix.nixosModules.sops
             ];
