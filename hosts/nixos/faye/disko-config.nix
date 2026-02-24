@@ -13,7 +13,6 @@ passwd
 ip a
 
 2. From your machine:
-cd ~/.config/nix-config
 
 nix run github:nix-community/nixos-anywhere -- \
   --flake .#faye \
