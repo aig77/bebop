@@ -8,6 +8,7 @@
 
   programs.zen-browser = {
     enable = true;
+    suppressXdgMigrationWarning = true;
 
     profiles.${config.var.username} = {
       isDefault = true;

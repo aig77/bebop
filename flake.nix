@@ -25,7 +25,7 @@
     };
 
     firefox-addons = {
-      url = "gitlab:rycee/nur-expressions/02ae5ccdcbe8defe6047840a7b46e67e215bef69?dir=pkgs/firefox-addons";
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -71,7 +71,7 @@
     };
 
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake/708e0f10aba5de7d0f55883d06fa08aa6a7cd462";
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -91,32 +91,27 @@
       };
 
       flake = let
-        lib = import ./lib/mkSystem.nix {inherit inputs;};
-        sdLib = import ./lib/mkSdImage.nix {inherit inputs;};
+        builders = import ./lib/builders.nix {inherit inputs;};
       in {
         nixosConfigurations = {
-          faye = lib.mkNixos {
+          faye = builders.mkNixos {
             hostname = "faye";
             system = "x86_64-linux";
             overlays = [inputs.niri.overlays.niri];
             extraModules = [
               inputs.disko.nixosModules.disko
               inputs.home-manager.nixosModules.home-manager
-              inputs.sops-nix.nixosModules.sops
               inputs.stylix.nixosModules.stylix
             ];
           };
-          ed = lib.mkNixos {
+          ed = builders.mkNixos {
             hostname = "ed";
             system = "aarch64-linux";
-            extraModules = [
-              inputs.sops-nix.nixosModules.sops
-            ];
           };
         };
 
-        images = {
-          ed = sdLib.mkSdImage {
+        packages.aarch64-linux = {
+          ed-sdimage = builders.mkSdImage {
             hostname = "ed";
             extraModules = [
               inputs.sops-nix.nixosModules.sops
@@ -125,8 +120,8 @@
         };
 
         darwinConfigurations = {
-          ein = lib.mkDarwin {hostname = "ein";};
-          spike = lib.mkDarwin {hostname = "spike";};
+          ein = builders.mkDarwin {hostname = "ein";};
+          spike = builders.mkDarwin {hostname = "spike";};
         };
       };
     };
