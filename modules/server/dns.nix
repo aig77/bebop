@@ -3,6 +3,17 @@
   pkgs,
   ...
 }: {
+  sops.secrets = {
+    grafana-admin-password = {
+      owner = "grafana";
+      group = "grafana";
+    };
+    grafana-secret-key = {
+      owner = "grafana";
+      group = "grafana";
+    };
+  };
+
   services = {
     blocky = {
       enable = true;
