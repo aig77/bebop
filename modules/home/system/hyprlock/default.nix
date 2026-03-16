@@ -49,7 +49,7 @@ in {
         fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>"; # can be set to empty
         fail_transition =
           300; # transition time in ms between normal outer_color and fail_color
-        capslock_color = -1;
+        capslock_color = red;
         numlock_color = -1;
         bothlock_color =
           -1; # when both locks are active. -1 means don't change outer color (same for above)
@@ -82,6 +82,17 @@ in {
           font_size = 120;
           #font_family = "";
           position = "0, 380";
+          halign = "center";
+          valign = "center";
+        }
+        # Caps Lock indicator
+        {
+          monitor = "";
+          text = ''cmd[update:100] if [ "$(cat /sys/class/leds/input*::capslock/brightness 2>/dev/null | head -1)" = "1" ]; then echo "Caps Lock ON"; fi'';
+          color = red;
+          font_size = 14;
+          font_family = font;
+          position = "0, -80";
           halign = "center";
           valign = "center";
         }
