@@ -48,7 +48,7 @@ _: {
           fail_color = red;
           fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>";
           fail_transition = 300;
-          capslock_color = -1;
+          capslock_color = red;
           numlock_color = -1;
           bothlock_color = -1;
           invert_numlock = false;
@@ -80,6 +80,18 @@ _: {
             halign = "center";
             valign = "center";
           }
+          # Caps Lock indicator
+          {
+            monitor = "";
+            text = ''cmd[update:100] if [ "$(cat /sys/class/leds/input*::capslock/brightness 2>/dev/null | head -1)" = "1" ]; then echo "Caps Lock ON"; fi'';
+            color = red;
+            font_size = 14;
+            font_family = font;
+            position = "0, -80";
+            halign = "center";
+            valign = "center";
+          }
+          # USER
           {
             monitor = "";
             text = "  $USER";
