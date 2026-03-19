@@ -26,6 +26,7 @@ in {
 
     # Can't be installed with brew
     packages = with pkgs; [
+      claude-code
       opencode
     ];
 

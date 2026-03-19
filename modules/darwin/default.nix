@@ -1,76 +1,69 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
-  inherit (config.var) username shell;
-in {
-  system = {
-    # Used for backwards compatibility, please read the changelog before changing.
-    # $ darwin-rebuild changelog
-    stateVersion = 5;
+_: {
+  flake.modules.darwin.base = {
+    config,
+    pkgs,
+    ...
+  }: {
+    nix.enable = false;
+    nixpkgs.hostPlatform = "aarch64-darwin";
 
-    # MacOS specific settings
-    keyboard = {
-      enableKeyMapping = true;
-      remapCapsLockToControl = true;
-    };
-
-    defaults = {
-      controlcenter = {
-        BatteryShowPercentage = true;
+    system = {
+      stateVersion = 5;
+      keyboard = {
+        enableKeyMapping = true;
+        remapCapsLockToControl = true;
       };
-
-      dock = {
-        autohide = true;
-        orientation = "bottom";
-      };
-
-      finder = {
-        AppleShowAllExtensions = true;
-        AppleShowAllFiles = true;
-        CreateDesktop = false;
-        FXRemoveOldTrashItems = true;
-      };
-
-      NSGlobalDomain = {
-        AppleInterfaceStyle = "Dark";
+      defaults = {
+        controlcenter.BatteryShowPercentage = true;
+        dock = {
+          autohide = true;
+          orientation = "bottom";
+        };
+        finder = {
+          AppleShowAllExtensions = true;
+          AppleShowAllFiles = true;
+          CreateDesktop = false;
+          FXRemoveOldTrashItems = true;
+        };
+        NSGlobalDomain.AppleInterfaceStyle = "Dark";
       };
     };
-  };
 
-  #Set Git commit hash for darwin-version.
-  #system.configurationRevision = self.rev or self.dirtyRev or null;
-
-  # The platform the configuration will be used on
-  nixpkgs.hostPlatform = "aarch64-darwin";
-
-  # Disabled for Determinate systems nix
-  nix.enable = false;
-
-  environment.shells = with pkgs; [fish zsh];
-  programs.${shell}.enable = true;
-
-  users.users.${username} = {
-    home = "/Users/${username}";
-    shell = pkgs.${shell};
-  };
-
-  environment = {
-    systemPackages = with pkgs; [coreutils];
-    systemPath = ["/usr/local/bin"];
-    pathsToLink = ["/Applications"];
-  };
-
-  homebrew = {
-    enable = true;
-    onActivation = {
-      autoUpdate = true;
-      upgrade = true;
-      cleanup = "zap";
+    environment = {
+      shells = with pkgs; [fish zsh];
+      systemPackages = with pkgs; [coreutils];
+      systemPath = ["/usr/local/bin"];
+      pathsToLink = ["/Applications"];
     };
-    extraConfig = ''
-      cask_args appdir: "~/Applications"
-    '';
+
+    programs.${config.var.shell}.enable = true;
+
+    users.users.${config.var.username} = {
+      home = "/Users/${config.var.username}";
+      shell = pkgs.${config.var.shell};
+    };
+
+    homebrew = {
+      enable = true;
+      onActivation = {
+        autoUpdate = true;
+        upgrade = true;
+        cleanup = "zap";
+      };
+      extraConfig = ''
+        cask_args appdir: "~/Applications"
+      '';
+    };
+
+    sops = {
+      defaultSopsFile = ../../secrets/secrets.yaml;
+      defaultSopsFormat = "yaml";
+      age.keyFile = "${config.users.users.${config.var.username}.home}/.config/sops/age/keys.txt";
+      secrets = {
+        git-email = {};
+        openweather-api-key = {};
+        weatherapi-key = {};
+      };
+    };
   };
 }
