@@ -97,13 +97,85 @@ outputs = inputs @ {flake-parts, ...}:
 
 A `deferredModule` merges: multiple files can all set `flake.modules.nixos.base = { ... }` and their contents are automatically combined. No explicit imports needed between files.
 
-### Built-in profile names
+### Profile Definitions
 
-**NixOS:** `base`, `desktop`, `hyprland`, `niri`, `gnome`, `amdgpu`, `nvidia`, `gaming`, `docker`, `tailscale`, `server`
+#### NixOS profiles
 
-**Darwin:** `base`
+| Profile | Meaning | What's in it |
+|---|---|---|
+| `base` | Every NixOS machine | nix daemon, users, networking, sops secrets, home-manager wiring |
+| `desktop` | Has a screen and a user sitting at it | audio, boot, bluetooth, file-manager, Stylix theme |
+| `hyprland` | Uses Hyprland as the WM | Hyprland system enablement, portals |
+| `niri` | Uses Niri as the compositor | Niri system enablement, GDM, portals |
+| `gnome` | Uses GNOME | GDM, GNOME packages |
+| `amdgpu` | AMD graphics card | AMD drivers, ROCm, Vulkan |
+| `nvidia` | NVIDIA graphics card | Proprietary NVIDIA drivers |
+| `gaming` | Gaming machine | Steam, GameMode, MangoHud, Wine |
+| `docker` | Needs containers | Docker daemon, docker group |
+| `tailscale` | Connected to Tailnet | Tailscale service, firewall port |
+| `server` | Headless server | DNS (Blocky + Unbound), Prometheus |
 
-**Home Manager:** `base`, `gui`, `hyprland`, `niri`, `gnome`, `gaming`, `fuzzel`, `hyprlock`, `hypridle`, `waybar`, `mako`, `screenshot`
+Profiles are additive — a desktop gaming machine with AMD GPU simply imports `[base desktop hyprland amdgpu gaming]`.
+
+#### Darwin profiles
+
+| Profile | Meaning | What's in it |
+|---|---|---|
+| `base` | Every Darwin machine | macOS system defaults, homebrew, sops secrets, home-manager wiring, Stylix theme, `var` schema |
+
+Darwin currently has one profile because all Mac machines here share the same base. Host-specific differences (casks, packages) go in the host's own files under `modules/hosts/darwin/<name>/`.
+
+#### Home Manager profiles
+
+| Profile | Meaning | What's in it |
+|---|---|---|
+| `base` | Every user on every machine | home-manager self-management, username, shell tools (zsh, fish, starship, direnv, fzf, zoxide, tmux), editors (neovim, vim), git, ghostty, alacritty, fastfetch, common CLI packages |
+| `gui` | User on a desktop machine | Zen browser, Discord, Spotify, Obsidian, Zathura, Thunar, OBS (Linux only), Rofi |
+| `hyprland` | Hyprland user config | Hyprland keybinds/rules, HyprPanel bar |
+| `niri` | Niri user config | Niri keybinds/rules, swww wallpaper |
+| `gnome` | GNOME user config | GNOME extensions, dconf settings |
+| `gaming` | Gaming user tools | Lutris, Bottles, Heroic launcher |
+| `fuzzel` | App launcher | Fuzzel config (shared by hyprland + niri) |
+| `hyprlock` | Lock screen | Hyprlock config (shared by hyprland + niri) |
+| `hypridle` | Idle/suspend | Hypridle config (shared by hyprland + niri) |
+| `waybar` | Status bar | Waybar config (used by niri; hyprland uses HyprPanel) |
+| `mako` | Notifications | Mako config (used by niri; hyprland uses HyprPanel) |
+| `screenshot` | Screenshot scripts | grimblast scripts, Print key bindings |
+
+### How NixOS and HM profiles connect
+
+NixOS profiles don't directly import HM profiles. The bridge is in `home-manager/nixos.nix`, which at flake-parts level reads `config.flake.modules.homeManager.*` and wires them into the NixOS `home-manager.users.<username>.imports` list. This means:
+
+- Importing `nixos.base` → HM user gets `hm.base`
+- Importing `nixos.desktop` → HM user gets `hm.gui`
+- Importing `nixos.hyprland` → HM user gets `hm.hyprland + hm.fuzzel + hm.hyprlock + hm.hypridle + hm.screenshot`
+- Importing `nixos.niri` → HM user gets `hm.niri + hm.waybar + hm.mako + hm.fuzzel + hm.hyprlock + hm.hypridle`
+
+A host that imports `[base desktop hyprland]` therefore ends up with a user that has `[hm.base + hm.gui + hm.hyprland + hm.fuzzel + hm.hyprlock + hm.hypridle + hm.screenshot]` — all without the host file listing any HM profiles directly.
+
+### Full profile stack for faye
+
+```
+nixos.base        → nix, users, networking, secrets, home-manager
+  └─ hm.base      → shell tools, editors, git, terminal, CLI packages
+
+nixos.desktop     → audio, boot, bluetooth, file-manager, theme
+  └─ hm.gui       → browser, discord, spotify, apps
+
+nixos.hyprland    → Hyprland system, portals
+  └─ hm.hyprland  → keybinds, window rules, HyprPanel bar
+  └─ hm.fuzzel    → launcher
+  └─ hm.hyprlock  → lock screen
+  └─ hm.hypridle  → idle/suspend
+  └─ hm.screenshot → screenshot scripts
+
+nixos.amdgpu      → AMD drivers, Vulkan, ROCm
+nixos.gaming      → Steam, GameMode, Wine
+  └─ hm.gaming    → Lutris, Bottles, Heroic
+
+nixos.docker      → Docker daemon
+nixos.tailscale   → Tailscale VPN
+```
 
 ## How a Host Gets Built
 
