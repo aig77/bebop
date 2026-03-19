@@ -23,6 +23,7 @@
             allowBroken = true;
           };
         }
+        inputs.home-manager.darwinModules.home-manager
         inputs.nix-homebrew.darwinModules.nix-homebrew
         inputs.sops-nix.darwinModules.sops
         inputs.stylix.darwinModules.stylix
