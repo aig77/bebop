@@ -8,7 +8,7 @@ _: {
       fonts = {
         monospace = {
           package = pkgs.nerd-fonts.jetbrains-mono;
-          name = "JetBrains Mono Nerd Font";
+          name = "JetBrainsMono Nerd Font";
         };
         sansSerif = {
           package = pkgs.dejavu_fonts;

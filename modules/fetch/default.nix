@@ -21,13 +21,13 @@ _: {
           "separator"
           {
             type = "os";
-            key = "";
+            key = "";
             keyColor = "red";
             format = "{2} {8}";
           }
           {
             type = "kernel";
-            key = "";
+            key = "";
             keyColor = "red";
             format = "{2}";
           }
@@ -39,38 +39,38 @@ _: {
           }
           {
             type = "wm";
-            key = "";
+            key = "󰖲";
             keyColor = "green";
             format = "{1}";
           }
           {
             type = "shell";
-            key = "";
+            key = "";
             keyColor = "green";
             format = "{1}";
           }
           {
             type = "terminal";
-            key = "";
+            key = "󰞷";
             keyColor = "green";
             format = "{1}";
           }
           {
             type = "cpu";
-            key = "";
+            key = "";
             keyColor = "blue";
             format = "{1}";
           }
           {
             type = "gpu";
-            key = "";
+            key = "󰢮";
             keyColor = "blue";
             format = "{2}";
             hideType = "integrated";
           }
           {
             type = "memory";
-            key = "";
+            key = "";
             keyColor = "blue";
             format = "{1} / {2}";
           }

@@ -54,7 +54,7 @@ _: {
         };
 
         bar = {
-          launcher.icon = "";
+          launcher.icon = "󱄅";
           workspaces = {
             show_icons = false;
             show_numbered = false;
