@@ -6,9 +6,9 @@
 
 # bebop
 
-A declarative, multi-platform system configuration built with Nix Flakes. One repo manages NixOS desktops, macOS workstations, and a headless ARM server.
+A declarative, multi-platform system configuration built with Nix Flakes and flake-parts. One repo manages NixOS desktops, macOS workstations, and a headless ARM server.
 
-Everything is reproducible. Everything is version-controlled.
+Everything is a composable flake-parts module. Everything is reproducible. Everything is version-controlled.
 
 ![Desktop Screenshot Placeholder](screenshots/desktop.png)
 <!-- Replace with an actual screenshot of your Hyprland desktop -->
@@ -56,7 +56,7 @@ Handles network services from a Raspberry Pi. No GUI, just DNS and monitoring.
 
 Managed through nix-darwin and Homebrew. Same shell, same tools, same theme -- just on Apple hardware.
 
-- Homebrew casks: Brave, Claude, Discord, Docker, Ghostty, LM Studio, Raycast, Steam, Zen
+- Homebrew casks: Brave, Claude, Discord, Docker Desktop, Ghostty, HTTPie Desktop, LM Studio, Raycast, Steam, Tailscale, WhatsApp
 - Home Manager for dotfiles
 - Catppuccin theming via Stylix
 
@@ -66,7 +66,7 @@ Managed through nix-darwin and Homebrew. Same shell, same tools, same theme -- j
 
 Same foundation as Ein with a trimmer set of apps.
 
-- Core apps: Docker, Discord, Ghostty, LM Studio, Raycast, Zen
+- Core apps: Docker, Discord, Ghostty, LM Studio, Proton Mail Bridge, Raycast, Tailscale, Zen
 - Same shell and development tooling
 
 ---
@@ -167,28 +167,34 @@ Managed with SOPS and age encryption. Git email, Grafana credentials, and API ke
 
 ```
 bebop/
-  flake.nix                  # Entry point
-  hosts/
-    nixos/
-      faye/                  # Desktop workstation
-      ed/                    # Raspberry Pi server
-    darwin/
-      ein/                   # Mac (full)
-      spike/                 # Mac (lean)
-  modules/
-    common/                  # Shared across all platforms
-    nixos/                   # NixOS system modules
-    darwin/                  # macOS system modules
-    server/                  # Server services (DNS, monitoring)
-    home/
-      programs/              # User apps (shell, editor, browser, etc.)
-      system/                # Desktop environment (Hyprland, bar, lock, etc.)
-  themes/                    # Catppuccin Stylix configs
-  secrets/                   # SOPS-encrypted secrets
-  lib/                       # Helpers (mkSystem, mkSdImage, pre-commit)
+├── flake.nix                # Entry point — wires import-tree into flake-parts
+└── modules/                 # Everything lives here; all files auto-imported
+    ├── flake/               # Flake-parts infrastructure (builders, formatter, shell)
+    ├── hosts/               # Per-machine configuration
+    │   ├── nixos/
+    │   │   ├── faye/        # Desktop workstation (x86_64, AMD, Hyprland)
+    │   │   └── ed/          # Raspberry Pi server (aarch64, headless)
+    │   └── darwin/
+    │       ├── ein/         # MacBook (aarch64-darwin, full)
+    │       └── spike/       # MacBook (aarch64-darwin, lean)
+    ├── secrets/             # SOPS secrets declaration + encrypted file
+    ├── theme/               # Stylix theming (linux + darwin)
+    ├── owner/               # Flake owner metadata
+    ├── var/                 # Per-platform variable schemas
+    ├── home-manager/        # Home Manager wiring
+    ├── hyprland/            # Hyprland WM (system + HM + bar)
+    ├── niri/                # Niri compositor (system + HM + waybar)
+    ├── gaming/              # Steam, GameMode, Wine, launchers
+    ├── shell/               # ZSH, fish, starship, tmux, fzf, zoxide, direnv
+    ├── editor/              # Neovim, vim
+    ├── browser/             # Zen browser
+    ├── terminal/            # Ghostty, alacritty
+    └── ...                  # amdgpu, audio, bluetooth, docker, tailscale, etc.
 ```
 
-Each host has a `variables.nix` that sets its identity -- username, hostname, shell, terminal, browser, launcher, and so on. Modules read from these variables so you can swap components without touching every file.
+Every `.nix` file in `modules/` is automatically imported via `import-tree` — there's no manual import list to maintain. Hosts select behaviour by composing named profiles (`configurations.nixos.faye.module = { imports = [base desktop hyprland amdgpu gaming ...]; }`). Each profile is a `deferredModule` that multiple files contribute to, so features stay co-located by concept rather than split across `nixos/`, `home/`, and `darwin/` directories.
+
+Each host directory contains `imports.nix` (profile selection), `variables.nix` (hostname, shell, etc.), and any machine-specific files. See [`docs/architecture.md`](docs/architecture.md) for the full picture.
 
 ---
 
