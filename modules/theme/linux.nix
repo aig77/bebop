@@ -24,10 +24,12 @@ _: {
         };
       };
 
-      image = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/orangci/walls-catppuccin-mocha/master/hollow-knight.jpg";
-        sha256 = "sha256-dX3Xtf/Ma9UCzLfmRxnxLMHNL+IBjT2U06ruPmj5rHw=";
-      };
+      # image = pkgs.fetchurl {
+      #   url = "https://raw.githubusercontent.com/orangci/walls-catppuccin-mocha/master/hollow-knight.jpg";
+      #   sha256 = "sha256-dX3Xtf/Ma9UCzLfmRxnxLMHNL+IBjT2U06ruPmj5rHw=";
+      # };
+
+      image = ./wallpapers/Faye-Valentine-Wallpaper-Catppuccin.jpg;
 
       cursor = {
         name = "catppuccin-mocha-light-cursors";
