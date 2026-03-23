@@ -26,20 +26,14 @@ in {
     hyprland = _: {
       home-manager.users.${username}.imports = [
         hm.hyprland
-        hm.fuzzel
-        hm.hyprlock
-        hm.hypridle
-        hm.screenshot
+        hm.customDesktopShell
+        hm.screenshot # hyprland-specific (grimblast/hyprshot)
       ];
     };
     niri = _: {
       home-manager.users.${username}.imports = [
         hm.niri
-        hm.waybar
-        hm.mako
-        hm.fuzzel
-        hm.hyprlock
-        hm.hypridle
+        hm.customDesktopShell
       ];
     };
     gnome = _: {

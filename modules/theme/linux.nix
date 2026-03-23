@@ -1,6 +1,8 @@
 _: {
   flake.modules.nixos.desktop = {pkgs, ...}: {
-    stylix = {
+    stylix = let
+      wallpapersPath = ../../assets/wallpapers;
+    in {
       enable = true;
       polarity = "dark";
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
@@ -29,7 +31,7 @@ _: {
       #   sha256 = "sha256-dX3Xtf/Ma9UCzLfmRxnxLMHNL+IBjT2U06ruPmj5rHw=";
       # };
 
-      image = ./wallpapers/Faye-Valentine-Wallpaper-Catppuccin.jpg;
+      image = wallpapersPath + /Faye-Valentine-Wallpaper-Catppuccin.jpg;
 
       cursor = {
         name = "catppuccin-mocha-light-cursors";

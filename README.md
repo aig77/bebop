@@ -26,8 +26,8 @@ Each host targets a different machine and use case.
 Full-featured desktop with Hyprland on Wayland, AMD GPU, gaming, and development tooling.
 
 - Hyprland compositor with custom animations, blur, and rounded corners
-- HyprPanel status bar with weather, media controls, system tray
-- Fuzzel launcher, Hyprlock lock screen, Wlogout logout menu
+- Waybar status bar (custom pill layout) with media controls, workspaces, volume, notifications
+- SwayNC notification center, Fuzzel launcher, Hyprlock lock screen, Wlogout logout menu
 - Gaming: Steam with Proton, Heroic, Bottles, GameMode, MangoHud
 - Ghostty terminal, Zen browser, Neovim, Tmux
 - Spotify (Spicetify), Discord (Nixcord), Obsidian, OBS
@@ -78,12 +78,12 @@ Same foundation as Ein with a trimmer set of apps.
 | Component       | Tool                     |
 |-----------------|--------------------------|
 | Compositor      | Hyprland (Wayland)       |
-| Status bar      | HyprPanel                |
+| Status bar      | Waybar (custom pill)     |
 | Launcher        | Fuzzel                   |
 | Lock screen     | Hyprlock                 |
 | Logout menu     | Wlogout                  |
 | Idle daemon     | Hypridle                 |
-| Notifications   | Dunst                    |
+| Notifications   | SwayNC                   |
 
 ![Hyprland Screenshot Placeholder](screenshots/hyprland.png)
 <!-- Replace with a screenshot showing the tiling layout, bar, and launcher -->
@@ -182,7 +182,8 @@ bebop/
     ├── owner/               # Flake owner metadata
     ├── var/                 # Per-platform variable schemas
     ├── home-manager/        # Home Manager wiring
-    ├── hyprland/            # Hyprland WM (system + HM + bar)
+    ├── hyprland/            # Hyprland WM (system + HM config)
+    ├── customDesktopShell/  # Waybar, SwayNC, Fuzzel, Hyprlock, Hypridle
     ├── niri/                # Niri compositor (system + HM + waybar)
     ├── gaming/              # Steam, GameMode, Wine, launchers
     ├── shell/               # ZSH, fish, starship, tmux, fzf, zoxide, direnv

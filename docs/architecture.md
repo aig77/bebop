@@ -51,7 +51,6 @@ bebop/
     ├── hypridle/                     # Idle daemon (shared between WMs)
     ├── hyprlock/                     # Lock screen (shared between WMs)
     ├── waybar/                       # Status bar (used by niri)
-    ├── mako/                         # Notification daemon (used by niri)
     ├── fuzzel/                       # App launcher (shared between WMs)
     ├── rofi/                         # Alternative launcher
     ├── wlogout/                      # Logout menu
@@ -139,7 +138,6 @@ Darwin currently has one profile because all Mac machines here share the same ba
 | `hyprlock` | Lock screen | Hyprlock config (shared by hyprland + niri) |
 | `hypridle` | Idle/suspend | Hypridle config (shared by hyprland + niri) |
 | `waybar` | Status bar | Waybar config (used by niri; hyprland uses HyprPanel) |
-| `mako` | Notifications | Mako config (used by niri; hyprland uses HyprPanel) |
 | `screenshot` | Screenshot scripts | grimblast scripts, Print key bindings |
 
 ### How NixOS and HM profiles connect
@@ -149,7 +147,7 @@ NixOS profiles don't directly import HM profiles. The bridge is in `home-manager
 - Importing `nixos.base` → HM user gets `hm.base`
 - Importing `nixos.desktop` → HM user gets `hm.gui`
 - Importing `nixos.hyprland` → HM user gets `hm.hyprland + hm.fuzzel + hm.hyprlock + hm.hypridle + hm.screenshot`
-- Importing `nixos.niri` → HM user gets `hm.niri + hm.waybar + hm.mako + hm.fuzzel + hm.hyprlock + hm.hypridle`
+- Importing `nixos.niri` → HM user gets `hm.niri + hm.waybar + hm.fuzzel + hm.hyprlock + hm.hypridle`
 
 A host that imports `[base desktop hyprland]` therefore ends up with a user that has `[hm.base + hm.gui + hm.hyprland + hm.fuzzel + hm.hyprlock + hm.hypridle + hm.screenshot]` — all without the host file listing any HM profiles directly.
 

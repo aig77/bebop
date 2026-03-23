@@ -78,7 +78,7 @@ Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `conf
 | `base` | `hm.base` |
 | `desktop` | `hm.gui` |
 | `hyprland` | `hm.hyprland`, `hm.fuzzel`, `hm.hyprlock`, `hm.hypridle`, `hm.screenshot` |
-| `niri` | `hm.niri`, `hm.waybar`, `hm.mako`, `hm.fuzzel`, `hm.hyprlock`, `hm.hypridle` |
+| `niri` | `hm.niri`, `hm.waybar`, `hm.fuzzel`, `hm.hyprlock`, `hm.hypridle` |
 | `gnome` | `hm.gnome` |
 | `gaming` | `hm.gaming` |
 
@@ -250,9 +250,6 @@ Contributes to `homeManager.hypridle`. Idle daemon: dim screen after 4min, lock 
 
 ### `waybar/default.nix`
 Contributes to `homeManager.waybar`. Base Waybar config (used by niri; hyprland uses hyprpanel instead).
-
-### `mako/default.nix`
-Contributes to `homeManager.mako`. Notification daemon used by niri. Hyprland uses hyprpanel's built-in notifications.
 
 ### `fuzzel/default.nix`
 Contributes to `homeManager.fuzzel`. App launcher shared between Hyprland and niri.

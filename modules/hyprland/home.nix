@@ -8,6 +8,7 @@ _: {
     ...
   }: let
     inherit (config.lib.stylix) colors;
+    gameWorkspace = 4;
 
     launcherCommand =
       if var.launcher == "rofi"
@@ -44,7 +45,7 @@ _: {
           --hide-prompt \
     '';
   in {
-    home.packages = [pkgs.hyprpolkitagent view-binds];
+    home.packages = [pkgs.hyprpolkitagent pkgs.playerctl view-binds];
 
     services.hyprpaper.settings.splash = false;
 
@@ -60,6 +61,7 @@ _: {
       settings = {
         exec-once = [
           "systemctl --user start hyprpolkitagent"
+          "playerctld"
         ];
 
         env = [
@@ -78,6 +80,12 @@ _: {
           hyprfocus.enabled = "yes";
         };
 
+        bindde = [
+          ", XF86AudioRaiseVolume, Raise Volume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕾 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\""
+          ", XF86AudioLowerVolume, Lower Volume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕿 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\""
+          ", XF86AudioMute, Mute Audio, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰝟 Volume' 'Muted'"
+        ];
+
         bindd = [
           "SUPER, slash, View Keybinds, exec, view-binds"
 
@@ -94,7 +102,6 @@ _: {
           "SUPER SHIFT, Q, Exit Hyprland, exit"
           "SUPER, T, Toggle Floating, togglefloating"
           "SUPER, P, Pseudo Tiling, pseudo"
-          "SUPER, O, Toggle Split, togglesplit"
           "SUPER, F, Fullscreen (Internal), fullscreen, 0"
           "SUPER SHIFT, F, Fullscreen (Global), fullscreen, 1"
 
@@ -114,17 +121,17 @@ _: {
           "SUPER, 3, Switch to Workspace 3, workspace, 3"
           "SUPER, 4, Switch to Workspace 4, workspace, 4"
           "SUPER, 5, Switch to Workspace 5, workspace, 5"
-          "SUPER, 6, Switch to Workspace 6, workspace, 6"
-          "SUPER, 7, Switch to Workspace 7, workspace, 7"
-          "SUPER, 8, Switch to Workspace 8, workspace, 8"
+          # "SUPER, 6, Switch to Workspace 6, workspace, 6"
+          # "SUPER, 7, Switch to Workspace 7, workspace, 7"
+          # "SUPER, 8, Switch to Workspace 8, workspace, 8"
           "SUPER SHIFT, 1, Move to Workspace 1, movetoworkspace, 1"
           "SUPER SHIFT, 2, Move to Workspace 2, movetoworkspace, 2"
           "SUPER SHIFT, 3, Move to Workspace 3, movetoworkspace, 3"
           "SUPER SHIFT, 4, Move to Workspace 4, movetoworkspace, 4"
           "SUPER SHIFT, 5, Move to Workspace 5, movetoworkspace, 5"
-          "SUPER SHIFT, 6, Move to Workspace 6, movetoworkspace, 6"
-          "SUPER SHIFT, 7, Move to Workspace 7, movetoworkspace, 7"
-          "SUPER SHIFT, 8, Move to Workspace 8, movetoworkspace, 8"
+          # "SUPER SHIFT, 6, Move to Workspace 6, movetoworkspace, 6"
+          # "SUPER SHIFT, 7, Move to Workspace 7, movetoworkspace, 7"
+          # "SUPER SHIFT, 8, Move to Workspace 8, movetoworkspace, 8"
 
           "SUPER, S, Toggle Special Workspace, togglespecialworkspace, magic"
           "SUPER SHIFT, S, Move to Special Workspace, movetoworkspace, special:magic"
@@ -150,8 +157,8 @@ _: {
         };
 
         general = {
-          gaps_in = 8;
-          gaps_out = 20;
+          gaps_in = 10;
+          gaps_out = 10;
           border_size = 2;
           "col.active_border" =
             lib.mkForce
@@ -228,9 +235,9 @@ _: {
           "match:title ^(.*Bitwarden Password Manager.*)$, float on"
           "match:title Calculator, float on"
           "match:class ^(steam_app_.*)$, fullscreen on"
-          "match:class ^(steam_app_.*)$, workspace 8"
+          "match:class ^(steam_app_.*)$, workspace ${toString gameWorkspace}"
           "match:class ^(gamescope)$, fullscreen on"
-          "match:class ^(gamescope)$, workspace 8"
+          "match:class ^(gamescope)$, workspace ${toString gameWorkspace}"
           "match:class ^(zen*)$, match:title ^(.*YouTube.*)$, idle_inhibit focus"
           "match:class ^(zen*)$, idle_inhibit fullscreen"
           "match:title ^(.*Bitwarden Password Manager.*)$, no_screen_share on"
