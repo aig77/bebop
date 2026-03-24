@@ -91,6 +91,7 @@ _: {
 
           "SUPER, RETURN, Open Terminal, exec, ${var.terminal}"
           "SUPER, SPACE, Open Launcher, exec, ${launcherCommand}"
+          "SUPER, W, Open Wallpaper Picker, exec, wallpaper-picker"
           "SUPER, C, Lock Screen, exec, ${var.lock}"
           "SUPER, P, Logout, exec, ${var.logout}"
 
@@ -241,6 +242,8 @@ _: {
           "match:class ^(zen*)$, match:title ^(.*YouTube.*)$, idle_inhibit focus"
           "match:class ^(zen*)$, idle_inhibit fullscreen"
           "match:title ^(.*Bitwarden Password Manager.*)$, no_screen_share on"
+          "match:class ^(rofi)$, float on"
+          "match:class ^(rofi)$, center 1"
         ];
 
         layerrule = [

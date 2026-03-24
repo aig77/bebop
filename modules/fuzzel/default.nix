@@ -29,11 +29,20 @@ _: {
 
         colors = {
           background = lib.mkForce "${colors.base00}99";
+          border = lib.mkForce "${colors.base04}ff";
         };
 
         border = {
           width = 2;
           radius = 12;
+        };
+
+        shadow = {
+          color = "00000066";
+          count = 1;
+          offset-x = 0;
+          offset-y = 4;
+          size = 20;
         };
       };
     };

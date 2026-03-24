@@ -91,9 +91,10 @@ _: {
 
         .notification-content {
           background: ${colors.base01}d9;
-          border: 1px solid ${colors.base03}4d;
+          border: 1px solid ${colors.base04};
           border-radius: 12px;
           padding: 12px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .notification-default-action {
@@ -160,9 +161,10 @@ _: {
 
         .control-center {
           background: ${colors.base00}cc;
-          border: 1px solid ${colors.base03}4d;
+          border: 1px solid ${colors.base04};
           border-radius: 16px;
           padding: 8px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .control-center-list {

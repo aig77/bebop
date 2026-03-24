@@ -32,6 +32,7 @@ _: {
             "clock"
             "hyprland/workspaces"
             "wireplumber"
+            "custom/wallpaper"
             "custom/swaync"
           ];
         };
@@ -83,7 +84,7 @@ _: {
           hide_on_silence = true;
           bars = 12;
           bar_delimiter = 0;
-          sleep_timer = 5;
+          sleep_timer = 1;
           input_delay = 2;
           format-icons = [
             "<span foreground='#${raw.base0E}'>▁</span>"
@@ -95,6 +96,12 @@ _: {
             "<span foreground='#${raw.base08}'>▇</span>"
             "<span foreground='#${raw.base08}'>█</span>"
           ];
+        };
+
+        "custom/wallpaper" = {
+          format = "󰸉";
+          on-click = "wallpaper-picker";
+          tooltip = false;
         };
 
         "custom/swaync" = {
@@ -150,11 +157,12 @@ _: {
         /* ── center pill ─────────────────────────────────────── */
 
         #pill {
-          background-color: ${colors.base00};
-          border: 1px solid ${colors.base03};
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
           border-radius: 100px;
           margin: 10px 0;
           padding: 0 6px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
         }
 
         #clock {
@@ -210,6 +218,13 @@ _: {
           color: ${colors.base03};
         }
 
+        #custom-wallpaper {
+          color: ${colors.base0B};
+          font-size: 18px;
+          padding: 0 6px;
+          margin-right: 5px;
+        }
+
         #custom-swaync {
           color: ${colors.base0A};
           padding: 0 10px 0 6px;
@@ -230,32 +245,33 @@ _: {
         }
 
         #mpris {
-          background-color: ${colors.base00};
-          border: 1px solid ${colors.base03};
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
           border-radius: 100px;
           color: ${colors.base05};
-          padding: 0 12px;
+          padding: 0 12px 0 14px;
           margin: 10px 4px 10px 0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
         }
 
         #cava {
-          background-color: ${colors.base00};
-          border: 1px solid ${colors.base03};
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
           border-radius: 100px;
           font-size: 10px;
           letter-spacing: 1px;
           padding: 0 12px 0 8px;
           margin: 10px 0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
         }
 
         /* ── right: taskbar ─────────────────────────────────── */
 
         #taskbar {
-          background-color: ${colors.base00};
-          border: 1px solid ${colors.base03};
-          border-radius: 100px;
-          margin: 10px 0;
-          padding: 0 6px;
+          background: transparent;
+          border: none;
+          margin: 10px 10px 10px 0;
+          padding: 0;
         }
 
         #taskbar button {
