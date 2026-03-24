@@ -16,13 +16,14 @@ _: {
           useOSProber = true;
           devices = ["nodev"];
         };
-        grub2-theme = {
-          enable = true;
-          theme = "vimix";
-          screen = "2k";
-        };
+        grub2-theme.enable = false;
         efi.canTouchEfiVariables = true;
         timeout = 3;
+        grub.extraConfig = ''
+          terminal_input console
+          terminal_output console
+          set timeout_style=hidden
+        '';
       };
 
       plymouth = {
@@ -39,6 +40,7 @@ _: {
       initrd.verbose = false;
       kernelParams = [
         "quiet"
+        "splash"
         "udev.log_level=3"
         "systemd.show_status=auto"
       ];
