@@ -161,7 +161,7 @@ The encrypted YAML file. Edit with `sops modules/secrets/secrets.yaml`. All four
 ## theme/
 
 ### `theme/linux.nix`
-Contributes to `flake.modules.nixos.desktop`. Configures Stylix with Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, a fetched wallpaper, and catppuccin-mocha-light cursors with Papirus Dark icons.
+Contributes to `flake.modules.nixos.desktop`. Configures Stylix with Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, catppuccin-mocha-light cursors, and Papirus Dark icons. Wallpaper is **not** managed by Stylix — it is set at runtime by `swww` (see below).
 
 ### `theme/darwin.nix`
 Contributes to `flake.modules.darwin.base`. Same fonts and color scheme, but no wallpaper or cursor/icon config (macOS handles those differently).
@@ -259,6 +259,13 @@ Contributes to `homeManager.wlogout`. Logout menu. Used by niri; hyprpanel handl
 
 ### `screenshot/default.nix`
 Contributes to `homeManager.screenshot`. Screenshot scripts using grimblast, bound to Print keys in both WMs.
+
+### `swww/default.nix`
+Contributes to `homeManager.swww`. Wallpaper daemon for Wayland. Runs `swww-daemon` as a systemd user service that waits for a Wayland socket before starting (compositor-agnostic). A second one-shot service sets the wallpaper with a grow-from-center transition on login.
+
+Wallpaper lives at `assets/wallpapers/Faye-Valentine-Wallpaper-Catppuccin.jpg` and is referenced as a Nix store path — change it there to update the wallpaper across all hosts.
+
+Stylix does **not** manage the wallpaper. swww handles it entirely at runtime.
 
 ---
 

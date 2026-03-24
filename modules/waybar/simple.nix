@@ -150,7 +150,7 @@ _: {
         /* ── center pill ─────────────────────────────────────── */
 
         #pill {
-          background-color: ${colors.base01};
+          background-color: ${colors.base00};
           border: 1px solid ${colors.base03};
           border-radius: 100px;
           margin: 10px 0;
@@ -230,7 +230,7 @@ _: {
         }
 
         #mpris {
-          background-color: ${colors.base01};
+          background-color: ${colors.base00};
           border: 1px solid ${colors.base03};
           border-radius: 100px;
           color: ${colors.base05};
@@ -239,7 +239,7 @@ _: {
         }
 
         #cava {
-          background-color: ${colors.base01};
+          background-color: ${colors.base00};
           border: 1px solid ${colors.base03};
           border-radius: 100px;
           font-size: 10px;
@@ -251,7 +251,7 @@ _: {
         /* ── right: taskbar ─────────────────────────────────── */
 
         #taskbar {
-          background-color: ${colors.base01};
+          background-color: ${colors.base00};
           border: 1px solid ${colors.base03};
           border-radius: 100px;
           margin: 10px 0;

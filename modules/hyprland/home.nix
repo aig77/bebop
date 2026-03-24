@@ -157,7 +157,7 @@ _: {
         };
 
         general = {
-          gaps_in = 10;
+          gaps_in = 5;
           gaps_out = 10;
           border_size = 2;
           "col.active_border" =
@@ -178,11 +178,11 @@ _: {
           };
           blur = {
             enabled = true;
-            size = 8;
-            passes = 4;
-            noise = 0.01;
-            contrast = 0.8;
-            vibrancy = 0.2;
+            size = 6;
+            passes = 3;
+            noise = 0.02;
+            contrast = 0.9;
+            vibrancy = 0.1;
             new_optimizations = true;
             ignore_opacity = true;
           };
@@ -244,11 +244,14 @@ _: {
         ];
 
         layerrule = [
-          "blur on, match:namespace bar-0"
           "blur on, match:namespace launcher"
           "ignore_alpha 0.5, match:namespace launcher"
           "blur on, match:namespace rofi"
           "ignore_alpha 0.5, match:namespace rofi"
+          "blur on, match:namespace swaync-control-center"
+          "ignore_alpha 0.1, match:namespace swaync-control-center"
+          "blur on, match:namespace swaync-notification-window"
+          "ignore_alpha 0.1, match:namespace swaync-notification-window"
         ];
       };
     };

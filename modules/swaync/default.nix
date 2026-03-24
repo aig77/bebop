@@ -60,10 +60,21 @@ _: {
           transition: none;
         }
 
+        .floating-notifications {
+          background: transparent;
+          margin-top: 10px;
+          margin-right: 10px;
+        }
+
+        .floating-notifications > box {
+          background: transparent;
+        }
+
         .notification-row {
           outline: none;
           margin: 0;
           padding: 0;
+          background: transparent;
         }
 
         .notification-row:hover {
@@ -75,11 +86,12 @@ _: {
           margin: 6px 0;
           padding: 0;
           box-shadow: none;
+          background: transparent;
         }
 
         .notification-content {
-          background: ${colors.base01};
-          border: 1px solid ${colors.base03};
+          background: ${colors.base01}d9;
+          border: 1px solid ${colors.base03}4d;
           border-radius: 12px;
           padding: 12px;
         }
@@ -147,8 +159,8 @@ _: {
         }
 
         .control-center {
-          background: ${colors.base00};
-          border: 1px solid ${colors.base03};
+          background: ${colors.base00}cc;
+          border: 1px solid ${colors.base03}4d;
           border-radius: 16px;
           padding: 8px;
         }
