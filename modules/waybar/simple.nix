@@ -9,11 +9,13 @@ _: {
     raw = config.lib.stylix.colors;
     font = config.stylix.fonts.monospace.name;
   in {
-    home.packages = [pkgs.cava];
+    home.packages = [pkgs.cava pkgs.playerctl];
+
+    wayland.windowManager.hyprland.settings.exec-once = lib.mkIf config.wayland.windowManager.hyprland.enable ["waybar" "playerctld"];
 
     programs.waybar = {
       enable = true;
-      systemd.enable = true;
+
 
       settings.pill = {
         layer = "top";

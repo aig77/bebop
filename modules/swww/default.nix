@@ -19,12 +19,26 @@ _: {
     swww-set-wallpaper = pkgs.writeShellScript "swww-set-wallpaper" ''
       until ${pkgs.swww}/bin/swww query; do sleep 0.1; done
       cache="$HOME/.cache/bebop/last-wallpaper"
+      dir="''${WALLPAPERS:-$HOME/Pictures/Wallpapers}"
+
+      pick_random() {
+        mapfile -t imgs < <(find "$dir" -maxdepth 1 \
+          \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \
+             -o -iname "*.webp" -o -iname "*.gif" \))
+        if [ ''${#imgs[@]} -gt 0 ]; then
+          echo "''${imgs[$RANDOM % ''${#imgs[@]}]}"
+        else
+          echo "${wallpaper}"
+        fi
+      }
+
       if [ -f "$cache" ] && [ -r "$cache" ]; then
         target="$(cat "$cache")"
-        [ -f "$target" ] || target="${wallpaper}"
+        [ -f "$target" ] || target="$(pick_random)"
       else
-        target="${wallpaper}"
+        target="$(pick_random)"
       fi
+
       exec ${pkgs.swww}/bin/swww img \
         --transition-type grow \
         --transition-pos "0.5,0.5" \

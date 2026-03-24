@@ -45,7 +45,7 @@ _: {
           --hide-prompt \
     '';
   in {
-    home.packages = [pkgs.hyprpolkitagent pkgs.playerctl view-binds];
+    home.packages = [pkgs.hyprpolkitagent view-binds];
 
     services.hyprpaper.settings.splash = false;
 
@@ -61,7 +61,6 @@ _: {
       settings = {
         exec-once = [
           "systemctl --user start hyprpolkitagent"
-          "playerctld"
         ];
 
         env = [
