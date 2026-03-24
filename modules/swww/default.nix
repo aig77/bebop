@@ -6,8 +6,6 @@ _: {
     ...
   }: let
     inherit (config.lib.stylix) colors;
-    wallpaper = ../../assets/wallpapers/Faye-Valentine-Wallpaper-Catppuccin.jpg;
-
     swww-start = pkgs.writeShellScript "swww-start" ''
       runtime="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
       until [ -S "$runtime/wayland-0" ] || [ -S "$runtime/wayland-1" ]; do
@@ -27,8 +25,6 @@ _: {
              -o -iname "*.webp" -o -iname "*.gif" \))
         if [ ''${#imgs[@]} -gt 0 ]; then
           echo "''${imgs[$RANDOM % ''${#imgs[@]}]}"
-        else
-          echo "${wallpaper}"
         fi
       }
 
@@ -39,6 +35,7 @@ _: {
         target="$(pick_random)"
       fi
 
+      ln -sf "$target" "$HOME/.cache/bebop/current-wallpaper"
       exec ${pkgs.swww}/bin/swww img \
         --transition-type grow \
         --transition-pos "0.5,0.5" \
@@ -153,6 +150,7 @@ _: {
 
         mkdir -p "$(dirname "$CACHE_FILE")"
         printf "%s" "$target" > "$CACHE_FILE"
+        ln -sf "$target" "$HOME/.cache/bebop/current-wallpaper"
         ${pkgs.swww}/bin/swww img \
           --transition-type grow \
           --transition-pos "0.5,0.5" \
