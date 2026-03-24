@@ -54,9 +54,9 @@ _: {
       package = null;
       portalPackage = null;
       systemd.variables = ["--all"];
-      plugins = with inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}; [
-        hyprfocus
-      ];
+      # plugins = with inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}; [
+      #   hyprfocus # broken: not yet updated for new Hyprland API (g_pConfigManager removed)
+      # ];
 
       settings = {
         exec-once = [
@@ -75,9 +75,9 @@ _: {
 
         monitor = [",preferred,auto,auto"];
 
-        plugin = {
-          hyprfocus.enabled = "yes";
-        };
+        # plugin = {
+        #   hyprfocus.enabled = "yes";
+        # };
 
         bindde = [
           ", XF86AudioRaiseVolume, Raise Volume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕾 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\""
