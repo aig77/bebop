@@ -41,10 +41,13 @@ _: {
 
         "clock" = {
           format = "{:%H:%M}";
-          tooltip-format = "<tt><small>{calendar}</small></tt>";
+          tooltip-format = "<tt>{calendar}</tt>";
           calendar = {
             mode = "month";
             on-scroll = 1;
+            format = {
+              today = "<span color='${colors.base0D}'><b><u>{}</u></b></span>";
+            };
           };
         };
 
@@ -251,7 +254,7 @@ _: {
           border: 2px solid ${colors.base04};
           border-radius: 100px;
           color: ${colors.base05};
-          padding: 0 12px 0 14px;
+          padding: 0 12px 0 16px;
           margin: 10px 4px 10px 0;
           box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
         }
@@ -303,6 +306,71 @@ _: {
         #tray > .needs-attention {
           background-color: ${colors.base08};
           border-radius: 100px;
+        }
+
+        /* ── tooltips ────────────────────────────────────────── */
+
+        tooltip {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 1px solid ${colors.base04};
+          border-radius: 16px;
+          padding: 4px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        tooltip label {
+          color: ${colors.base05};
+          font-size: 13px;
+          padding: 6px 12px;
+          border-radius: 12px;
+        }
+
+        /* ── clock calendar ──────────────────────────────────── */
+
+        calendar {
+          background-color: transparent;
+          color: ${colors.base05};
+          font-size: 15px;
+          border-radius: 12px;
+          padding: 4px 6px 6px;
+        }
+
+        calendar.header {
+          background-color: transparent;
+          color: ${colors.base0D};
+          font-weight: bold;
+          border: none;
+          border-radius: 0;
+          padding: 4px 2px 8px;
+        }
+
+        calendar.button {
+          background-color: transparent;
+          color: ${colors.base0D};
+          border: none;
+          border-radius: 8px;
+          padding: 2px 8px;
+          min-height: 0;
+        }
+
+        calendar.button:hover {
+          background-color: alpha(${colors.base0D}, 0.15);
+        }
+
+        calendar:selected {
+          background-color: ${colors.base0D};
+          color: ${colors.base00};
+          border-radius: 8px;
+          font-weight: bold;
+        }
+
+
+        calendar.othermonth {
+          color: ${colors.base03};
+        }
+
+        calendar.weekend {
+          color: ${colors.base0E};
         }
       '';
     };
