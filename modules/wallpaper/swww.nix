@@ -1,6 +1,7 @@
 _: {
   flake.modules.homeManager.swww = {
     pkgs,
+    var,
     ...
   }: let
     swww-start = pkgs.writeShellScript "swww-start" ''
@@ -24,10 +25,10 @@ _: {
   in {
     home.packages = [pkgs.swww];
 
-    home.sessionVariables.CURRENT_WALLPAPER = "$HOME/.cache/bebop/current-wallpaper";
+    home.sessionVariables.CURRENT_WALLPAPER = var.wallpaperPath;
 
     wayland.windowManager.hyprland.settings.env = [
-      "CURRENT_WALLPAPER,$HOME/.cache/bebop/current-wallpaper"
+      "CURRENT_WALLPAPER,${var.wallpaperPath}"
     ];
 
     systemd.user.services.swww = {

@@ -2,6 +2,7 @@ _: {
   flake.modules.homeManager.hyprlock = {
     lib,
     config,
+    var,
     ...
   }: let
     inherit (config.lib.stylix) colors;
@@ -9,7 +10,7 @@ _: {
     foreground = "rgb(${colors.base06})";
     blue = "rgb(${colors.base0C})";
     red = "rgb(${colors.base0F})";
-    wallpaper = "$CURRENT_WALLPAPER";
+    wallpaper = var.wallpaperPath;
     font = config.stylix.fonts.monospace.name;
   in {
     programs.hyprlock = {

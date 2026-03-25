@@ -38,6 +38,10 @@
             type = lib.types.str;
             default = "swww";
           };
+          wallpaperPath = lib.mkOption {
+            type = lib.types.str;
+            default = "$HOME/.cache/bebop/current-wallpaper";
+          };
         };
       };
       default = {};

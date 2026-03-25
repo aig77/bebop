@@ -58,6 +58,7 @@ Contributes the `options.var` schema to `flake.modules.nixos.base`. Available op
 | `var.lock` | str | `"hyprlock"` | Lock screen command |
 | `var.logout` | str | `"wlogout"` | Logout menu command |
 | `var.wallpaperEngine` | str | `"swww"` | Wallpaper backend (`"swww"`, or future engines like `"hyprpaper"`, `"mpvpaper"`) |
+| `var.wallpaperPath` | str | `"$HOME/.cache/bebop/current-wallpaper"` | Runtime path to the current wallpaper symlink. Used by `swww`, `waypaper`, and `hyprlock` so all three stay in sync without duplicating the path. |
 
 ### `var/darwin.nix`
 Same but contributes to `flake.modules.darwin.base`. Darwin has a smaller set: `username`, `hostname`, `shell`, `terminal`, `browser`.
@@ -244,7 +245,7 @@ Contributes to `homeManager.gnome`. GNOME Shell extensions: blur-my-shell, caffe
 These are standalone profiles specifically so they can be composed into multiple WM setups.
 
 ### `hyprlock/default.nix`
-Contributes to `homeManager.hyprlock`. Lock screen with Stylix-themed background, clock, password input, blur. Background path uses `$CURRENT_WALLPAPER` (set by the `wallpaper` module) so it always shows the last active wallpaper.
+Contributes to `homeManager.hyprlock`. Lock screen with Stylix-themed background, clock, password input, blur. Background path uses `var.wallpaperPath` so it always shows the last active wallpaper.
 
 ### `hypridle/default.nix`
 Contributes to `homeManager.hypridle`. Idle daemon: dim screen after 4min, lock after 5min, suspend after 10min. Used by both Hyprland and niri.
@@ -273,9 +274,9 @@ Three-file module split into backend (swww) and picker (waypaper), bundled by a 
 
 **`swww.nix`** — runs `swww-daemon` as a systemd user service (waits for a Wayland socket, compositor-agnostic). A second one-shot `swww-wallpaper` service fires on login and calls `waypaper --restore` to replay the last selection (falls back to `--random` on first run). Also exports `CURRENT_WALLPAPER` pointing to `~/.cache/bebop/current-wallpaper`.
 
-**`waypaper.nix`** — installs `waypaper` and a thin `wallpaper-picker` wrapper (so keybinds/waybar button keep working without changes). Writes `~/.config/waypaper/config.ini` with `backend = ${var.wallpaperEngine}` and a `post_command` that updates the `current-wallpaper` symlink on every pick.
+**`waypaper.nix`** — installs `waypaper` and a thin `wallpaper-picker` wrapper (so keybinds/waybar button keep working without changes). Creates `~/.config/waypaper/config.ini` via `home.activation` (not `xdg.configFile`) so waypaper can update the `wallpaper=` line at runtime. A Nix-managed symlink would be read-only, causing `post_command` to receive the folder path instead of the selected image — breaking the `current-wallpaper` symlink. The activation script only writes the file if it doesn't already exist, so picks survive rebuilds. `post_command` symlinks the chosen wallpaper to `var.wallpaperPath` on every pick.
 
-**`CURRENT_WALLPAPER` env var** — defined in `swww.nix` in two places: `home.sessionVariables` (for shell sessions) and `wayland.windowManager.hyprland.settings.env` (for processes launched by Hyprland, including hyprlock). Both are needed because `home.sessionVariables` is only sourced by login shells — processes spawned directly by Hyprland (like the lock screen) won't see it otherwise.
+**`CURRENT_WALLPAPER` env var** — exported from `swww.nix` via `home.sessionVariables` and `wayland.windowManager.hyprland.settings.env`, both set to `var.wallpaperPath`. Modules that need the path at eval time (like `hyprlock`) use `var.wallpaperPath` directly rather than relying on this env var, since the env var is not available when processes are spawned outside a login shell.
 
 Stylix does **not** manage the wallpaper. waypaper + swww handle it entirely at runtime.
 
