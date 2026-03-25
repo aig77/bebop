@@ -8,9 +8,8 @@ _: {
       terminal = "ghostty";
       browser = "zen";
       launcher = "fuzzel";
-      fileManager = "nautilus";
+      fileManager = "thunar";
       lock = "hyprlock";
-      logout = "wlogout";
     };
   };
 }
