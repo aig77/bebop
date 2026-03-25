@@ -15,8 +15,8 @@ _: {
       installVimSyntax = hasPkg;
 
       settings = {
-        window-padding-x = 12;
-        window-padding-y = "0,8";
+        window-padding-x = 24;
+        window-padding-y = 16;
         window-padding-balance = true;
         shell-integration-features = "ssh-env,ssh-terminfo";
         background-opacity =

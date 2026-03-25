@@ -5,8 +5,8 @@ _: {
       settings = {
         window = {
           padding = {
-            x = 10;
-            y = 10;
+            x = 24;
+            y = 16;
           };
         };
       };

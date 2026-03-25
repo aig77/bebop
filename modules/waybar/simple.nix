@@ -71,7 +71,7 @@ _: {
 
         "group/media" = {
           orientation = "horizontal";
-          modules = ["mpris" "cava"];
+          modules = ["cava" "mpris"];
         };
 
         "mpris" = {
@@ -89,7 +89,6 @@ _: {
           hide_on_silence = true;
           bars = 12;
           bar_delimiter = 0;
-          sleep_timer = 1;
           input_delay = 2;
           format-icons = [
             "<span foreground='#${raw.base0E}'>▁</span>"
@@ -273,10 +272,20 @@ _: {
         /* ── right: taskbar ─────────────────────────────────── */
 
         #taskbar {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
+          border-radius: 100px;
+          margin: 10px 10px 10px 0;
+          padding: 0 4px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        #taskbar.empty {
           background: transparent;
           border: none;
-          margin: 10px 10px 10px 0;
+          box-shadow: none;
           padding: 0;
+          min-width: 0;
         }
 
         #taskbar button {
