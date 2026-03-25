@@ -34,6 +34,10 @@
             type = lib.types.str;
             default = "wlogout";
           };
+          wallpaperEngine = lib.mkOption {
+            type = lib.types.str;
+            default = "swww";
+          };
         };
       };
       default = {};

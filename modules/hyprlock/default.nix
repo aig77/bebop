@@ -9,7 +9,7 @@ _: {
     foreground = "rgb(${colors.base06})";
     blue = "rgb(${colors.base0C})";
     red = "rgb(${colors.base0F})";
-    wallpaper = "$HOME/.cache/bebop/current-wallpaper";
+    wallpaper = "$CURRENT_WALLPAPER";
     font = config.stylix.fonts.monospace.name;
   in {
     programs.hyprlock = {

@@ -8,7 +8,7 @@
       hm.fuzzel
       hm.hyprlock
       hm.hypridle
-      hm.swww
+      hm.wallpaperManager
     ];
   };
 }

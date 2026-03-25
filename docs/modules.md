@@ -57,6 +57,7 @@ Contributes the `options.var` schema to `flake.modules.nixos.base`. Available op
 | `var.fileManager` | str | `"nautilus"` | File manager |
 | `var.lock` | str | `"hyprlock"` | Lock screen command |
 | `var.logout` | str | `"wlogout"` | Logout menu command |
+| `var.wallpaperEngine` | str | `"swww"` | Wallpaper backend (`"swww"`, or future engines like `"hyprpaper"`, `"mpvpaper"`) |
 
 ### `var/darwin.nix`
 Same but contributes to `flake.modules.darwin.base`. Darwin has a smaller set: `username`, `hostname`, `shell`, `terminal`, `browser`.
@@ -161,7 +162,7 @@ The encrypted YAML file. Edit with `sops modules/secrets/secrets.yaml`. All four
 ## theme/
 
 ### `theme/linux.nix`
-Contributes to `flake.modules.nixos.desktop`. Configures Stylix with Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, catppuccin-mocha-light cursors, and Papirus Dark icons. Wallpaper is **not** managed by Stylix — it is set at runtime by `swww` (see below).
+Contributes to `flake.modules.nixos.desktop`. Configures Stylix with Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, catppuccin-mocha-light cursors, and Papirus Dark icons. Wallpaper is **not** managed by Stylix — it is set at runtime by `waypaper` + `swww` (see below).
 
 ### `theme/darwin.nix`
 Contributes to `flake.modules.darwin.base`. Same fonts and color scheme, but no wallpaper or cursor/icon config (macOS handles those differently).
@@ -243,7 +244,7 @@ Contributes to `homeManager.gnome`. GNOME Shell extensions: blur-my-shell, caffe
 These are standalone profiles specifically so they can be composed into multiple WM setups.
 
 ### `hyprlock/default.nix`
-Contributes to `homeManager.hyprlock`. Lock screen with Stylix-themed background, clock, password input, blur.
+Contributes to `homeManager.hyprlock`. Lock screen with Stylix-themed background, clock, password input, blur. Background path uses `$CURRENT_WALLPAPER` (set by the `wallpaper` module) so it always shows the last active wallpaper.
 
 ### `hypridle/default.nix`
 Contributes to `homeManager.hypridle`. Idle daemon: dim screen after 4min, lock after 5min, suspend after 10min. Used by both Hyprland and niri.
@@ -260,12 +261,23 @@ Contributes to `homeManager.wlogout`. Logout menu. Used by niri; hyprpanel handl
 ### `screenshot/default.nix`
 Contributes to `homeManager.screenshot`. Screenshot scripts using grimblast, bound to Print keys in both WMs.
 
-### `swww/default.nix`
-Contributes to `homeManager.swww`. Wallpaper daemon for Wayland. Runs `swww-daemon` as a systemd user service that waits for a Wayland socket before starting (compositor-agnostic). A second one-shot service sets the wallpaper with a grow-from-center transition on login.
+### `wallpaper/`
 
-Wallpaper lives at `assets/wallpapers/Faye-Valentine-Wallpaper-Catppuccin.jpg` and is referenced as a Nix store path — change it there to update the wallpaper across all hosts.
+Three-file module split into backend (swww) and picker (waypaper), bundled by a composite profile.
 
-Stylix does **not** manage the wallpaper. swww handles it entirely at runtime.
+| File | Profile | Purpose |
+|---|---|---|
+| `swww.nix` | `homeManager.swww` | swww daemon + startup service |
+| `waypaper.nix` | `homeManager.waypaper` | GTK wallpaper picker + config |
+| `default.nix` | `homeManager.wallpaperManager` | imports `waypaper` always; conditionally imports the engine module based on `var.wallpaperEngine` |
+
+**`swww.nix`** — runs `swww-daemon` as a systemd user service (waits for a Wayland socket, compositor-agnostic). A second one-shot `swww-wallpaper` service fires on login and calls `waypaper --restore` to replay the last selection (falls back to `--random` on first run). Also exports `CURRENT_WALLPAPER` pointing to `~/.cache/bebop/current-wallpaper`.
+
+**`waypaper.nix`** — installs `waypaper` and a thin `wallpaper-picker` wrapper (so keybinds/waybar button keep working without changes). Writes `~/.config/waypaper/config.ini` with `backend = ${var.wallpaperEngine}` and a `post_command` that updates the `current-wallpaper` symlink on every pick.
+
+**`CURRENT_WALLPAPER` env var** — defined in `swww.nix` in two places: `home.sessionVariables` (for shell sessions) and `wayland.windowManager.hyprland.settings.env` (for processes launched by Hyprland, including hyprlock). Both are needed because `home.sessionVariables` is only sourced by login shells — processes spawned directly by Hyprland (like the lock screen) won't see it otherwise.
+
+Stylix does **not** manage the wallpaper. waypaper + swww handle it entirely at runtime.
 
 ---
 
@@ -338,9 +350,6 @@ All contribute to `homeManager.base` or `homeManager.gui` unless noted.
 
 ### `file-manager/default.nix`
 `homeManager.gui`. Thunar file manager with archive and media tag plugins.
-
-### `rofi/default.nix`
-`homeManager.gui`. Rofi launcher as alternative to fuzzel. Selected via `var.launcher = "rofi"`.
 
 ### `gaming/home.nix`
 `homeManager.gaming`. Lutris, Bottles, Heroic launcher for non-Steam games.

@@ -243,6 +243,9 @@ _: {
           "match:title ^(.*Bitwarden Password Manager.*)$, no_screen_share on"
           "match:class ^(rofi)$, float on"
           "match:class ^(rofi)$, center 1"
+          "match:class ^(waypaper)$, float on"
+          "match:class ^(waypaper)$, center 1"
+          "match:class ^(waypaper)$, size 1000 620"
         ];
 
         layerrule = [
