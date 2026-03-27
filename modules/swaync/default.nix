@@ -5,7 +5,7 @@ _: {
     ...
   }: let
     colors = config.lib.stylix.colors.withHashtag;
-    font = config.stylix.fonts.sansSerif.name;
+    font = config.stylix.fonts.monospace.name;
   in {
     home.packages = [pkgs.libnotify];
 
@@ -90,8 +90,8 @@ _: {
         }
 
         .notification-content {
-          background: ${colors.base01}d9;
-          border: 1px solid ${colors.base04};
+          background: ${colors.base01};
+          border: 1px solid ${colors.base0E};
           border-radius: 12px;
           padding: 12px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.4);
@@ -145,7 +145,7 @@ _: {
         }
 
         .body {
-          color: ${colors.base04};
+          color: ${colors.base05};
           font-size: 12px;
         }
 
@@ -160,7 +160,7 @@ _: {
         }
 
         .control-center {
-          background: ${colors.base00}cc;
+          background: ${colors.base00};
           border: 1px solid ${colors.base04};
           border-radius: 16px;
           padding: 8px;

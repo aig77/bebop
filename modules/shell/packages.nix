@@ -8,6 +8,7 @@ _: {
       cmake
       deadnix
       eza
+      fastfetch
       fzf
       gcc
       gh

@@ -22,7 +22,7 @@ _: {
         background-opacity =
           if isDarwin
           then 1.0
-          else 0.8;
+          else 0.9;
       };
     };
   };

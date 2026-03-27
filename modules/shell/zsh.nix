@@ -5,7 +5,9 @@ _: {
     config,
     ...
   }: {
-    programs.zsh = {
+    programs.zsh = let
+      fetchCommand = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
+    in {
       enable = true;
       enableCompletion = true;
       autosuggestion.enable = true;
@@ -33,10 +35,12 @@ _: {
 
       shellAliases = {
         ll = "ls -l";
+        nrs = "sudo nixos-rebuild switch --flake .";
+        nrt = "sudo nixos-rebuild test --flake .";
         ls = "eza --icons=always --no-quotes";
         tree = "eza --icons=always --tree --no-quotes";
         cat = "bat --theme=base16 --color=always --wrap=never";
-        fetch = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
+        fetch = fetchCommand;
       };
 
       history = {
@@ -53,7 +57,7 @@ _: {
 
       initContent = lib.mkMerge [
         (lib.mkBefore ''
-          ${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -
+          ${fetchCommand}
 
           # Keybindings
           bindkey -e

@@ -1,9 +1,4 @@
 _: {
-  #   flake.modules.homeManager.gui = {pkgs, ...}: {
-  #     home.packages = [pkgs.discord];
-  #   };
-  # }
-  # _: {
   flake.modules.homeManager.gui = {inputs, ...}: {
     imports = [inputs.nixcord.homeModules.nixcord];
 

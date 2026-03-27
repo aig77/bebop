@@ -9,7 +9,6 @@ _: {
           color.separator = 245;
         };
         modules = [
-          "break"
           {
             type = "title";
             color = {
@@ -21,7 +20,7 @@ _: {
           "separator"
           {
             type = "os";
-            key = "";
+            key = "";
             keyColor = "red";
             format = "{2} {8}";
           }
@@ -32,10 +31,22 @@ _: {
             format = "{2}";
           }
           {
+            type = "uptime";
+            key = "󰔛";
+            keyColor = "red";
+            format = "{?1}{1}d {?}{2}h {3}m";
+          }
+          {
             type = "packages";
             key = "󰏖";
             keyColor = "red";
             format = "{1}";
+          }
+          {
+            type = "display";
+            key = "󰍹";
+            keyColor = "green";
+            format = "{2} @ {3}Hz";
           }
           {
             type = "wm";
@@ -69,14 +80,22 @@ _: {
             hideType = "integrated";
           }
           {
-            type = "memory";
-            key = "";
+            type = "disk";
+            key = "󰋊";
             keyColor = "blue";
             format = "{1} / {2}";
           }
-          "break"
+          {
+            type = "memory";
+            key = "";
+            keyColor = "blue";
+            format = "{1} / {2} ({3})";
+          }
+
           {
             type = "colors";
+            key = "󰏘";
+            keyColor = "yellow";
             symbol = "circle";
           }
         ];

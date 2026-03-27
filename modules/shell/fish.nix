@@ -5,25 +5,25 @@ _: {
     config,
     ...
   }: {
-    programs.fish = {
+    programs.fish = let
+      fetchCommand = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
+    in {
       enable = true;
 
-      shellAbbrs = {
-        ll = "ls -l";
-      };
-
       shellAliases = {
-        cd = "z";
+        ll = "ls -l";
+        nrw = "sudo nixos-rebuild switch --flake .";
+        nrt = "sudo nixos-rebuild test --flake .";
         ls = "eza --icons=always --no-quotes";
         tree = "eza --icons=always --tree --no-quotes";
         cat = "bat --theme=base16 --color=always --wrap=never";
-        fetch = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
+        fetch = fetchCommand;
       };
 
       interactiveShellInit = ''
         set -g fish_greeting ""
         function fish_greeting
-          ${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -
+          ${fetchCommand}
         end
 
         fish_vi_key_bindings

@@ -30,11 +30,7 @@
             type = lib.types.str;
             default = "hyprlock";
           };
-          logout = lib.mkOption {
-            type = lib.types.str;
-            default = "wlogout";
-          };
-          wallpaperEngine = lib.mkOption {
+wallpaperEngine = lib.mkOption {
             type = lib.types.str;
             default = "swww";
           };

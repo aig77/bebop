@@ -5,104 +5,83 @@ _: {
     pkgs,
     ...
   }: let
-    scheme = config.lib.stylix.colors.withHashtag;
+    colors = config.lib.stylix.colors.withHashtag;
+    raw = config.lib.stylix.colors;
+    font = config.stylix.fonts.monospace.name;
   in {
-    home.packages = [pkgs.cava];
+    home.packages = [pkgs.cava pkgs.playerctl];
+
+    wayland.windowManager.hyprland.settings.exec-once = lib.mkIf config.wayland.windowManager.hyprland.enable ["waybar" "playerctld"];
 
     programs.waybar = {
       enable = true;
-      settings.mainBar = {
+
+      settings.pill = {
+        layer = "top";
+        position = "top";
+        height = 56;
         reload_style_on_change = true;
+        exclusive = true;
 
-        "group/hyprlandNav" = {
+        modules-left = ["group/media"];
+        modules-center = ["group/pill"];
+        modules-right = ["wlr/taskbar"];
+
+        "group/pill" = {
           orientation = "horizontal";
-          modules = ["hyprland/workspaces" "hyprland/window"];
-        };
-
-        "hyprland/workspaces" = {
-          persistent-workspaces = {
-            eDP-1 = [1 2 3 4 5 6 7 8];
-          };
-          on-click = "activate";
-          sort-by-number = true;
-          format = "{icon}";
-          format-icons = {
-            "1" = "";
-            "2" = "";
-            "3" = "";
-            "4" = "";
-            "5" = "";
-            "6" = "";
-            "7" = "";
-            "8" = "";
-          };
-        };
-
-        "hyprland/window" = {
-          format = " {title}";
-          max-length = 50;
-          separate-outputs = true;
-        };
-
-        "group/niriNav" = {
-          orientation = "horizontal";
-          modules = ["niri/workspaces" "niri/window"];
-        };
-
-        "niri/workspaces" = {
-          persistent-workspaces = {
-            eDP-1 = [1 2 3 4];
-          };
-          on-click = "activate";
-          sort-by-number = true;
-          format = "{icon}";
-          format-icons = {
-            "1" = "";
-            "2" = "";
-            "3" = "";
-            "4" = "";
-          };
-        };
-
-        "niri/window" = {
-          format = " {title}";
-          max-length = 50;
-          separate-outputs = true;
-        };
-
-        "wlr/taskbar" = {
-          format = "{icon}";
-          icon-size = 18;
-          spacing = 0;
-          all-outputs = true;
-          on-click = "activate";
-          on-click-right = "close";
+          modules = [
+            "clock"
+            "hyprland/workspaces"
+            "wireplumber"
+            "custom/wallpaper"
+            "custom/swaync"
+          ];
         };
 
         "clock" = {
           format = "{:%H:%M}";
-          tooltip-format = "<tt><small>{calendar}</small></tt>";
+          tooltip-format = "<tt>{calendar}</tt>";
           calendar = {
-            mode = "year";
-            mode-mon-col = 3;
-            weeks-pos = "right";
+            mode = "month";
             on-scroll = 1;
-            on-click-right = "mode";
             format = {
-              months = "<span color='#ffead3'><b>{}</b></span>";
-              days = "<span color='#ecc6d9'><b>{}</b></span>";
-              weeks = "<span color='#99ffdd'><b>W{}</b></span>";
-              weekdays = "<span color='#ffcc66'><b>{}</b></span>";
-              today = "<span color='#ff6699'><b><u>{}</u></b></span>";
+              today = "<span color='${colors.base0D}'><b><u>{}</u></b></span>";
             };
           };
-          actions = {
-            on-click-right = "mode";
-            on-click-forward = "tz_up";
-            on-click-backward = "tz_down";
-            on-scroll-up = "shift_up";
-            on-scroll-down = "shift_down";
-          };
+        };
+
+        "hyprland/workspaces" = {
+          persistent-workspaces."*" = 5;
+          on-click = "activate";
+          sort-by-number = true;
+          format = "";
+        };
+
+        "wireplumber" = {
+          format = "{icon}";
+          format-muted = "󰝟";
+          format-icons = ["󰕿" "󰖀" "󰕾"];
+          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰝟 Volume' 'Muted'";
+          on-click-right = "pavucontrol";
+          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕾 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\"";
+          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕿 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\"";
+          tooltip = false;
+        };
+
+        "group/media" = {
+          orientation = "horizontal";
+          modules = ["cava" "mpris"];
+        };
+
+        "mpris" = {
+          player = "playerctld";
+          format = "{player_icon}  <span size='small'>{dynamic}</span>";
+          format-paused = "⏸  <span size='small'>{dynamic}</span>";
+          dynamic-order = ["title" "artist"];
+          dynamic-len = 30;
+          player-icons.default = "▶";
+          status-icons.paused = "⏸";
+          tooltip = false;
         };
 
         "cava" = {
@@ -110,234 +89,296 @@ _: {
           bars = 12;
           bar_delimiter = 0;
           input_delay = 2;
-          sleep_timer = 5;
+          format-icons = [
+            "<span foreground='#${raw.base0E}'>▁</span>"
+            "<span foreground='#${raw.base0D}'>▂</span>"
+            "<span foreground='#${raw.base0C}'>▃</span>"
+            "<span foreground='#${raw.base0B}'>▄</span>"
+            "<span foreground='#${raw.base0A}'>▅</span>"
+            "<span foreground='#${raw.base09}'>▆</span>"
+            "<span foreground='#${raw.base08}'>▇</span>"
+            "<span foreground='#${raw.base08}'>█</span>"
+          ];
         };
 
-        "group/hardware" = {
-          orientation = "horizontal";
-          modules = ["disk" "cpu" "memory"];
-        };
-
-        "disk" = {format = "{percentage_used}%  /";};
-
-        "cpu" = {
-          format = "{usage}%  /";
-          interval = 2;
-        };
-
-        "memory" = {
-          format = "{percentage}%  ";
-          interval = 2;
-        };
-
-        "group/systray" = {
-          orientation = "horizontal";
-          modules = ["network" "bluetooth" "battery"];
-        };
-
-        "network" = {
-          format-wifi = "{icon}";
-          format-ethernet = "";
-          format-disconnected = "";
-          format-icons = ["" "" "" "" ""];
-          tooltip-format = "{ifname} via {gwaddr} ";
-          tooltip-format-wifi = "{essid} ({signalStrength}%) ";
-          tooltip-format-ethernet = "{ifname} ";
-          tooltip-format-disconnected = "Disconnected";
-          interval = 10;
-          max-length = 50;
-          on-click = "nm-connection-editor";
-        };
-
-        "bluetooth" = {
-          format = "";
-          format-disabled = "";
-          format-connected = "";
-          tooltip-format = "{controller_alias}\t{controller_address}\t{num_connections} connected";
-          tooltip-format-connected = ''
-            {controller_alias}\t{controller_address}
-
-            {device_enumerate}'';
-          tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
-          tooltip-format-enumerate-connected-battery = "{device_alias}\t{device_address}\t{device_battery_percentage}%";
-          on-click = "blueman-manager";
-        };
-
-        "battery" = {
-          interval = 2;
-          states = {
-            warning = 30;
-            critical = 15;
-          };
-          format = "{icon}";
-          format-icons = ["" "" "" "" ""];
-          format-charging = "";
-          format-full = "";
-          tooltip = true;
-          tooltip-format = "{capacity}% | {timeTo}";
-          max-length = 25;
-        };
-
-        "wireplumber" = {
-          format = "{volume}% {icon}";
-          format-muted = "";
-          scroll-step = 5.0;
-          on-click = "pavucontrol";
-          on-click-right = "qpwgraph";
-          format-icons = ["" "" ""];
-        };
-
-        "custom/exit" = {
-          format = "";
-          on-click = "wlogout";
+        "custom/wallpaper" = {
+          format = "󰸉";
+          on-click = "wallpaper-picker";
           tooltip = false;
+        };
+
+        "custom/swaync" = {
+          return-type = "json";
+          exec = "swaync-client -swb";
+          on-click = "swaync-client -t -sw";
+          on-click-right = "swaync-client -d -sw";
+          escape = true;
+          format = "{icon}";
+          format-icons = {
+            notification = "󰂚";
+            none = "󰂚";
+            dnd-notification = "󰂛";
+            dnd-none = "󰂛";
+          };
+          tooltip = false;
+        };
+
+        "tray" = {
+          spacing = 8;
+          show-passive-items = false;
+          icon-size = 16;
+        };
+
+        "wlr/taskbar" = {
+          format = "{icon}";
+          icon-size = 20;
+          spacing = 4;
+          on-click = "activate";
+          on-click-right = "close";
+          on-click-middle = "minimize";
+          tooltip-format = "{title}";
+          all-outputs = false;
         };
       };
 
       style = lib.mkForce ''
-        @define-color background ${scheme.base06};
-        @define-color workspacesbackground1 ${scheme.base00};
-        @define-color workspacesbackground2 ${scheme.base00};
-        @define-color workspacesbackground3 ${scheme.base01};
-        @define-color bordercolor ${scheme.base06};
-        @define-color textcolor1 ${scheme.base00};
-        @define-color textcolor2 ${scheme.base06};
-        @define-color textcolor3 ${scheme.base0B};
-        @define-color textcolor4 ${scheme.base0D};
-        @define-color textcolor5 ${scheme.base0F};
-        @define-color iconcolor ${scheme.base03};
-
         * {
-            font-family: JetBrainsMono Nerd Font, DejaVu Sans, DejaVu Serif;
-            border: none;
-            border-radius: 0px;
-            font-size: 11px;
+          font-family: "${font}", "Symbols Nerd Font Mono";
+          font-size: 15px;
+          border: none;
+          border-radius: 0;
+          min-height: 0;
+          box-shadow: none;
+          text-shadow: none;
         }
 
         window#waybar {
-            background-color: transparent;
-            opacity: 0.95;
-            transition-property: background-color;
-            transition-duration: .5s;
+          background: transparent;
+          color: ${colors.base05};
         }
 
-        #navigation {
-          background-color: @background;
-          margin: 4px 0px 4px 10px;
-          color: @textcolor1;
-          border-radius: 15px;
-        }
+        /* ── center pill ─────────────────────────────────────── */
 
-        #workspaces {
-            padding-left: 4px;
-            color: transparent;
-            font-size: 0px;
-        }
-
-        #workspaces button {
-            padding: 0px;
-            margin: 4px;
-            border-radius: 20px;
-            min-height: 0px;
-            background-color: @workspacesbackground2;
-            transition: all 0.3s ease-in-out;
-            opacity: 0.4;
-            font-size: 0px;
-        }
-
-        #workspaces button.active {
-            background: @workspacesbackground2;
-            transition: all 0.3s ease-in-out;
-            min-width: 25px;
-            opacity: 1.0;
-        }
-
-        #workspaces button:hover {
-            background: @workspacesbackground3;
-            opacity: 0.7;
-        }
-
-        #window {
-            padding-left: 6px;
-            padding-right: 10px;
-            font-weight: bold;
-        }
-
-        window#waybar.empty #window {
-            padding: 0px 8px;
+        #pill {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
+          border-radius: 100px;
+          margin: 10px 0;
+          padding: 0 6px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
         }
 
         #clock {
-            background-color: transparent;
-            margin: 4px 5px 4px 0px;
-            padding-left: 15px;
-            padding-right: 15px;
-            border: 1.5px solid @background;
-            border-radius: 15px;
-            color: @textcolor2;
+          color: ${colors.base05};
+          font-weight: bold;
+          padding: 5px 8px 4px 10px;
         }
 
-        #hardware {
-            background: transparent;
-            margin: 4px 5px 4px 5px;
-            border-radius: 15px;
-            color: @textcolor2;
+        #workspaces {
+          padding: 0 6px;
         }
 
-        #disk {
-            padding-left: 15px;
-            padding-right: 2px;
+        #workspaces button {
+          background: transparent;
+          border: none;
+          padding: 0;
+          margin: 0;
+          box-shadow: none;
         }
 
-        #cpu {
-            padding-left: 2px;
-            padding-right: 2.5px;
+        #workspaces button label {
+          background-color: ${colors.base02};
+          border-radius: 50%;
+          min-width: 16px;
+          min-height: 16px;
+          font-size: 0;
+          padding: 0;
+          margin: 9px 5px;
+          transition: all 0.2s ease;
         }
 
-        #memory {
-            padding-left: 2px;
-            padding-right: 15px;
+        #workspaces button.active label {
+          background-color: ${colors.base0D};
+          min-width: 36px;
+          border-radius: 100px;
         }
 
-        #systray {
-            background-color: transparent;
-            margin: 4px 5px 4px 5px;
-            border: 1.5px solid @background;
-            border-radius: 15px;
-            color: @textcolor2;
+        #workspaces button.occupied:not(.active) label {
+          background-color: ${colors.base05};
         }
 
-        #network {
-            padding-left: 15px;
-            padding-right: 10px;
+        #workspaces button:hover label {
+          background-color: ${colors.base04};
         }
-
-        #bluetooth {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        #battery {
-            padding-left: 7px;
-            padding-right: 15px;
-        }
-
-        #battery.warning { color: orange; }
-        #battery.critical { color: red; }
 
         #wireplumber {
-            background-color: transparent;
-            margin: 4px 17px 4px 1px;
-            color: @textcolor2;
+          color: ${colors.base05};
+          font-size: 18px;
+          padding: 0 10px 0 6px;
         }
 
-        #custom-exit {
-            background-color: @background;
-            margin: 4px 10px 4px 5px;
-            padding-left: 15px;
-            padding-right: 10px;
-            border-radius: 15px;
-            color: @textcolor1;
+        #wireplumber.muted {
+          color: ${colors.base03};
+        }
+
+        #custom-wallpaper {
+          color: ${colors.base0B};
+          font-size: 18px;
+          padding: 0 6px;
+          margin-right: 5px;
+        }
+
+        #custom-swaync {
+          color: ${colors.base0A};
+          padding: 0 10px 0 6px;
+        }
+
+        #custom-swaync.dnd-notification,
+        #custom-swaync.dnd-none {
+          color: ${colors.base03};
+        }
+
+        /* ── left: media ─────────────────────────────────────── */
+
+        #media {
+          background: transparent;
+          border: none;
+          padding: 0;
+          margin: 0 0 0 10px;
+        }
+
+        #mpris {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
+          border-radius: 100px;
+          color: ${colors.base05};
+          padding: 0 12px 0 16px;
+          margin: 10px 4px 10px 0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        #cava {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
+          border-radius: 100px;
+          font-size: 10px;
+          letter-spacing: 1px;
+          padding: 0 12px 0 8px;
+          margin: 10px 0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        /* ── right: taskbar ─────────────────────────────────── */
+
+        #taskbar {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 2px solid ${colors.base04};
+          border-radius: 100px;
+          margin: 10px 10px 10px 0;
+          padding: 0 4px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        #taskbar.empty {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          padding: 0;
+          min-width: 0;
+        }
+
+        #taskbar button {
+          background: transparent;
+          border: none;
+          border-radius: 100px;
+          margin: 0 2px;
+          padding: 0 6px;
+          min-height: 0;
+          transition: background-color 0.2s ease;
+        }
+
+        #taskbar button.active {
+          background-color: ${colors.base02};
+        }
+
+        #taskbar button:hover {
+          background-color: ${colors.base02};
+        }
+
+        /* ── right: tray ─────────────────────────────────────── */
+
+        #tray {
+          margin: 10px 10px 10px 0;
+        }
+
+        #tray > .needs-attention {
+          background-color: ${colors.base08};
+          border-radius: 100px;
+        }
+
+        /* ── tooltips ────────────────────────────────────────── */
+
+        tooltip {
+          background-color: alpha(${colors.base00}, 0.92);
+          border: 1px solid ${colors.base04};
+          border-radius: 16px;
+          padding: 4px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${colors.base0D}33;
+        }
+
+        tooltip label {
+          color: ${colors.base05};
+          font-size: 13px;
+          padding: 6px 12px;
+          border-radius: 12px;
+        }
+
+        /* ── clock calendar ──────────────────────────────────── */
+
+        calendar {
+          background-color: transparent;
+          color: ${colors.base05};
+          font-size: 15px;
+          border-radius: 12px;
+          padding: 4px 6px 6px;
+        }
+
+        calendar.header {
+          background-color: transparent;
+          color: ${colors.base0D};
+          font-weight: bold;
+          border: none;
+          border-radius: 0;
+          padding: 4px 2px 8px;
+        }
+
+        calendar.button {
+          background-color: transparent;
+          color: ${colors.base0D};
+          border: none;
+          border-radius: 8px;
+          padding: 2px 8px;
+          min-height: 0;
+        }
+
+        calendar.button:hover {
+          background-color: alpha(${colors.base0D}, 0.15);
+        }
+
+        calendar:selected {
+          background-color: ${colors.base0D};
+          color: ${colors.base00};
+          border-radius: 8px;
+          font-weight: bold;
+        }
+
+
+        calendar.othermonth {
+          color: ${colors.base03};
+        }
+
+        calendar.weekend {
+          color: ${colors.base0E};
         }
       '';
     };

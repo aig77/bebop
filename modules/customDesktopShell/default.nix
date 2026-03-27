@@ -3,7 +3,7 @@
     imports = let
       hm = config.flake.modules.homeManager;
     in [
-      hm.waybarSimple
+      hm.waybar
       hm.swaync
       hm.fuzzel
       hm.hyprlock

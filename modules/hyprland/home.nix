@@ -1,13 +1,20 @@
 _: {
   flake.modules.homeManager.hyprland = {
     config,
-    inputs,
+    # inputs,
     lib,
     pkgs,
     var,
     ...
   }: let
     inherit (config.lib.stylix) colors;
+    base = colors.base00;
+    mantle = colors.base01;
+    surface0 = colors.base02;
+    text = colors.base05;
+    lavender = colors.base07;
+    blue = colors.base0D;
+    mauve = colors.base0E;
     gameWorkspace = 4;
 
     launcherCommand =
@@ -36,12 +43,12 @@ _: {
           --y-margin 40 \
           --border-width 2 \
           --border-radius 12 \
-          --background-color ${colors.base00}dd \
-          --text-color ${colors.base05}ff \
-          --selection-color ${colors.base02}ff \
-          --selection-text-color ${colors.base0D}ff \
-          --border-color ${colors.base0D}ff \
-          --input-color ${colors.base01}ff \
+          --background-color ${base}dd \
+          --text-color ${text}ff \
+          --selection-color ${surface0}ff \
+          --selection-text-color ${blue}ff \
+          --border-color ${blue}ff \
+          --input-color ${mantle}ff \
           --hide-prompt \
     '';
   in {
@@ -92,7 +99,6 @@ _: {
           "SUPER, SPACE, Open Launcher, exec, ${launcherCommand}"
           "SUPER, W, Open Wallpaper Picker, exec, wallpaper-picker"
           "SUPER, C, Lock Screen, exec, ${var.lock}"
-          "SUPER, P, Logout, exec, ${var.logout}"
 
           ", PRINT, Screenshot Area, exec, screenshot-area"
           "SHIFT, PRINT, Screenshot Screen, exec, screenshot-screen"
@@ -160,10 +166,8 @@ _: {
           gaps_in = 5;
           gaps_out = 10;
           border_size = 2;
-          "col.active_border" =
-            lib.mkForce
-            "rgb(${colors.base0D}) rgb(${colors.base0E}) rgb(${colors.base0D}) 45deg";
-          "col.inactive_border" = lib.mkForce "rgb(${colors.base02})";
+          "col.active_border" = lib.mkForce "rgb(${mauve}) rgb(${lavender}) rgb(${blue}) 45deg";
+          "col.inactive_border" = lib.mkForce "rgb(${surface0})";
           layout = "dwindle";
           allow_tearing = false;
         };
@@ -171,10 +175,10 @@ _: {
         decoration = {
           rounding = 12;
           active_opacity = 1.0;
-          inactive_opacity = 0.92;
+          inactive_opacity = 1.0;
           shadow = {
-            range = 25;
-            render_power = 3;
+            range = 8;
+            render_power = 2;
           };
           blur = {
             enabled = true;
@@ -184,7 +188,7 @@ _: {
             contrast = 0.9;
             vibrancy = 0.1;
             new_optimizations = true;
-            ignore_opacity = true;
+            ignore_opacity = false;
           };
         };
 
@@ -230,6 +234,7 @@ _: {
 
         windowrule = [
           "match:class ^(org.pulseaudio.pavucontrol)$, float on"
+          "match:class ^(org.pulseaudio.pavucontrol)$, size 800 600"
           "match:class ^(nm-connection-editor)$, float on"
           "match:class ^(.blueman-manager-wrapped)$, float on"
           "match:title ^(.*Bitwarden Password Manager.*)$, float on"
@@ -241,8 +246,6 @@ _: {
           "match:class ^(zen*)$, match:title ^(.*YouTube.*)$, idle_inhibit focus"
           "match:class ^(zen*)$, idle_inhibit fullscreen"
           "match:title ^(.*Bitwarden Password Manager.*)$, no_screen_share on"
-          "match:class ^(rofi)$, float on"
-          "match:class ^(rofi)$, center 1"
           "match:class ^(waypaper)$, float on"
           "match:class ^(waypaper)$, center 1"
           "match:class ^(waypaper)$, size 1000 620"
@@ -251,12 +254,6 @@ _: {
         layerrule = [
           "blur on, match:namespace launcher"
           "ignore_alpha 0.5, match:namespace launcher"
-          "blur on, match:namespace rofi"
-          "ignore_alpha 0.5, match:namespace rofi"
-          "blur on, match:namespace swaync-control-center"
-          "ignore_alpha 0.1, match:namespace swaync-control-center"
-          "blur on, match:namespace swaync-notification-window"
-          "ignore_alpha 0.1, match:namespace swaync-notification-window"
         ];
       };
     };
