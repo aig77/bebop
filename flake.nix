@@ -50,10 +50,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nixcord = {
-    #   url = "github:kaylorben/nixcord";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    nixcord = {
+      url = "github:kaylorben/nixcord";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixos-anywhere = {
       url = "github:nix-community/nixos-anywhere";

@@ -101,7 +101,7 @@ Full desktop machine. x86_64, AMD GPU, Hyprland.
 
 | File | Purpose |
 |---|---|
-| `imports.nix` | Selects named profiles: `base desktop hyprland amdgpu gaming docker tailscale` |
+| `imports.nix` | Selects named profiles: `base desktop hyprland amdgpu gaming docker tailscale volt` |
 | `variables.nix` | Sets all `var.*` values: hostname=faye, location=Miami, shell=zsh, etc. |
 | `hardware.nix` | Kernel modules (nvme, xhci_pci, etc.), AMD microcode, hostPlatform, DHCP |
 | `disko.nix` | Disk layout: GPT, 1G ESP + btrfs root with @, @home, @nix, @snapshots, @log, @cache subvolumes |
@@ -186,6 +186,9 @@ Contributes to `nixos.desktop`. Systemd-boot with EFI, grub2 theme, Plymouth boo
 
 ### `audio/default.nix`
 Contributes to `nixos.desktop`. PipeWire with PulseAudio compatibility, rtkit for real-time audio, dbus.
+
+### `audio/volt.nix`
+Contributes to `nixos.volt` (faye only). WirePlumber rule that pins the Universal Audio Volt 476 to the `analog-surround-40` profile on connect. Without this, WirePlumber defaults to `pro-audio`, which breaks normal apps like Discord. Switch to `pro-audio` manually via `pactl set-card-profile` when using a DAW.
 
 ### `bluetooth/nixos.nix`
 Contributes to `nixos.desktop`. Enables `services.bluetooth`, installs `blueman` applet.
