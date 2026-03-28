@@ -75,7 +75,7 @@ _: {
           "MOZ_ENABLE_WAYLAND,1"
           "XDG_SESSION_TYPE,wayland"
           "XDG_SESSION_DESKTOP,Hyprland"
-          "T_QPA_PLATFORM,wayland"
+          "QT_QPA_PLATFORM,wayland"
           "GDK_BACKEND,wayland"
           "ELECTRON_OZONE_PLATFORM_HINT,auto"
         ];
