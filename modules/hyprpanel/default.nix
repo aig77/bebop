@@ -93,7 +93,5 @@ _: {
     };
 
     home.file.".face.icon".source = ../hosts/nixos/${var.hostname}/icon.jpg;
-
-    wayland.windowManager.hyprland.settings.exec-once = ["hyprpanel"];
   };
 }

@@ -20,25 +20,54 @@ in {
         users.${username}.imports = [hm.base];
       };
     };
+
     desktop = _: {
       home-manager.users.${username}.imports = [hm.gui];
     };
-    hyprland = _: {
+
+    hyprland-custom = _: {
       home-manager.users.${username}.imports = [
         hm.hyprland
         hm.customDesktopShell
+        {wayland.windowManager.hyprland.settings.exec-once = ["waybar" "playerctld"];}
         hm.screenshot # hyprland-specific (grimblast/hyprshot)
       ];
     };
+
+    hyprland-hyprpanel = _: {
+      home-manager.users.${username}.imports = [
+        hm.hyprland
+        hm.hyprpanelShell
+        {wayland.windowManager.hyprland.settings.exec-once = ["hyprpanel"];}
+        hm.screenshot # hyprland-specific (grimblast/hyprshot)
+      ];
+    };
+
+    hyprland-quickshell = _: {
+      home-manager.users.${username}.imports = [
+        hm.hyprland
+        hm.quickshell
+        {wayland.windowManager.hyprland.settings.exec-once = ["quickshell"];}
+        hm.screenshot # hyprland-specific (grimblast/hyprshot)
+      ];
+    };
+
     niri = _: {
       home-manager.users.${username}.imports = [
         hm.niri
         hm.customDesktopShell
+        {
+          programs.niri.settings.spawn-at-startup = [
+            {command = ["waybar"];}
+          ];
+        }
       ];
     };
+
     gnome = _: {
       home-manager.users.${username}.imports = [hm.gnome];
     };
+
     gaming = _: {
       home-manager.users.${username}.imports = [hm.gaming];
     };

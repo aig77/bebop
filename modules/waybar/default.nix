@@ -11,8 +11,6 @@ _: {
   in {
     home.packages = [pkgs.cava pkgs.playerctl];
 
-    wayland.windowManager.hyprland.settings.exec-once = lib.mkIf config.wayland.windowManager.hyprland.enable ["waybar" "playerctld"];
-
     programs.waybar = {
       enable = true;
 

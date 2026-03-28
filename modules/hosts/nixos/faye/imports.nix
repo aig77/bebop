@@ -1,13 +1,9 @@
-{
-  config,
-  inputs,
-  ...
-}: {
+{config, ...}: {
   configurations.nixos.faye.module = {
     imports = with config.flake.modules.nixos; [
       base
       desktop
-      hyprland
+      hyprland-quickshell
       amdgpu
       gaming
       docker
