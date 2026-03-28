@@ -47,7 +47,10 @@ in {
       home-manager.users.${username}.imports = [
         hm.hyprland
         hm.quickshell
-        {wayland.windowManager.hyprland.settings.exec-once = ["quickshell"];}
+        {
+          wayland.windowManager.hyprland.settings.exec-once = ["quickshell"];
+          wayland.windowManager.hyprland.settings.bindd = ["ALT, tab, Workspace Overview, exec, qs ipc call overview toggle"];
+        }
         hm.screenshot # hyprland-specific (grimblast/hyprshot)
       ];
     };
