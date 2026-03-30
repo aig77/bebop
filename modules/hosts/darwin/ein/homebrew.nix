@@ -10,7 +10,8 @@ _: {
       "lm-studio"
       "raycast"
       "steam"
-      "tailscale"
+      "tailscale-app"
+      "utm"
       "whatsapp"
     ];
   };

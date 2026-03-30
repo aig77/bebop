@@ -10,15 +10,21 @@ _: {
     in {
       enable = true;
 
-      shellAliases = {
-        ll = "ls -l";
-        nrw = "sudo nixos-rebuild switch --flake .";
-        nrt = "sudo nixos-rebuild test --flake .";
-        ls = "eza --icons=always --no-quotes";
-        tree = "eza --icons=always --tree --no-quotes";
-        cat = "bat --theme=base16 --color=always --wrap=never";
-        fetch = fetchCommand;
-      };
+      shellAliases =
+        {
+          ll = "ls -l";
+          ls = "eza --icons=always --no-quotes";
+          tree = "eza --icons=always --tree --no-quotes";
+          cat = "bat --theme=base16 --color=always --wrap=never";
+          fetch = fetchCommand;
+        }
+        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+          nrs = "sudo darwin-rebuild switch --flake .";
+        }
+        // lib.optionalAttrs pkgs.stdenv.isLinux {
+          nrs = "sudo nixos-rebuild switch --flake .";
+          nrt = "sudo nixos-rebuild test --flake .";
+        };
 
       interactiveShellInit = ''
         set -g fish_greeting ""

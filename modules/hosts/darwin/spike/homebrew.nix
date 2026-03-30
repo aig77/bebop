@@ -1,13 +1,14 @@
 _: {
   configurations.darwin.spike.module = {
     homebrew.casks = [
-      "docker"
+      "docker-desktop"
+      "claude"
       "discord"
       "ghostty"
       "lm-studio"
       "proton-mail-bridge"
       "raycast"
-      "tailscale"
+      "tailscale-app"
       "zen-browser"
     ];
   };
