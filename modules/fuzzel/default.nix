@@ -21,6 +21,7 @@ _: {
           layer = "overlay";
           font = lib.mkForce "${config.stylix.fonts.monospace.name}:size=14";
           icons-enabled = true;
+          icon-theme = config.stylix.icons.dark;
           launch-prefix = "";
           line-height = 25;
           filter-desktop = true;
