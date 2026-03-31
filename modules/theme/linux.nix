@@ -1,5 +1,5 @@
 _: {
-  flake.modules.nixos.desktop = {pkgs, ...}: {
+  flake.modules.nixos.desktop = {pkgs, config, ...}: {
     stylix = {
       enable = true;
       polarity = "dark";
@@ -37,5 +37,9 @@ _: {
         package = pkgs.papirus-icon-theme;
       };
     };
+
+    # Stylix installs the icon theme but doesn't expose it at a stable system path.
+    # Adding it explicitly ensures icons are available at /run/current-system/sw/share/icons.
+    environment.systemPackages = [ config.stylix.icons.package ];
   };
 }
