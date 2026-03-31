@@ -8,7 +8,7 @@ _: {
     font = config.stylix.fonts.monospace.name;
   in {
     home = {
-      packages = with pkgs; [quickshell qt6.qtwayland];
+      packages = with pkgs; [quickshell qt6.qtwayland libnotify];
 
       file = {
         # To apply basic theming
