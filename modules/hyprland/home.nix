@@ -245,22 +245,32 @@ _: {
         };
 
         windowrule = [
-          "match:class ^(org.pulseaudio.pavucontrol)$, float on"
-          "match:class ^(org.pulseaudio.pavucontrol)$, size 800 600"
-          "match:class ^(nm-connection-editor)$, float on"
-          "match:class ^(.blueman-manager-wrapped)$, float on"
-          "match:title ^(.*Bitwarden Password Manager.*)$, float on"
+          "match:class Bitwarden, float on"
+          "match:class Bitwarden, size 1000 750"
+          "match:class Bitwarden, no_screen_share on"
+
+          "match:class .blueman-manager-wrapped, float on"
+          "match:class .blueman-manager-wrapped, size 800 600"
+
+          "match:class org.pulseaudio.pavucontrol, float on"
+          "match:class org.pulseaudio.pavucontrol, size 800 600"
+
+          "match:class nm-connection-editor, float on"
+
+          "match:class steam_app_*, fullscreen on"
+          "match:class steam_app_*, workspace ${toString gameWorkspace}"
+
+          "match:class gamescope, fullscreen on"
+          "match:class gamescope, workspace ${toString gameWorkspace}"
+
+          "match:class .*zen.*, match:title .*YouTube.*, idle_inhibit focus"
+          "match:class .*zen.*, idle_inhibit fullscreen"
+
+          "match:class waypaper, float on"
+          "match:class waypaper, center 1"
+          "match:class waypaper, size 1000 750"
+
           "match:title Calculator, float on"
-          "match:class ^(steam_app_.*)$, fullscreen on"
-          "match:class ^(steam_app_.*)$, workspace ${toString gameWorkspace}"
-          "match:class ^(gamescope)$, fullscreen on"
-          "match:class ^(gamescope)$, workspace ${toString gameWorkspace}"
-          "match:class ^(zen*)$, match:title ^(.*YouTube.*)$, idle_inhibit focus"
-          "match:class ^(zen*)$, idle_inhibit fullscreen"
-          "match:title ^(.*Bitwarden Password Manager.*)$, no_screen_share on"
-          "match:class ^(waypaper)$, float on"
-          "match:class ^(waypaper)$, center 1"
-          "match:class ^(waypaper)$, size 1000 620"
         ];
 
         layerrule = [
