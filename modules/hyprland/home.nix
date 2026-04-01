@@ -29,7 +29,22 @@ _: {
          (if (.modmask % 64 >= 8) then "󰘵 + " else "" end) +
          (if (.modmask % 8 >= 4) then "󰘴 + " else "" end) +
          (if (.modmask % 4 >= 1) then "󰘶 + " else "" end) +
-         "\(.key)  ➜  \(.description)")')
+         (.key |
+           if . == "XF86AudioRaiseVolume" then "󰕾"
+           elif . == "XF86AudioLowerVolume" then "󰕿"
+           elif . == "XF86AudioMute" then "󰝟"
+           elif . == "XF86AudioMicMute" then "󰍭"
+           elif . == "XF86MonBrightnessUp" then "󰃠"
+           elif . == "XF86MonBrightnessDown" then "󰃞"
+           elif . == "XF86AudioPlay" then "󰐊"
+           elif . == "XF86AudioPause" then "󰏤"
+           elif . == "XF86AudioNext" then "󰒭"
+           elif . == "XF86AudioPrev" then "󰒮"
+           elif . == "XF86AudioStop" then "󰓛"
+           elif . == "PRINT" then "󰹑"
+           elif . == "mouse_down" then "󰍽 ↓"
+           elif . == "mouse_up" then "󰍽 ↑"
+           else . end) + "  ➜  " + .description)')
 
       LINE_COUNT=$(echo "$BINDS" | wc -l)
 
@@ -86,12 +101,6 @@ _: {
         #   hyprfocus.enabled = "yes";
         # };
 
-        bindde = [
-          ", XF86AudioRaiseVolume, Raise Volume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕾 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\""
-          ", XF86AudioLowerVolume, Lower Volume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰕿 Volume' \"$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d%%\", $2 * 100}')\""
-          ", XF86AudioMute, Mute Audio, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && notify-send -t 1500 -h string:x-canonical-private-synchronous:volume '󰝟 Volume' 'Muted'"
-        ];
-
         bindd = [
           "SUPER, slash, View Keybinds, exec, view-binds"
 
@@ -121,28 +130,30 @@ _: {
           "SUPER SHIFT, L, Move Window Right, movewindow, r"
 
           "SUPER, tab, Cycle Next Window, cyclenext"
+          "SUPER SHIFT, tab, Cycle Previous Window, cyclenext, prev"
 
           "SUPER, 1, Switch to Workspace 1, workspace, 1"
           "SUPER, 2, Switch to Workspace 2, workspace, 2"
           "SUPER, 3, Switch to Workspace 3, workspace, 3"
           "SUPER, 4, Switch to Workspace 4, workspace, 4"
           "SUPER, 5, Switch to Workspace 5, workspace, 5"
-          # "SUPER, 6, Switch to Workspace 6, workspace, 6"
-          # "SUPER, 7, Switch to Workspace 7, workspace, 7"
-          # "SUPER, 8, Switch to Workspace 8, workspace, 8"
+
           "SUPER SHIFT, 1, Move to Workspace 1, movetoworkspace, 1"
           "SUPER SHIFT, 2, Move to Workspace 2, movetoworkspace, 2"
           "SUPER SHIFT, 3, Move to Workspace 3, movetoworkspace, 3"
           "SUPER SHIFT, 4, Move to Workspace 4, movetoworkspace, 4"
           "SUPER SHIFT, 5, Move to Workspace 5, movetoworkspace, 5"
-          # "SUPER SHIFT, 6, Move to Workspace 6, movetoworkspace, 6"
-          # "SUPER SHIFT, 7, Move to Workspace 7, movetoworkspace, 7"
-          # "SUPER SHIFT, 8, Move to Workspace 8, movetoworkspace, 8"
 
           "SUPER, S, Toggle Special Workspace, togglespecialworkspace, magic"
           "SUPER SHIFT, S, Move to Special Workspace, movetoworkspace, special:magic"
           "SUPER, mouse_down, Next Workspace, workspace, e+1"
           "SUPER, mouse_up, Previous Workspace, workspace, e-1"
+        ];
+
+        bindde = [
+          ", XF86AudioRaiseVolume, Volume +5%, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+          ", XF86AudioLowerVolume, Volume -5%, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+          ", XF86AudioMute, Mute audio, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
         ];
 
         bindm = [
@@ -168,7 +179,8 @@ _: {
           border_size = 2;
           "col.active_border" = lib.mkForce "rgb(${mauve}) rgb(${lavender}) rgb(${blue}) 45deg";
           "col.inactive_border" = lib.mkForce "rgb(${surface0})";
-          layout = "dwindle";
+          # layout = "dwindle"; # bspwm-like window tiling
+          layout = "scrolling"; # niri-like scrolling
           allow_tearing = false;
         };
 

@@ -4,12 +4,6 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 
-    grub2-themes.url = "github:vinceliuice/grub2-themes";
-    hyprland.url = "github:hyprwm/Hyprland/";
-    niri.url = "github:sodiboo/niri-flake";
-    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-    stylix.url = "github:danth/stylix";
-
     claude-desktop = {
       url = "github:k3d3/claude-desktop-linux-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -35,20 +29,26 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    grub2-themes.url = "github:vinceliuice/grub2-themes";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
+    hyprland.url = "github:hyprwm/Hyprland";
+
+    # hyprland-plugins = {
+    #   url = "github:hyprwm/hyprland-plugins";
+    #   inputs.hyprland.follows = "hyprland";
+    # };
 
     hyprpanel = {
       url = "github:Jas-SinghFSU/HyprPanel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    niri.url = "github:sodiboo/niri-flake";
 
     nixcord = {
       url = "github:kaylorben/nixcord";
@@ -61,6 +61,8 @@
       inputs.disko.follows = "disko";
     };
 
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,6 +72,8 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    stylix.url = "github:danth/stylix";
 
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
