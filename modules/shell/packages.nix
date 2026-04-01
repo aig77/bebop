@@ -3,7 +3,6 @@ _: {
     home.packages = with pkgs; [
       alejandra
       bat
-      btop
       curl
       cmake
       deadnix
