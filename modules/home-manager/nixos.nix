@@ -22,7 +22,7 @@ in {
     };
 
     desktop = _: {
-      home-manager.users.${username}.imports = [hm.gui hm.eyecandy];
+      home-manager.users.${username}.imports = [hm.gui hm.eyecandyNixos hm.nvimStylix];
     };
 
     hyprland-custom = _: {

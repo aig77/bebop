@@ -16,12 +16,12 @@ in {
           inherit inputs;
           inherit (config) var;
         };
-        users.${username}.imports = [hm.base hm.gui];
+        users.${username}.imports = [hm.base hm.gui hm.nvimStylix];
       };
     };
 
     eyecandy = _: {
-      home-manager.users.${username}.imports = [hm.eyecandy];
+      home-manager.users.${username}.imports = [hm.eyecandyBase];
     };
   };
 }
