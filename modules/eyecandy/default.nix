@@ -56,13 +56,13 @@ _: {
             "separator"
             {
               type = "os";
-              key = "";
+              key = "";
               keyColor = "red";
               format = "{2} {8}";
             }
             {
               type = "kernel";
-              key = "";
+              key = "";
               keyColor = "red";
               format = "{2}";
             }
@@ -92,7 +92,7 @@ _: {
             }
             {
               type = "shell";
-              key = "";
+              key = "";
               keyColor = "green";
               format = "{1}";
             }
@@ -104,7 +104,7 @@ _: {
             }
             {
               type = "cpu";
-              key = "";
+              key = "";
               keyColor = "blue";
               format = "{1}";
             }
@@ -116,16 +116,16 @@ _: {
               hideType = "integrated";
             }
             {
+              type = "memory";
+              key = "";
+              keyColor = "blue";
+              format = "{1} / {2} ({3})";
+            }
+            {
               type = "disk";
               key = "󰋊";
               keyColor = "blue";
               format = "{1} / {2}";
-            }
-            {
-              type = "memory";
-              key = "";
-              keyColor = "blue";
-              format = "{1} / {2} ({3})";
             }
             {
               type = "colors";
