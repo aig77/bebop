@@ -1,5 +1,12 @@
-_: {
-  flake.modules.nixos.desktop = {pkgs, config, ...}: {
+{inputs, ...}: {
+  flake.modules.nixos.desktop = {
+    pkgs,
+    config,
+    ...
+  }: {
+    # Scoped to desktop only to avoid breaking server hosts that lack stylix options
+    imports = [inputs.stylix.nixosModules.stylix];
+
     stylix = {
       enable = true;
       polarity = "dark";
@@ -40,6 +47,6 @@ _: {
 
     # Stylix installs the icon theme but doesn't expose it at a stable system path.
     # Adding it explicitly ensures icons are available at /run/current-system/sw/share/icons.
-    environment.systemPackages = [ config.stylix.icons.package ];
+    environment.systemPackages = [config.stylix.icons.package];
   };
 }

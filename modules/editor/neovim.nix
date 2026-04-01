@@ -12,8 +12,6 @@ _: {
       viAlias = true;
     };
 
-    stylix.targets.neovim.enable = false;
-
     home.file = lib.mkIf enableStylix {
       ".config/nvim/lua/plugins/stylix-loader.lua".text = let
         colors = config.lib.stylix.colors.withHashtag;

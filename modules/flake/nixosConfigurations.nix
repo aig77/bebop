@@ -26,7 +26,6 @@
               };
             }
             inputs.sops-nix.nixosModules.sops
-            inputs.stylix.nixosModules.stylix
             module
           ];
         }

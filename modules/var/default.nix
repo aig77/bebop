@@ -30,7 +30,7 @@
             type = lib.types.str;
             default = "hyprlock";
           };
-wallpaperEngine = lib.mkOption {
+          wallpaperEngine = lib.mkOption {
             type = lib.types.str;
             default = "swww";
           };

@@ -1,24 +1,24 @@
 /*
-  Disko configuration for faye desktop
+Disko configuration for faye desktop
 
-  FRESH INSTALL WITH NIXOS-ANYWHERE:
+FRESH INSTALL WITH NIXOS-ANYWHERE:
 
-  1. On TARGET machine:
-     - Boot NixOS installer ISO
-     - Enable SSH: systemctl start sshd
-     - Set password: passwd
-     - Get IP: ip a
+1. On TARGET machine:
+   - Boot NixOS installer ISO
+   - Enable SSH: systemctl start sshd
+   - Set password: passwd
+   - Get IP: ip a
 
-  2. From your machine (generates facter.json, formats disk, installs NixOS):
+2. From your machine (generates facter.json, formats disk, installs NixOS):
 
-     nix run github:nix-community/nixos-anywhere -- \
-       --flake .#faye \
-       --target-host nixos@<ip> \
-       --generate-hardware-config nixos-facter ./modules/hosts/nixos/faye/facter.json
+   nix run github:nix-community/nixos-anywhere -- \
+     --flake .#faye \
+     --target-host nixos@<ip> \
+     --generate-hardware-config nixos-facter ./modules/hosts/nixos/faye/facter.json
 
-     Then commit facter.json, replace hardware.nix import with facter.nix in imports.nix.
+   Then commit facter.json, replace hardware.nix import with facter.nix in imports.nix.
 
-  WARNING: This will DESTROY ALL DATA on the specified device!
+WARNING: This will DESTROY ALL DATA on the specified device!
 */
 {inputs, ...}: {
   configurations.nixos.faye.module = {
