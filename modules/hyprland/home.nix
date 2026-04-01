@@ -30,7 +30,15 @@ _: {
          (if (.modmask % 8 >= 4) then "󰘴 + " else "" end) +
          (if (.modmask % 4 >= 1) then "󰘶 + " else "" end) +
          (.key |
-           if . == "XF86AudioRaiseVolume" then "󰕾"
+           if . == "slash" then "/"
+           elif . == "RETURN" then "󰌑"
+           elif . == "SPACE" then "󱁐"
+           elif . == "PRINT" then "󰹑"
+           elif . == "bracketright" then "["
+           elif . == "bracketleft" then "]"
+           elif . == "mouse_down" then "󰍽 ↓"
+           elif . == "mouse_up" then "󰍽 ↑"
+           elif . == "XF86AudioRaiseVolume" then "󰕾"
            elif . == "XF86AudioLowerVolume" then "󰕿"
            elif . == "XF86AudioMute" then "󰝟"
            elif . == "XF86AudioMicMute" then "󰍭"
@@ -41,9 +49,6 @@ _: {
            elif . == "XF86AudioNext" then "󰒭"
            elif . == "XF86AudioPrev" then "󰒮"
            elif . == "XF86AudioStop" then "󰓛"
-           elif . == "PRINT" then "󰹑"
-           elif . == "mouse_down" then "󰍽 ↓"
-           elif . == "mouse_up" then "󰍽 ↑"
            else . end) + "  ➜  " + .description)')
 
       LINE_COUNT=$(echo "$BINDS" | wc -l)
@@ -117,9 +122,14 @@ _: {
           "SUPER SHIFT, Q, Exit Hyprland, exit"
           "SUPER, T, Toggle Floating, togglefloating"
           "SUPER, P, Pseudo Tiling, pseudo"
-          "SUPER, F, Fullscreen (Internal), fullscreen, 0"
-          "SUPER SHIFT, F, Fullscreen (Global), fullscreen, 1"
+          "SUPER, F, Fullscreen, fullscreen, 0"
+          "SUPER, M, Maximize, fullscreen, 1"
 
+          "SUPER, bracketright, Expand Column (Scrolling), layoutmsg, colresize +conf"
+          "SUPER, bracketleft, Shrink Column (Scrolling), layoutmsg, colresize -conf"
+
+          "SUPER, tab, Cycle Next Window, cyclenext"
+          "SUPER SHIFT, tab, Cycle Previous Window, cyclenext, prev"
           "SUPER, H, Move Focus Left, movefocus, l"
           "SUPER, J, Move Focus Down, movefocus, d"
           "SUPER, K, Move Focus Up, movefocus, u"
@@ -129,15 +139,11 @@ _: {
           "SUPER SHIFT, K, Move Window Up, movewindow, u"
           "SUPER SHIFT, L, Move Window Right, movewindow, r"
 
-          "SUPER, tab, Cycle Next Window, cyclenext"
-          "SUPER SHIFT, tab, Cycle Previous Window, cyclenext, prev"
-
           "SUPER, 1, Switch to Workspace 1, workspace, 1"
           "SUPER, 2, Switch to Workspace 2, workspace, 2"
           "SUPER, 3, Switch to Workspace 3, workspace, 3"
           "SUPER, 4, Switch to Workspace 4, workspace, 4"
           "SUPER, 5, Switch to Workspace 5, workspace, 5"
-
           "SUPER SHIFT, 1, Move to Workspace 1, movetoworkspace, 1"
           "SUPER SHIFT, 2, Move to Workspace 2, movetoworkspace, 2"
           "SUPER SHIFT, 3, Move to Workspace 3, movetoworkspace, 3"
@@ -146,8 +152,6 @@ _: {
 
           "SUPER, S, Toggle Special Workspace, togglespecialworkspace, magic"
           "SUPER SHIFT, S, Move to Special Workspace, movetoworkspace, special:magic"
-          "SUPER, mouse_down, Next Workspace, workspace, e+1"
-          "SUPER, mouse_up, Previous Workspace, workspace, e-1"
         ];
 
         bindde = [
@@ -208,6 +212,11 @@ _: {
           pseudotile = "yes";
           force_split = 2;
           preserve_split = "yes";
+        };
+
+        scrolling = {
+          column_width = 0.5;
+          explicit_column_widths = "0.33, 0.5, 0.66, 1.0";
         };
 
         misc = {
