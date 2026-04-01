@@ -1,5 +1,5 @@
 {config, ...}: {
   configurations.darwin.ein.module = {
-    imports = with config.flake.modules.darwin; [base];
+    imports = with config.flake.modules.darwin; [base eyecandy];
   };
 }

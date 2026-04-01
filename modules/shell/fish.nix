@@ -5,9 +5,7 @@ _: {
     config,
     ...
   }: {
-    programs.fish = let
-      fetchCommand = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
-    in {
+    programs.fish = {
       enable = true;
 
       shellAliases =
@@ -16,7 +14,6 @@ _: {
           ls = "eza --icons=always --no-quotes";
           tree = "eza --icons=always --tree --no-quotes";
           cat = "bat --theme=base16 --color=always --wrap=never";
-          fetch = fetchCommand;
         }
         // lib.optionalAttrs pkgs.stdenv.isDarwin {
           nrs = "sudo darwin-rebuild switch --flake .";
@@ -28,9 +25,6 @@ _: {
 
       interactiveShellInit = ''
         set -g fish_greeting ""
-        function fish_greeting
-          ${fetchCommand}
-        end
 
         fish_vi_key_bindings
 

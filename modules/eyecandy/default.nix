@@ -1,5 +1,40 @@
 _: {
-  flake.modules.homeManager.base = _: {
+  flake.modules.homeManager.eyecandy = {
+    lib,
+    config,
+    pkgs,
+    ...
+  }: let
+    fetchCommand = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
+  in {
+    programs.cava = {
+      enable = true;
+      settings = lib.mkIf (config.lib ? stylix) (
+        let
+          colors = config.lib.stylix.colors.withHashtag;
+          blue = colors.base0D;
+          teal = colors.base0C;
+          green = colors.base0B;
+          yellow = colors.base0A;
+          peach = colors.base09;
+          red = colors.base08;
+          mauve = colors.base0E;
+        in {
+          color = {
+            gradient = lib.mkForce 1;
+            gradient_color_1 = lib.mkForce "'${blue}'";
+            gradient_color_2 = lib.mkForce "'${teal}'";
+            gradient_color_3 = lib.mkForce "'${green}'";
+            gradient_color_4 = lib.mkForce "'${yellow}'";
+            gradient_color_5 = lib.mkForce "'${peach}'";
+            gradient_color_6 = lib.mkForce "'${red}'";
+            gradient_color_7 = lib.mkForce "'${red}'";
+            gradient_color_8 = lib.mkForce "'${mauve}'";
+          };
+        }
+      );
+    };
+
     programs.fastfetch = {
       enable = true;
       settings = {
@@ -20,13 +55,13 @@ _: {
           "separator"
           {
             type = "os";
-            key = "";
+            key = "";
             keyColor = "red";
             format = "{2} {8}";
           }
           {
             type = "kernel";
-            key = "";
+            key = "";
             keyColor = "red";
             format = "{2}";
           }
@@ -56,7 +91,7 @@ _: {
           }
           {
             type = "shell";
-            key = "";
+            key = "";
             keyColor = "green";
             format = "{1}";
           }
@@ -68,7 +103,7 @@ _: {
           }
           {
             type = "cpu";
-            key = "";
+            key = "";
             keyColor = "blue";
             format = "{1}";
           }
@@ -87,11 +122,10 @@ _: {
           }
           {
             type = "memory";
-            key = "";
+            key = "";
             keyColor = "blue";
             format = "{1} / {2} ({3})";
           }
-
           {
             type = "colors";
             key = "󰏘";
@@ -101,5 +135,34 @@ _: {
         ];
       };
     };
+
+    programs.fish = {
+      shellAliases.fetch = fetchCommand;
+      interactiveShellInit = ''
+        function fish_greeting
+          ${fetchCommand}
+        end
+      '';
+    };
+
+    programs.zsh = {
+      shellAliases.fetch = fetchCommand;
+      initContent = lib.mkBefore ''
+        ${fetchCommand}
+      '';
+    };
+
+    home.packages = with pkgs; [
+      krabby
+      cmatrix
+      pipes-rs
+      cbonsai
+      tty-clock
+      asciiquarium
+      lavat
+      lolcat
+      sl
+      nms
+    ];
   };
 }

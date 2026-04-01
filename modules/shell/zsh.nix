@@ -5,9 +5,7 @@ _: {
     config,
     ...
   }: {
-    programs.zsh = let
-      fetchCommand = "${pkgs.krabby}/bin/krabby name umbreon -s --no-title | ${pkgs.fastfetch}/bin/fastfetch --file-raw -";
-    in {
+    programs.zsh = {
       enable = true;
       enableCompletion = true;
       autosuggestion.enable = true;
@@ -39,7 +37,6 @@ _: {
           ls = "eza --icons=always --no-quotes";
           tree = "eza --icons=always --tree --no-quotes";
           cat = "bat --theme=base16 --color=always --wrap=never";
-          fetch = fetchCommand;
         }
         // lib.optionalAttrs pkgs.stdenv.isDarwin {
           nrs = "sudo darwin-rebuild switch --flake .";
@@ -63,8 +60,6 @@ _: {
 
       initContent = lib.mkMerge [
         (lib.mkBefore ''
-          ${fetchCommand}
-
           # Keybindings
           bindkey -e
           bindkey '^p' history-search-backward
