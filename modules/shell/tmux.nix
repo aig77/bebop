@@ -32,6 +32,11 @@ _: {
 
         bind | split-window -h
         bind _ split-window -v
+
+        set -g pane-border-style "fg=colour238"
+        set -g pane-active-border-style "fg=colour39,bold"
+        set -g pane-border-status top
+        set -g pane-border-format " #{pane_current_command} "
       '';
     };
   };
