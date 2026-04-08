@@ -74,5 +74,13 @@ in {
     gaming = _: {
       home-manager.users.${username}.imports = [hm.gaming];
     };
+
+    amdgpu = _: {
+      home-manager.users.${username}.imports = [hm.btopAmd];
+    };
+
+    nvidia = _: {
+      home-manager.users.${username}.imports = [hm.btopNvidia];
+    };
   };
 }
