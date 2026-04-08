@@ -4,6 +4,9 @@ _: {
 
     programs.nixcord = {
       enable = true;
+      discord.settings = {
+        MINIMIZE_TO_TRAY = false;
+      };
       config = {
         frameless = true;
         plugins = {
