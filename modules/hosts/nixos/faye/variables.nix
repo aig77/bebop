@@ -7,7 +7,6 @@ _: {
       shell = "zsh";
       terminal = "ghostty";
       browser = "zen";
-      launcher = "quickshell";
       fileManager = "thunar";
       lock = "hyprlock";
       wallpaperEngine = "awww";

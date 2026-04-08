@@ -44,6 +44,7 @@ in {
     };
 
     hyprland-quickshell = _: {
+      var.launcher = "quickshell";
       home-manager.users.${username}.imports = [
         hm.hyprland
         hm.quickshell
