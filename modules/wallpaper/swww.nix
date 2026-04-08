@@ -9,11 +9,11 @@ _: {
       until [ -S "$runtime/wayland-0" ] || [ -S "$runtime/wayland-1" ]; do
         sleep 0.1
       done
-      exec ${pkgs.swww}/bin/swww-daemon
+      exec ${pkgs.awww}/bin/awww-daemon
     '';
 
     swww-set-wallpaper = pkgs.writeShellScript "swww-set-wallpaper" ''
-      until ${pkgs.swww}/bin/swww query; do sleep 0.1; done
+      until ${pkgs.awww}/bin/awww query; do sleep 0.1; done
       mkdir -p "$HOME/.cache/bebop"
       saved=$(grep -m1 '^wallpaper' "$HOME/.config/waypaper/config.ini" | cut -d= -f2 | xargs | sed "s|^~|$HOME|")
       if [ -f "$saved" ]; then
@@ -23,7 +23,7 @@ _: {
       fi
     '';
   in {
-    home.packages = [pkgs.swww];
+    home.packages = [pkgs.awww];
 
     home.sessionVariables.CURRENT_WALLPAPER = var.wallpaperPath;
 

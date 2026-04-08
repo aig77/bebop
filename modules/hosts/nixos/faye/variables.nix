@@ -10,7 +10,7 @@ _: {
       launcher = "fuzzel";
       fileManager = "thunar";
       lock = "hyprlock";
-      wallpaperEngine = "swww";
+      wallpaperEngine = "awww";
     };
   };
 }

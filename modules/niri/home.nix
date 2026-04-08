@@ -7,7 +7,7 @@ _: {
   }: let
     inherit (config.lib.stylix.colors) base0D base0E;
   in {
-    home.packages = [pkgs.swww];
+    home.packages = [pkgs.awww];
 
     programs.niri.settings = {
       environment = {
@@ -25,8 +25,8 @@ _: {
           command = [
             "sh"
             "-c"
-            "swww-daemon &"
-            "sleep 0.5 && swww img '${config.stylix.image}'"
+            "awww-daemon &"
+            "sleep 0.5 && awww img '${config.stylix.image}'"
           ];
         }
         {command = ["waybar"];}

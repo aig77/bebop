@@ -13,7 +13,8 @@ _: {
           amdgpu_top
           bitwarden-desktop
           brave
-          inputs.claude-desktop.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop-with-fhs
+          claude-code
+          inputs.claude-desktop.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop-fhs
           gnome-calculator
           httpie-desktop
           imv
@@ -21,11 +22,10 @@ _: {
           mission-center
           networkmanagerapplet
           obsidian
+          opencode
           pavucontrol
           qpwgraph
           vlc
-          claude-code
-          opencode
           yazi
           rustc
           cargo

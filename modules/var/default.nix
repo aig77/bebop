@@ -32,7 +32,7 @@
           };
           wallpaperEngine = lib.mkOption {
             type = lib.types.str;
-            default = "swww";
+            default = "awww";
           };
           wallpaperPath = lib.mkOption {
             type = lib.types.str;

@@ -4,6 +4,8 @@ _: {
       enable = true;
       defaultEditor = true;
       viAlias = true;
+      withRuby = true;
+      withPython3 = true;
     };
   };
 
