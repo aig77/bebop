@@ -20,6 +20,8 @@ _: {
     launcherCommand =
       if var.launcher == "rofi"
       then "rofi -show drun"
+      else if var.launcher == "quickshell"
+      then "qs ipc call launcher toggle"
       else var.launcher;
 
     view-binds = pkgs.writeShellScriptBin "view-binds" ''
@@ -285,6 +287,8 @@ _: {
         layerrule = [
           "blur on, match:namespace launcher"
           "ignore_alpha 0.5, match:namespace launcher"
+          "blur on, match:namespace ^(quickshell:launcher)$"
+          "ignore_alpha 0.1, match:namespace ^(quickshell:launcher)$"
         ];
       };
     };
