@@ -13,7 +13,7 @@
 
 ## NixOS-Only Module
 
-Create a `.nix` file anywhere in `modules/features/` (or `modules/aspects/` if it's a foundational concern), then `git add` it.
+Create a `.nix` file in `modules/features/` (or `modules/aspects/` if it's a foundational concern), then `git add` it.
 
 ```nix
 # modules/features/myfeature/default.nix
@@ -25,7 +25,7 @@ _: {
 }
 ```
 
-Then add the profile name to the host's `imports.nix`:
+Add the profile name to the host's `imports.nix`:
 ```nix
 # modules/hosts/nixos/faye/imports.nix
 {config, ...}: {
@@ -42,7 +42,7 @@ Then add the profile name to the host's `imports.nix`:
 
 ## Home Manager-Only Module
 
-To contribute to an existing HM profile (e.g., add a package to every machine's `hm.base`):
+To add to an existing HM profile (e.g., give every machine a new package via `hm.base`):
 
 ```nix
 # modules/features/myapp/default.nix
@@ -53,7 +53,7 @@ _: {
 }
 ```
 
-No host changes needed — any host that already imports `nixos.base` automatically gets `hm.base`, which now includes this file.
+No host changes needed. Any host that imports `nixos.base` automatically gets `hm.base`, which now includes this.
 
 To create a new opt-in HM profile:
 
@@ -76,7 +76,7 @@ myapp = _: {
 
 ## Both-Layer Module
 
-This is the dendritic pattern's strength — one directory, one concept, spanning both system and user config:
+One directory, one concept, spanning both system and user config:
 
 ```nix
 # modules/features/myapp/nixos.nix
@@ -106,17 +106,17 @@ Wire the HM profile in `modules/flake/home-manager/nixos.nix` and add the NixOS 
 
 ## Making It Available to Hosts
 
-There are two ways a module takes effect:
+Two paths:
 
-1. **Contributing to an existing profile** — if you add to `nixos.base` or `hm.base`, every host that uses those profiles picks it up automatically. Use this for things every machine should have.
+1. **Contributing to an existing profile**: add to `nixos.base` or `hm.base` and every host picks it up automatically. Good for things every machine should have.
 
-2. **New named profile** — if you create a new profile name, hosts must explicitly import it in their `imports.nix`. Use this for opt-in features.
+2. **New named profile**: create a new profile name and hosts import it explicitly in `imports.nix`. Good for opt-in features.
 
 ---
 
 ## Contributing to an Existing Profile
 
-Multiple files can all contribute to the same profile name — Nix merges them automatically. So to add something to, say, `nixos.desktop` without touching any existing file:
+Multiple files can all contribute to the same profile name; Nix merges them. To add something to `nixos.desktop` without touching any existing file:
 
 ```nix
 # modules/aspects/mynewthing/default.nix
@@ -127,15 +127,14 @@ _: {
 }
 ```
 
-This is valid. All hosts that import `nixos.desktop` now get this too.
+All hosts that import `nixos.desktop` now get this too.
 
 ---
 
 ## Naming Conventions
 
-- Use `_:` (not `{...}:`) in the outer function when no flake-parts args are used — `statix` will warn otherwise.
-- Remove unused bindings from function argument patterns — `deadnix` will warn on unused variables.
-- Place new **aspects** (foundational, broadly-applied) in `modules/aspects/<name>/`.
-- Place new **features** (opt-in capabilities) in `modules/features/<name>/`.
-- Split by layer when needed: `nixos.nix` for system, `home.nix` for user, keeping them in the same directory.
-- `git add` new files before running `nix flake check` — import-tree uses git to discover files.
+- Use `_:` in the outer function when no flake-parts args are used. `statix` warns on `{...}:` with no used bindings.
+- Remove unused variables from function argument patterns. `deadnix` warns on unused bindings.
+- New aspects go in `modules/aspects/<name>/`, new features in `modules/features/<name>/`.
+- Split by layer when needed: `nixos.nix` for system config, `home.nix` for user config, in the same directory.
+- `git add` new files before running `nix flake check`. import-tree uses git to discover files.

@@ -10,7 +10,7 @@
 
 ## How Keys Work
 
-Each machine has its own age key pair. All four keys are listed in `.sops.yaml` and all can decrypt `modules/aspects/secrets/secrets.yaml`. This means any machine can rebuild from a fresh clone without needing keys from other machines.
+Each machine has its own age key pair. All four keys are listed in `.sops.yaml` and all can decrypt `modules/aspects/secrets/secrets.yaml`. Any machine can rebuild from a fresh clone without needing keys from other machines.
 
 Key location on each machine: `~/.config/sops/age/keys.txt`
 
@@ -48,7 +48,7 @@ creation_rules:
         - *newmachine     # add here too
 ```
 
-### 3. Re-encrypt the secrets file with the new key
+### 3. Re-encrypt with the new key
 
 ```bash
 sops updatekeys modules/aspects/secrets/secrets.yaml
@@ -67,4 +67,4 @@ If a machine's private key is compromised or lost:
 3. Run `sops updatekeys modules/aspects/secrets/secrets.yaml`.
 4. Commit both files.
 
-The old key can no longer decrypt the secrets file after `updatekeys`.
+The old key can no longer decrypt after `updatekeys`.

@@ -27,7 +27,7 @@ sops.secrets.my-new-secret = {};
 
 ### 3. Use it
 
-At activation time sops-nix decrypts the value. At runtime it is available at `/run/secrets/my-new-secret`.
+sops-nix decrypts the value at activation time. At runtime it lives at `/run/secrets/my-new-secret`.
 
 ---
 
@@ -40,7 +40,7 @@ config.sops.secrets.my-new-secret.path
 # evaluates to "/run/secrets/my-new-secret"
 ```
 
-For values needed at eval time (e.g., a URL in a config file), use `sops.templates` instead (see below) — the `/run/secrets/` path is only valid at runtime.
+For values needed at eval time (e.g., a URL in a config file), use `sops.templates` instead. The `/run/secrets/` path is only valid at runtime.
 
 ---
 
@@ -52,16 +52,15 @@ For values needed at eval time (e.g., a URL in a config file), use `sops.templat
 osConfig.sops.secrets.my-new-secret.path
 ```
 
-Do not use `config.sops.*` inside HM — `config` there is the HM config, not NixOS.
+Do not use `config.sops.*` inside HM. `config` there is the HM config, not NixOS.
 
 ---
 
 ## Templated Secrets
 
-For secrets that need to be rendered into a config file format:
+For secrets that need to be rendered into a config file:
 
 ```nix
-# In modules/aspects/secrets/default.nix (or any NixOS module)
 sops.templates."myapp-config.json" = {
   content = builtins.toJSON {
     api_key = config.sops.placeholder."my-new-secret";
@@ -70,7 +69,7 @@ sops.templates."myapp-config.json" = {
 };
 ```
 
-The rendered file is available at `/run/secrets/render/myapp-config.json`. Access the path via:
+The rendered file lives at `/run/secrets/render/myapp-config.json`. Access the path via:
 
 ```nix
 config.sops.templates."myapp-config.json".path
@@ -78,4 +77,4 @@ config.sops.templates."myapp-config.json".path
 osConfig.sops.templates."myapp-config.json".path
 ```
 
-The existing `weatherapi.json` template (for hyprpanel's weather widget) is an example of this pattern.
+The existing `weatherapi.json` template (for hyprpanel's weather widget) is an example of this.

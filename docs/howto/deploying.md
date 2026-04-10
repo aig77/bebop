@@ -37,14 +37,14 @@ darwin-rebuild switch --flake .#spike
 nix flake check
 ```
 
-### Verify all machines build (run from Mac)
+### Verify all machines build from Mac
 
 ```bash
-# Darwin — fully builds locally
+# Darwin - fully builds locally
 nix build .#darwinConfigurations.ein.system
 nix build .#darwinConfigurations.spike.system
 
-# NixOS — evaluate only (can't build Linux on Mac without a remote builder)
+# NixOS - evaluate only (can't build Linux on Mac without a remote builder)
 nix eval .#nixosConfigurations.faye.config.system.build.toplevel.drvPath
 nix eval .#nixosConfigurations.ed.config.system.build.toplevel.drvPath
 ```
@@ -53,7 +53,7 @@ nix eval .#nixosConfigurations.ed.config.system.build.toplevel.drvPath
 
 ## Fresh Install (nixos-anywhere)
 
-For a new machine or reinstall, use nixos-anywhere. See the comment at the top of the host's `disko.nix` for the exact command. The general form:
+See the comment at the top of the host's `disko.nix` for the exact command. General form:
 
 ```bash
 nix run github:nix-community/nixos-anywhere -- \
@@ -62,7 +62,7 @@ nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-facter ./modules/hosts/nixos/myhostname/facter.json
 ```
 
-This SSHs to the target, generates `facter.json` (hardware detection), partitions the disk with disko, and installs NixOS. After completion, commit `facter.json`, create a `facter.nix` (see below), and remove `hardware.nix`.
+This SSHs to the target, generates `facter.json` (hardware detection), partitions the disk with disko, and installs NixOS. After that, commit `facter.json`, create a `facter.nix`, and remove `hardware.nix`.
 
 ### Replacing hardware.nix with nixos-facter
 

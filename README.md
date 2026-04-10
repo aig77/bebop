@@ -6,16 +6,16 @@
 
 # bebop
 
-A declarative, multi-platform system configuration built with Nix Flakes and flake-parts. One repo manages NixOS desktops, macOS workstations, and a headless ARM server — all reproducible, all version-controlled, all composed from the same module tree.
+A declarative, multi-platform system configuration built with Nix Flakes and flake-parts. One repo manages NixOS desktops, macOS workstations, and a headless ARM server. Everything is reproducible and version-controlled, composed from the same module tree.
 
 ## Hosts
 
 | Host | Platform | Role |
 |------|----------|------|
-| [Faye](docs/hosts/faye.md) | x86_64 NixOS | Desktop workstation — Hyprland, AMD GPU, gaming, full dev environment |
-| [Ed](docs/hosts/ed.md) | aarch64 NixOS | Headless Raspberry Pi — DNS, ad-blocking, monitoring |
-| [Ein](docs/hosts/ein.md) | aarch64 Darwin | MacBook — full configuration with Homebrew casks |
-| [Spike](docs/hosts/spike.md) | aarch64 Darwin | MacBook — lean configuration |
+| [Faye](docs/hosts/faye.md) | x86_64 NixOS | Desktop workstation: Hyprland, AMD GPU, gaming, full dev environment |
+| [Ed](docs/hosts/ed.md) | aarch64 NixOS | Headless Raspberry Pi: DNS, ad-blocking, monitoring |
+| [Ein](docs/hosts/ein.md) | aarch64 Darwin | MacBook, full configuration with Homebrew casks |
+| [Spike](docs/hosts/spike.md) | aarch64 Darwin | MacBook, lean configuration |
 
 ---
 
@@ -23,7 +23,7 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 
 ### Architecture & Design
 
-- [Architecture](docs/architecture.md) — how the configuration works end to end
+- [Architecture](docs/architecture.md): how the configuration works end to end
   - [Dendritic Pattern](docs/architecture.md#dendritic-pattern)
   - [Auto-Import via import-tree](docs/architecture.md#auto-import-via-import-tree)
   - [Named Profiles](docs/architecture.md#named-profiles)
@@ -33,12 +33,12 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
   - [Variable Schema](docs/architecture.md#variable-schema)
   - [Theming](docs/architecture.md#theming)
   - [Secrets](docs/architecture.md#secrets)
-- [Flake-Parts Infrastructure](docs/flake-parts.md) — output builders, dev shell, hooks, formatter
+- [Flake-Parts Infrastructure](docs/flake-parts.md): output builders, dev shell, hooks, formatter
 
 ### Module Reference
 
-- [Aspects](docs/modules/aspects.md) — foundational, always-on system concerns
-- [Features](docs/modules/features.md) — opt-in capabilities selected per host
+- [Aspects](docs/modules/aspects.md): foundational, always-on system concerns
+- [Features](docs/modules/features.md): opt-in capabilities selected per host
   - [Desktop Environments](docs/modules/features.md#desktop-environments)
   - [Desktop Components](docs/modules/features.md#desktop-components)
   - [Applications](docs/modules/features.md#applications)
@@ -46,12 +46,12 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 
 ### How-To Guides
 
-- [Deploying](docs/howto/deploying.md) — rebuild and apply configuration to any host
-- [Adding a Module](docs/howto/new-module.md) — NixOS-only, Home Manager-only, or both-layer modules
-- [Adding a Host](docs/howto/new-host.md) — new NixOS or Darwin machine end-to-end
-- [Managing Secrets](docs/howto/secrets.md) — adding and using sops-nix secrets
-- [Managing Age Keys](docs/howto/age-keys.md) — adding new machines, rotating keys
-- [Flake Inputs](docs/howto/flake-inputs.md) — adding and updating flake inputs
+- [Deploying](docs/howto/deploying.md): rebuild and apply configuration to any host
+- [Adding a Module](docs/howto/new-module.md): NixOS-only, Home Manager-only, or both-layer modules
+- [Adding a Host](docs/howto/new-host.md): new NixOS or Darwin machine end-to-end
+- [Managing Secrets](docs/howto/secrets.md): adding and using sops-nix secrets
+- [Managing Age Keys](docs/howto/age-keys.md): adding new machines, rotating keys
+- [Flake Inputs](docs/howto/flake-inputs.md): adding and updating flake inputs
 
 ---
 

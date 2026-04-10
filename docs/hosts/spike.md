@@ -12,8 +12,8 @@
 
 ## Overview
 
-**Platform:** aarch64 Darwin (Apple Silicon)  
-**Role:** MacBook — lean configuration
+**Platform:** aarch64 Darwin (Apple Silicon)
+**Role:** MacBook, lean configuration
 
 Same foundation as Ein with a trimmer app set. Same shell, same dev tools, same theming.
 
@@ -26,7 +26,7 @@ Same foundation as Ein with a trimmer app set. Same shell, same dev tools, same 
 imports = with config.flake.modules.darwin; [base];
 ```
 
-No `eyecandy` profile — Spike is the leaner of the two Mac configurations.
+No `eyecandy` profile. Spike is the leaner of the two Mac configurations.
 
 ---
 

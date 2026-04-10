@@ -13,45 +13,45 @@
 
 ## What Are Features
 
-Features are opt-in capabilities that a host explicitly selects in its `imports.nix`. They represent things a machine _chooses_ to have — a desktop environment, a set of applications, a system service — rather than concerns that every machine in a category shares.
+Features are opt-in capabilities that a host explicitly selects in its `imports.nix`. They represent things a machine chooses to have: a desktop environment, a set of applications, a system service.
 
-Features live in `modules/features/`. They contribute to named profiles that hosts import. Multiple files in a feature directory can contribute to different profiles (e.g., `hyprland/nixos.nix` → `nixos.hyprland`, `hyprland/home.nix` → `homeManager.hyprland`).
+Features live in `modules/features/` and contribute to named profiles that hosts import. A feature directory can contain multiple files contributing to different profiles (e.g., `hyprland/nixos.nix` for `nixos.hyprland` and `hyprland/home.nix` for `homeManager.hyprland`).
 
-Contrast with [Aspects](aspects.md), which are foundational system concerns applied broadly.
+See [Aspects](aspects.md) for foundational system concerns.
 
 ---
 
 ## Desktop Environments
 
-Full compositor/WM setups, each owning their system-level enablement and HM configuration.
+Full compositor/WM setups. Each owns its system-level enablement and HM configuration.
 
 | Feature | Path | Profiles | Description |
 |---------|------|----------|-------------|
-| Hyprland | `features/hyprland/` | `nixos.hyprland`, `hm.hyprland` | Hyprland compositor: system enablement + portals (nixos.nix), full keybinds/animations/window rules + HyprPanel bar (home.nix). Uses `var.*` for terminal, browser, launcher, lock, logout |
+| Hyprland | `features/hyprland/` | `nixos.hyprland`, `hm.hyprland` | System enablement + portals (nixos.nix), keybinds/animations/window rules + HyprPanel bar (home.nix). Uses `var.*` for terminal, browser, launcher, lock, logout |
 | Hyprland + Quickshell | `features/quickshell/` | `nixos.hyprland-quickshell`, `hm.quickshell` | Hyprland with Quickshell as the bar/launcher |
-| Niri | `features/niri/` | `nixos.niri`, `hm.niri` | Niri compositor: GDM + Niri session (nixos.nix), keybinds/rules/wallpaper (home.nix), niri-specific Waybar (waybar.nix) |
+| Niri | `features/niri/` | `nixos.niri`, `hm.niri` | GDM + Niri session (nixos.nix), keybinds/rules/wallpaper (home.nix), niri-specific Waybar (waybar.nix) |
 | GNOME | `features/gnome/` | `nixos.gnome`, `hm.gnome` | GDM + GNOME packages (nixos.nix), shell extensions via dconf (extensions.nix) |
 
 ---
 
 ## Desktop Components
 
-Standalone components that are composable across multiple WM setups.
+Standalone components composable across multiple WM setups.
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| HyprPanel | `features/hyprpanel/` | `hm.hyprland` | HyprPanel bar: layout varies by hostname (faye gets network/bluetooth modules). Weather widget reads API key via `osConfig.sops.templates` |
-| Waybar | `features/waybar/` | `hm.waybar` | Status bar used by niri (hyprland uses HyprPanel) |
-| SwayNC | `features/swaync/` | `hm.hyprland` | Notification center/daemon for Wayland |
-| Hyprlock | `features/hyprlock/` | `hm.hyprlock` | Lock screen: Stylix-themed, background from `var.wallpaperPath`, blur |
+| HyprPanel | `features/hyprpanel/` | `hm.hyprland` | Bar config; layout varies by hostname. Weather widget reads API key via `osConfig.sops.templates` |
+| Waybar | `features/waybar/` | `hm.waybar` | Status bar for niri (hyprland uses HyprPanel) |
+| SwayNC | `features/swaync/` | `hm.hyprland` | Notification center/daemon |
+| Hyprlock | `features/hyprlock/` | `hm.hyprlock` | Lock screen with Stylix-themed background from `var.wallpaperPath`, blur |
 | Hypridle | `features/hypridle/` | `hm.hypridle` | Idle daemon: dim at 4min, lock at 5min, suspend at 10min |
 | Fuzzel | `features/fuzzel/` | `hm.fuzzel` | App launcher shared between Hyprland and niri |
 | Quickshell | `features/quickshell/` | `hm.quickshell` | Quickshell bar/launcher widget framework |
 | Wallpaper | `features/wallpaper/` | `hm.wallpaperManager` | Three-file split: `swww.nix` (daemon + restore service), `waypaper.nix` (GTK picker + `post_command` symlink), `default.nix` (composite profile). Config written via `home.activation` so it stays writable at runtime |
 | Screenshot | `features/screenshot/` | `hm.screenshot` | grimblast scripts bound to Print keys |
 | File manager | `features/file-manager/` | `hm.gui` | Thunar with archive and media tag plugins |
-| Custom desktop shell | `features/customDesktopShell/` | — | Custom shell integration utilities |
-| Eyecandy | `features/eyecandy/` | `darwin.eyecandy`, `hm.base` | CLI eye candy: fastfetch, cava audio visualizer, krabby fetch alias, extra packages |
+| Custom desktop shell | `features/customDesktopShell/` | | Custom shell integration utilities |
+| Eyecandy | `features/eyecandy/` | `darwin.eyecandy`, `hm.base` | fastfetch, cava audio visualizer, krabby fetch alias, extra packages |
 
 ---
 
@@ -59,11 +59,11 @@ Standalone components that are composable across multiple WM setups.
 
 All Home Manager modules. Most contribute to `hm.base` or `hm.gui`.
 
-### Shell & Terminal
+### Shell and Terminal
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| ZSH | `features/shell/zsh.nix` | `hm.base` | ZSH with completions, autosuggestions, syntax highlighting, vi mode, fzf-tab |
+| ZSH | `features/shell/zsh.nix` | `hm.base` | Completions, autosuggestions, syntax highlighting, vi mode, fzf-tab |
 | Fish | `features/shell/fish.nix` | `hm.base` | Fish shell config and abbreviations |
 | Starship | `features/shell/starship.nix` | `hm.base` | Cross-shell prompt |
 | Direnv | `features/shell/direnv.nix` | `hm.base` | Automatic dev shell activation with nix-direnv |
@@ -74,13 +74,13 @@ All Home Manager modules. Most contribute to `hm.base` or `hm.gui`.
 | Ghostty | `features/terminal/ghostty.nix` | `hm.base` | Ghostty terminal (Stylix handles colors) |
 | Alacritty | `features/terminal/alacritty.nix` | `hm.base` | Alacritty as fallback terminal |
 
-### Editors & Version Control
+### Editors and Version Control
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| Neovim | `features/editor/neovim.nix` | `hm.base` | Neovim with LSP, treesitter, mini.nvim, mason |
+| Neovim | `features/editor/neovim.nix` | `hm.base` | LSP, treesitter, mini.nvim, mason |
 | Vim | `features/editor/vim.nix` | `hm.base` | Minimal vim config as fallback |
-| Git | `features/git/git.nix` | `hm.base` | Git: username from `var.username`, email from sops secret at runtime |
+| Git | `features/git/git.nix` | `hm.base` | Username from `var.username`, email from sops secret at runtime |
 | Lazygit | `features/git/lazygit.nix` | `hm.base` | Lazygit TUI with Catppuccin theme |
 
 ### GUI Applications
@@ -90,7 +90,7 @@ All Home Manager modules. Most contribute to `hm.base` or `hm.gui`.
 | Zen browser | `features/browser/zen.nix` | `hm.gui` | Privacy-hardened Firefox fork: containers, Brave search, uBlock Origin, Bitwarden, etc. |
 | Discord | `features/discord/nixcord.nix` | `hm.gui` | Discord via Nixcord (Vencord-patched), Stylix CSS theme |
 | Spotify | `features/media/spotify.nix` | `hm.gui` | Spotify via spicetify-nix with Catppuccin theme |
-| OBS | `features/media/obs.nix` | `hm.gui` | OBS Studio — **Linux only** (`lib.mkIf pkgs.stdenv.isLinux`). Includes obs-pipewire-audio-capture |
+| OBS | `features/media/obs.nix` | `hm.gui` | OBS Studio, Linux only (`lib.mkIf pkgs.stdenv.isLinux`). Includes obs-pipewire-audio-capture |
 | Obsidian | `features/notes/obsidian.nix` | `hm.gui` | Obsidian note-taking |
 | Zathura | `features/pdf/zathura.nix` | `hm.gui` | Zathura PDF viewer |
 | Gaming apps | `features/gaming/home.nix` | `hm.gaming` | Lutris, Bottles, Heroic launcher |
@@ -116,4 +116,4 @@ NixOS-level opt-in services.
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| Darwin base | `features/darwin/` | `darwin.base` | macOS system config: Dock, Finder, keyboard remapping (CapsLock→Control), dark mode, Homebrew with auto-cleanup, user shell, sops-nix secrets |
+| Darwin base | `features/darwin/` | `darwin.base` | macOS system config: Dock, Finder, keyboard remapping (CapsLock to Control), dark mode, Homebrew with auto-cleanup, user shell, sops-nix secrets |

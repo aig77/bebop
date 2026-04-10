@@ -33,7 +33,7 @@ inputs = {
 };
 ```
 
-Then pass it through to modules. Inputs are available in flake-parts modules via the `inputs` argument:
+Inputs are available in flake-parts modules via the outer `inputs` argument:
 
 ```nix
 {inputs, ...}: {
@@ -49,20 +49,18 @@ Then pass it through to modules. Inputs are available in flake-parts modules via
 
 ## Pinning an Input to nixpkgs
 
-Inputs that accept nixpkgs should follow this repo's nixpkgs to avoid duplicate nixpkgs versions in the closure:
+Inputs that accept nixpkgs should follow this repo's nixpkgs to avoid duplicate versions in the closure:
 
 ```nix
 inputs.mynewpackage.inputs.nixpkgs.follows = "nixpkgs";
 ```
 
-This is already done for most inputs in the existing `flake.nix`. Inputs that don't take nixpkgs don't need this.
+This is already done for most inputs in `flake.nix`. Inputs that don't take nixpkgs don't need this.
 
 ---
 
 ## Common Issues
 
-**New input not visible in modules**
-Import-tree and flake-parts pass `inputs` down automatically — if you declare an input in `flake.nix` and it's not showing up, check that your module's outer function takes `inputs` as an argument.
+**New input not visible in modules:** Check that the module's outer function takes `inputs` as an argument. import-tree and flake-parts pass it down automatically.
 
-**`error: infinite recursion` with darwin inputs**
-nix-darwin has a known issue with `inputs.self` in `specialArgs`. This is handled in `modules/flake/darwinConfigurations.nix` by removing `self` from `specialArgs`.
+**`error: infinite recursion` with darwin inputs:** nix-darwin has a known issue with `inputs.self` in `specialArgs`. This is handled in `modules/flake/darwinConfigurations.nix` by removing `self` from `specialArgs`.

@@ -21,7 +21,7 @@ modules/hosts/nixos/myhostname/
 └── state-version.nix
 ```
 
-### 2. `imports.nix` — select profiles
+### 2. `imports.nix`
 
 ```nix
 {config, ...}: {
@@ -33,7 +33,7 @@ modules/hosts/nixos/myhostname/
 }
 ```
 
-### 3. `variables.nix` — set vars
+### 3. `variables.nix`
 
 ```nix
 _: {
@@ -60,7 +60,7 @@ _: {
 
 ### 5. `hardware.nix`
 
-Copy from faye and adjust kernel modules, CPU microcode, and hostPlatform, or use nixos-facter (preferred):
+Copy from faye and adjust kernel modules, CPU microcode, and hostPlatform. Or use nixos-facter (preferred):
 
 ```nix
 _: {
@@ -74,7 +74,7 @@ _: {
 
 Copy from faye and adjust the disk device and layout. Include a comment with the nixos-anywhere install command.
 
-### 7. `home.nix` — host-specific packages
+### 7. `home.nix`
 
 ```nix
 _: {
@@ -166,7 +166,7 @@ _: {
 }
 ```
 
-### 6. `home.nix` — host-specific packages
+### 6. `home.nix`
 
 ```nix
 _: {

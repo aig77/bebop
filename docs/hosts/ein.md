@@ -12,10 +12,10 @@
 
 ## Overview
 
-**Platform:** aarch64 Darwin (Apple Silicon)  
-**Role:** MacBook — full configuration
+**Platform:** aarch64 Darwin (Apple Silicon)
+**Role:** MacBook, full configuration
 
-Managed through nix-darwin and Homebrew. Same shell, same tools, same theme as the NixOS machines — just on Apple hardware.
+Managed through nix-darwin and Homebrew. Same shell, same tools, same theme as the NixOS machines.
 
 ---
 

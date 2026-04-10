@@ -12,7 +12,7 @@
 
 ## Overview
 
-**Platform:** x86_64 NixOS  
+**Platform:** x86_64 NixOS
 **Role:** Daily driver desktop workstation
 
 Full-featured desktop with Hyprland on Wayland, AMD GPU, gaming, and development tooling. Catppuccin Mocha everywhere.
@@ -31,7 +31,7 @@ Full-featured desktop with Hyprland on Wayland, AMD GPU, gaming, and development
 - **CPU:** AMD (x86_64)
 - **GPU:** AMD (ROCm, Vulkan)
 - **Boot:** systemd-boot with EFI
-- **Disk:** GPT — 1G ESP + btrfs root with `@`, `@home`, `@nix`, `@snapshots`, `@log`, `@cache` subvolumes
+- **Disk:** GPT, 1G ESP + btrfs root with `@`, `@home`, `@nix`, `@snapshots`, `@log`, `@cache` subvolumes
 - **Kernel modules:** nvme, xhci_pci, ahci, usbhid, usb_storage, sd_mod, kvm-amd
 - **Audio interface:** Universal Audio Volt 476 (pinned to stereo profile via `volt` aspect)
 
@@ -53,7 +53,7 @@ imports = with config.flake.modules.nixos; [
 ];
 ```
 
-This results in the following Home Manager profiles being activated automatically via the NixOS↔HM bridge:
+HM profiles activated automatically via the bridge:
 
 `hm.base` + `hm.gui` + `hm.hyprland` + `hm.fuzzel` + `hm.hyprlock` + `hm.hypridle` + `hm.screenshot` + `hm.gaming`
 
@@ -90,4 +90,4 @@ var = {
 
 ### Fresh install
 
-See the comment block at the top of `disko.nix` for the full `nixos-anywhere` command. Running it with `--generate-hardware-config nixos-facter` will partition the disk, install NixOS, and generate `facter.json` for hardware detection — after which `hardware.nix` can be replaced by `facter.nix` + `facter.json`.
+See the comment block at the top of `disko.nix` for the full `nixos-anywhere` command. Running it with `--generate-hardware-config nixos-facter` will partition the disk, install NixOS, and generate `facter.json`. After that, `hardware.nix` can be replaced by `facter.nix` + `facter.json`.

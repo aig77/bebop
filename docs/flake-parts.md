@@ -16,7 +16,7 @@
 
 ## Overview
 
-Everything in `modules/flake/` is flake-parts infrastructure — it defines the shape and wiring of the flake itself rather than contributing to any system configuration. These modules are not profiles and are not imported by hosts.
+Everything in `modules/flake/` defines the shape and wiring of the flake itself, not system configuration. These modules are not profiles and are not imported by hosts.
 
 ```
 modules/flake/
@@ -27,10 +27,10 @@ modules/flake/
 ├── formatter.nix             # nix fmt (alejandra)
 ├── pre-commit.nix            # Git hooks
 ├── shell.nix                 # Dev shell
-├── home-manager/             # NixOS↔HM and Darwin↔HM bridges
+├── home-manager/             # NixOS/Darwin to HM bridges
 │   ├── base.nix              # Minimal HM config every user gets
-│   ├── nixos.nix             # Maps nixos profiles → HM profiles
-│   └── darwin.nix            # Maps darwin profiles → HM profiles
+│   ├── nixos.nix             # Maps nixos profiles to HM profiles
+│   └── darwin.nix            # Maps darwin profiles to HM profiles
 ├── var/                      # Variable schema
 │   ├── default.nix           # NixOS var options
 │   └── darwin.nix            # Darwin var options
@@ -48,11 +48,11 @@ Defines the `configurations.nixos` option. Every NixOS host registers itself by 
 
 ### `flake/darwinConfigurations.nix`
 
-Same pattern for Darwin. Automatically includes `home-manager`, `nix-homebrew`, `sops-nix`, and `stylix` Darwin modules. Note: `inputs.self` is removed from `specialArgs` to avoid infinite recursion in nix-darwin.
+Same pattern for Darwin. Automatically includes `home-manager`, `nix-homebrew`, `sops-nix`, and `stylix` Darwin modules. `inputs.self` is removed from `specialArgs` to avoid infinite recursion in nix-darwin.
 
 ### `flake/flake-parts.nix`
 
-Imports `flake-parts.flakeModules.modules`, which enables the `flake.modules.*` option namespace across all other files. This is the foundation everything else depends on.
+Imports `flake-parts.flakeModules.modules`, enabling the `flake.modules.*` option namespace across all other files.
 
 ---
 
@@ -64,7 +64,7 @@ Imports `flake-parts.flakeModules.modules`, which enables the `flake.modules.*` 
 systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
 ```
 
-Declares the supported platforms for `perSystem` outputs (used by dev shell, formatter, etc.).
+Declares supported platforms for `perSystem` outputs (dev shell, formatter, etc.).
 
 ---
 
@@ -72,11 +72,11 @@ Declares the supported platforms for `perSystem` outputs (used by dev shell, for
 
 ### `flake/home-manager/base.nix`
 
-Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `config.flake.meta.owner.username` (flake-parts context) and enables `programs.home-manager`. This is the minimal HM configuration every user gets.
+Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `config.flake.meta.owner.username` and enables `programs.home-manager`. Every user gets this.
 
 ### `flake/home-manager/nixos.nix`
 
-**The NixOS↔HM bridge.** Reads `config.flake.modules.homeManager.*` at flake-parts level and wires them into `home-manager.users.<username>.imports` for each NixOS profile. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
+The NixOS-to-HM bridge. Reads `config.flake.modules.homeManager.*` at flake-parts level and wires them into `home-manager.users.<username>.imports` for each NixOS profile. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
 
 | NixOS profile | HM profiles wired in |
 |---------------|----------------------|
@@ -90,7 +90,7 @@ Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `conf
 
 ### `flake/home-manager/darwin.nix`
 
-**The Darwin↔HM bridge.** Wires `hm.base` and `hm.gui` into all Darwin configurations unconditionally. Darwin also passes `var` and `inputs` into HM's `extraSpecialArgs`.
+The Darwin-to-HM bridge. Wires `hm.base` and `hm.gui` into all Darwin configurations. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
 
 ---
 
@@ -98,11 +98,11 @@ Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `conf
 
 ### `flake/var/default.nix`
 
-Contributes `options.var` to `flake.modules.nixos.base`. See [Architecture — Variable Schema](architecture.md#variable-schema) for the full option table.
+Contributes `options.var` to `flake.modules.nixos.base`. See [Architecture: Variable Schema](architecture.md#variable-schema) for the full option table.
 
 ### `flake/var/darwin.nix`
 
-Same, but contributes to `flake.modules.darwin.base`. Smaller set: `username`, `hostname`, `shell`, `terminal`, `browser`.
+Same, contributed to `flake.modules.darwin.base`. Smaller set: `username`, `hostname`, `shell`, `terminal`, `browser`.
 
 ---
 
@@ -114,7 +114,7 @@ Same, but contributes to `flake.modules.darwin.base`. Smaller set: `username`, `
 flake.meta.owner.username = "arturo";
 ```
 
-Single source of truth for the primary username. Used by `home-manager/base.nix` and the HM bridge modules. To change the username across the entire configuration, only this file needs updating.
+Single source of truth for the primary username. Used by `home-manager/base.nix` and the HM bridge modules. To change the username across the whole configuration, only this file needs updating.
 
 ---
 
@@ -122,7 +122,7 @@ Single source of truth for the primary username. Used by `home-manager/base.nix`
 
 ### `flake/shell.nix`
 
-Enter with `nix develop`. Provides: `age`, `git`, `neovim`, `nixd`, `sops`. Pre-commit hooks are installed into the shell automatically.
+Enter with `nix develop`. Provides: `age`, `git`, `neovim`, `nixd`, `sops`. Pre-commit hooks are installed automatically.
 
 ---
 
@@ -130,7 +130,7 @@ Enter with `nix develop`. Provides: `age`, `git`, `neovim`, `nixd`, `sops`. Pre-
 
 ### `flake/pre-commit.nix`
 
-Configures three hooks that run on `git commit` and `nix flake check`:
+Three hooks run on `git commit` and `nix flake check`:
 
 | Hook | Purpose |
 |------|---------|

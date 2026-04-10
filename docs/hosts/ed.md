@@ -11,10 +11,10 @@
 
 ## Overview
 
-**Platform:** aarch64 NixOS  
+**Platform:** aarch64 NixOS
 **Role:** Headless Raspberry Pi server
 
-Handles network services. No GUI, no desktop — just DNS and monitoring running quietly.
+Handles network services. No GUI, no desktop. Just DNS and monitoring running quietly.
 
 - Blocky DNS server with ad-blocking (StevenBlack hosts list)
 - Unbound recursive resolver with DNSSEC
@@ -37,7 +37,7 @@ imports = with config.flake.modules.nixos; [
 nixpkgs.hostPlatform = "aarch64-linux";
 ```
 
-Platform is set inline in `imports.nix` — no separate `hardware.nix` needed for a server without complex hardware config.
+Platform is set inline in `imports.nix`. No separate `hardware.nix` needed for a server without complex hardware config.
 
 ---
 
