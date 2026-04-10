@@ -1,13 +1,13 @@
 {config, ...}: let
-  ec = config.flake.modules.generic;
+  hm = config.flake.modules.homeManager;
 in {
   flake.modules.homeManager = {
     eyecandyBase = {
-      imports = [ec.eyecandyFastfetch ec.eyecandyFetchAlias ec.eyecandyPackages];
+      imports = [hm.fastfetch hm.krabby hm.eyecandyPackages];
     };
 
     eyecandyNixos = {pkgs, ...}: {
-      imports = [ec.eyecandyFastfetch ec.eyecandyFetchAlias ec.eyecandyPackages ec.eyecandyCava];
+      imports = [hm.fastfetch hm.krabby hm.eyecandyPackages hm.cava];
       home.packages = [pkgs.tty-clock];
     };
   };

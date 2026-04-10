@@ -1,5 +1,5 @@
 _: {
-  flake.modules.generic.eyecandyPackages = {pkgs, ...}: {
+  flake.modules.homeManager.eyecandyPackages = {pkgs, ...}: {
     home.packages = with pkgs; [
       krabby
       cmatrix

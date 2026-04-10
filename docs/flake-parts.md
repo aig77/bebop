@@ -48,7 +48,9 @@ Defines the `configurations.nixos` option. Every NixOS host registers itself by 
 
 ### `flake/darwinConfigurations.nix`
 
-Same pattern for Darwin. Automatically includes `home-manager`, `nix-homebrew`, `sops-nix`, and `stylix` Darwin modules. `inputs.self` is removed from `specialArgs` to avoid infinite recursion in nix-darwin.
+Same pattern for Darwin. Automatically includes `home-manager`, `nix-homebrew`, `sops-nix`, and `stylix` Darwin modules.
+
+**Why `inputs.self` is excluded from `specialArgs`:** nix-darwin evaluates `specialArgs` lazily in a context that causes infinite recursion when `inputs.self` is present. This is a known nix-darwin limitation. The workaround is `builtins.removeAttrs inputs ["self"]` in the builder. No Darwin module in this repo needs `inputs.self`, so nothing is lost. If a future module does need it, `config.flake.self` (available via flake-parts) is an alternative.
 
 ### `flake/flake-parts.nix`
 

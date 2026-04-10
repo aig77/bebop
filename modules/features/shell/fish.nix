@@ -2,9 +2,10 @@ _: {
   flake.modules.homeManager.base = {
     pkgs,
     lib,
+    var,
     config,
     ...
-  }: {
+  }: lib.mkIf (var.shell == "fish") {
     programs.fish = {
       enable = true;
 

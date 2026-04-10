@@ -1,5 +1,5 @@
 _: {
-  flake.modules.generic.eyecandyFetchAlias = {
+  flake.modules.homeManager.krabby = {
     lib,
     pkgs,
     ...

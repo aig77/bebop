@@ -1,5 +1,5 @@
 _: {
-  flake.modules.generic.eyecandyCava = {
+  flake.modules.homeManager.cava = {
     lib,
     config,
     ...

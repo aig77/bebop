@@ -1,12 +1,12 @@
 _: {
-  flake.modules.homeManager.base = {pkgs, ...}: let
+  flake.modules.homeManager.base = {pkgs, lib, var, ...}: let
     inherit (pkgs.stdenv) isDarwin;
     ghosttyPkg =
       if isDarwin
       then null
       else pkgs.ghostty;
     hasPkg = ghosttyPkg != null;
-  in {
+  in lib.mkIf (var.terminal == "ghostty") {
     programs.ghostty = {
       enable = true;
       package = ghosttyPkg;

@@ -1,5 +1,5 @@
-{lib, ...}: {
-  flake.modules.homeManager.base = _: {
+_: {
+  flake.modules.homeManager.base = {lib, var, ...}: lib.mkIf (var.terminal == "alacritty") {
     programs.alacritty = {
       enable = true;
       settings = {
