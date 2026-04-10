@@ -1,4 +1,7 @@
-_: {
+{config, ...}: let
+  inherit (config.flake.meta.owner) username;
+  hm = config.flake.modules.homeManager;
+in {
   flake.modules.nixos.niri = {
     config,
     inputs,
@@ -34,5 +37,11 @@ _: {
       extraPortals = [pkgs.xdg-desktop-portal-gnome];
       config.common.default = "gtk";
     };
+
+    home-manager.users.${username}.imports = [
+      hm.niri
+      hm.customDesktopShell
+      {programs.niri.settings.spawn-at-startup = [{command = ["waybar"];}];}
+    ];
   };
 }

@@ -1,4 +1,7 @@
-_: {
+{config, ...}: let
+  inherit (config.flake.meta.owner) username;
+  hm = config.flake.modules.homeManager;
+in {
   flake.modules.nixos.gnome = {pkgs, ...}: {
     services.displayManager.gdm = {
       enable = true;
@@ -44,5 +47,7 @@ _: {
       baobab
       snapshot
     ];
+
+    home-manager.users.${username}.imports = [hm.gnome];
   };
 }

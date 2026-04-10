@@ -27,8 +27,10 @@ Full compositor/WM setups. Each owns its system-level enablement and HM configur
 
 | Feature | Path | Profiles | Description |
 |---------|------|----------|-------------|
-| Hyprland | `features/hyprland/` | `nixos.hyprland`, `hm.hyprland` | System enablement + portals (nixos.nix), keybinds/animations/window rules + HyprPanel bar (home.nix). Uses `var.*` for terminal, browser, launcher, lock, logout |
-| Hyprland + Quickshell | `features/quickshell/` | `nixos.hyprland-quickshell`, `hm.quickshell` | Hyprland with Quickshell as the bar/launcher |
+| Hyprland (base) | `features/hyprland/` | `nixos.hyprland`, `hm.hyprland` | System enablement + portals (nixos.nix), keybinds/animations/window rules (home.nix). Uses `var.*` for terminal, browser, launcher, lock, logout. Not used directly; hosts import one of the variant profiles below |
+| Hyprland + Quickshell | `features/hyprland/quickshell.nix` | `nixos.hyprland-quickshell` | Hyprland with Quickshell as bar/launcher. Activates `hm.hyprland`, `hm.quickshell`, `hm.screenshot`. Sets `var.launcher = "quickshell"` |
+| Hyprland + HyprPanel | `features/hyprland/hyprpanel.nix` | `nixos.hyprland-hyprpanel` | Hyprland with HyprPanel bar. Activates `hm.hyprland`, `hm.hyprpanelShell`, `hm.screenshot` |
+| Hyprland + Custom | `features/hyprland/custom.nix` | `nixos.hyprland-custom` | Hyprland with Waybar + SwayNC. Activates `hm.hyprland`, `hm.customDesktopShell`, `hm.screenshot` |
 | Niri | `features/niri/` | `nixos.niri`, `hm.niri` | GDM + Niri session (nixos.nix), keybinds/rules/wallpaper (home.nix), niri-specific Waybar (waybar.nix) |
 | GNOME | `features/gnome/` | `nixos.gnome`, `hm.gnome` | GDM + GNOME packages (nixos.nix), shell extensions via dconf (extensions.nix) |
 
@@ -40,9 +42,9 @@ Standalone components composable across multiple WM setups.
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| HyprPanel | `features/hyprpanel/` | `hm.hyprland` | Bar config; layout varies by hostname. Weather widget reads API key via `osConfig.sops.templates` |
-| Waybar | `features/waybar/` | `hm.waybar` | Status bar for niri (hyprland uses HyprPanel) |
-| SwayNC | `features/swaync/` | `hm.hyprland` | Notification center/daemon |
+| HyprPanel | `features/hyprpanel/` | `hm.hyprpanelShell` | Bar config; layout varies by hostname. Weather widget reads API key via `osConfig.sops.templates` |
+| Waybar | `features/waybar/` | `hm.waybar` | Status bar for niri and Hyprland custom shell |
+| SwayNC | `features/swaync/` | `hm.customDesktopShell` | Notification center/daemon, bundled in `customDesktopShell` |
 | Hyprlock | `features/hyprlock/` | `hm.hyprlock` | Lock screen with Stylix-themed background from `var.wallpaperPath`, blur |
 | Hypridle | `features/hypridle/` | `hm.hypridle` | Idle daemon: dim at 4min, lock at 5min, suspend at 10min |
 | Fuzzel | `features/fuzzel/` | `hm.fuzzel` | App launcher shared between Hyprland and niri |
@@ -50,8 +52,7 @@ Standalone components composable across multiple WM setups.
 | Wallpaper | `features/wallpaper/` | `hm.wallpaperManager` | Three-file split: `swww.nix` (daemon + restore service), `waypaper.nix` (GTK picker + `post_command` symlink), `default.nix` (composite profile). Config written via `home.activation` so it stays writable at runtime |
 | Screenshot | `features/screenshot/` | `hm.screenshot` | grimblast scripts bound to Print keys |
 | File manager | `features/file-manager/` | `hm.gui` | Thunar with archive and media tag plugins |
-| Custom desktop shell | `features/customDesktopShell/` | | Custom shell integration utilities |
-| Eyecandy | `features/eyecandy/` | `darwin.eyecandy`, `hm.base` | fastfetch, cava audio visualizer, krabby fetch alias, extra packages |
+| Eyecandy | `features/eyecandy/` | `darwin.eyecandy`, `hm.eyecandyBase`, `hm.eyecandyNixos` | Sub-modules: `hm.fastfetch` (fastfetch config), `hm.krabby` (krabby + fetch alias), `hm.cava` (audio visualizer), `hm.eyecandyPackages` (cmatrix, pipes-rs, cbonsai, etc.). Composite: `hm.eyecandyBase` = fastfetch + krabby + packages (Darwin); `hm.eyecandyNixos` = eyecandyBase + cava + tty-clock (NixOS desktop) |
 
 ---
 
@@ -63,16 +64,16 @@ All Home Manager modules. Most contribute to `hm.base` or `hm.gui`.
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| ZSH | `features/shell/zsh.nix` | `hm.base` | Completions, autosuggestions, syntax highlighting, vi mode, fzf-tab |
-| Fish | `features/shell/fish.nix` | `hm.base` | Fish shell config and abbreviations |
+| ZSH | `features/shell/zsh.nix` | `hm.base` | Completions, autosuggestions, syntax highlighting, vi mode, fzf-tab. Active when `var.shell == "zsh"` |
+| Fish | `features/shell/fish.nix` | `hm.base` | Fish shell config and abbreviations. Active when `var.shell == "fish"` |
 | Starship | `features/shell/starship.nix` | `hm.base` | Cross-shell prompt |
 | Direnv | `features/shell/direnv.nix` | `hm.base` | Automatic dev shell activation with nix-direnv |
 | FZF | `features/shell/fzf.nix` | `hm.base` | Fuzzy finder with shell integration |
 | Zoxide | `features/shell/zoxide.nix` | `hm.base` | Smart `cd` replacement |
 | Tmux | `features/shell/tmux.nix` | `hm.base` | Tmux with Catppuccin theme |
 | CLI packages | `features/shell/packages.nix` | `hm.base` | ripgrep, fd, bat, eza, jq, htop, wget, curl, unzip, etc. |
-| Ghostty | `features/terminal/ghostty.nix` | `hm.base` | Ghostty terminal (Stylix handles colors) |
-| Alacritty | `features/terminal/alacritty.nix` | `hm.base` | Alacritty as fallback terminal |
+| Ghostty | `features/terminal/ghostty.nix` | `hm.base` | Ghostty terminal (Stylix handles colors). Active when `var.terminal == "ghostty"` |
+| Alacritty | `features/terminal/alacritty.nix` | `hm.base` | Alacritty as fallback terminal. Active when `var.terminal == "alacritty"` |
 
 ### Editors and Version Control
 

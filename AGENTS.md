@@ -82,7 +82,9 @@ Hosts import named profiles in their `imports.nix`. Modules never import hosts.
 
 ### NixOS to Home Manager bridge
 
-`modules/flake/home-manager/nixos.nix` maps NixOS profiles to HM profiles. Importing a NixOS profile activates the corresponding HM profiles without the host listing them. Importing `nixos.desktop` automatically activates `hm.gui` for the user, for example.
+Each feature that spans both NixOS and HM owns its own wiring. The NixOS-side file in the feature directory contributes to its NixOS profile and adds `home-manager.users.${username}.imports = [hm.myprofile]` directly. For example, `features/hyprland/quickshell.nix` contributes to `nixos.hyprland-quickshell` and wires in `hm.hyprland`, `hm.quickshell`, `hm.screenshot` from there.
+
+`modules/flake/home-manager/nixos.nix` is infrastructure only: it sets up the home-manager NixOS module (useGlobalPkgs, extraSpecialArgs, backupFileExtension) and activates `hm.base` for every user. It does not map profiles.
 
 From within a HM module, `osConfig` accesses NixOS options. `config` accesses HM options only:
 

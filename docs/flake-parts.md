@@ -78,21 +78,13 @@ Contributes to `flake.modules.homeManager.base`. Sets `home.username` from `conf
 
 ### `flake/home-manager/nixos.nix`
 
-The NixOS-to-HM bridge. Reads `config.flake.modules.homeManager.*` at flake-parts level and wires them into `home-manager.users.<username>.imports` for each NixOS profile. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
+Infrastructure only. Sets up the home-manager NixOS module (useGlobalPkgs, useUserPackages, extraSpecialArgs) and activates `hm.base` for every NixOS user. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
 
-| NixOS profile | HM profiles wired in |
-|---------------|----------------------|
-| `base` | `hm.base` |
-| `desktop` | `hm.gui` |
-| `hyprland` | `hm.hyprland`, `hm.fuzzel`, `hm.hyprlock`, `hm.hypridle`, `hm.screenshot` |
-| `hyprland-quickshell` | same as `hyprland` + quickshell |
-| `niri` | `hm.niri`, `hm.waybar`, `hm.fuzzel`, `hm.hyprlock`, `hm.hypridle` |
-| `gnome` | `hm.gnome` |
-| `gaming` | `hm.gaming` |
+Profile-to-HM wiring is not centralised here. Each feature that spans NixOS and HM owns its wiring in its feature directory. See [Architecture: NixOS HM Bridge](architecture.md#nixos--home-manager-bridge) for the full mapping.
 
 ### `flake/home-manager/darwin.nix`
 
-The Darwin-to-HM bridge. Wires `hm.base` and `hm.gui` into all Darwin configurations. Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
+Infrastructure only. Sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.nvimStylix` for every Darwin user (all Darwin machines are GUI machines). Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
 
 ---
 

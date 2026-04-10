@@ -1,4 +1,7 @@
-_: {
+{config, ...}: let
+  inherit (config.flake.meta.owner) username;
+  hm = config.flake.modules.homeManager;
+in {
   flake.modules.nixos.nvidia = _: {
     hardware.graphics = {
       enable = true;
@@ -27,5 +30,7 @@ _: {
       modesetting.enable = true;
       powerManagement.enable = true;
     };
+
+    home-manager.users.${username}.imports = [hm.btopNvidia];
   };
 }

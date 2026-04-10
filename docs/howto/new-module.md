@@ -65,11 +65,18 @@ _: {
 }
 ```
 
-Then wire it in `modules/flake/home-manager/nixos.nix` so the right NixOS profile activates it:
+Then wire it from the feature's own NixOS file so importing the NixOS profile activates the HM profile too:
+
 ```nix
-myapp = _: {
-  home-manager.users.${username}.imports = [hm.myapp];
-};
+# modules/features/myapp/nixos.nix
+{config, ...}: let
+  inherit (config.flake.meta.owner) username;
+  hm = config.flake.modules.homeManager;
+in {
+  flake.modules.nixos.myapp = _: {
+    home-manager.users.${username}.imports = [hm.myapp];
+  };
+}
 ```
 
 ---
@@ -100,7 +107,21 @@ _: {
 }
 ```
 
-Wire the HM profile in `modules/flake/home-manager/nixos.nix` and add the NixOS profile to any host that needs it.
+Wire the HM import directly in `nixos.nix` by contributing to the NixOS profile, then add the NixOS profile to any host that needs it:
+
+```nix
+# modules/features/myapp/nixos.nix  (add home-manager wiring here)
+{config, ...}: let
+  inherit (config.flake.meta.owner) username;
+  hm = config.flake.modules.homeManager;
+in {
+  flake.modules.nixos.myapp = {pkgs, ...}: {
+    services.myapp.enable = true;
+    environment.systemPackages = [pkgs.myapp];
+    home-manager.users.${username}.imports = [hm.myapp];
+  };
+}
+```
 
 ---
 
