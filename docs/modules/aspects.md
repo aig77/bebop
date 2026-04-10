@@ -1,0 +1,47 @@
+# Aspects
+
+## Contents
+
+- [What Are Aspects](#what-are-aspects)
+- [Reference](#reference)
+
+---
+
+## What Are Aspects
+
+Aspects are foundational system concerns that are applied broadly — they define what the system fundamentally is at a base level. An aspect is not something a host opts into for a specific capability; it's a concern that belongs to every machine in its category (all NixOS machines, all desktop machines, etc.).
+
+Aspects live in `modules/aspects/`. They contribute to the NixOS profiles `base` and `desktop` (the two broadest profiles), or to profiles that represent a hardware reality rather than an optional capability.
+
+Contrast with [Features](features.md), which are opt-in capabilities a host explicitly selects.
+
+---
+
+## Reference
+
+| Aspect | Path | Profile | Description |
+|--------|------|---------|-------------|
+| `nix` | `aspects/nix/` | `nixos.base` | Nix daemon settings: flakes, nix-command, auto-optimise-store, auto-gc, trusted users, substituters (nixos.org + hyprland cache) |
+| `users` | `aspects/users/` | `nixos.base` | Primary user account from `var.username`, shell enablement, groups (networkmanager, audio, video, etc.), sudo |
+| `networking` | `aspects/networking/` | `nixos.base` | NetworkManager, firewall with ports 22/80/443 open |
+| `secrets` | `aspects/secrets/` | `nixos.base` | sops-nix integration: `defaultSopsFile = ./secrets.yaml`, age key at `~/.config/sops/age/keys.txt`, secret declarations, weatherapi.json template (Linux only) |
+| `boot` | `aspects/boot/` | `nixos.desktop` | systemd-boot with EFI, GRUB2 theme, Plymouth boot splash |
+| `audio` | `aspects/audio/` | `nixos.desktop` | PipeWire with PulseAudio compatibility, rtkit for real-time audio, dbus |
+| `bluetooth` | `aspects/bluetooth/` | `nixos.desktop` | `services.bluetooth` enabled, `blueman` applet |
+| `theme` | `aspects/theme/` | `nixos.desktop` / `darwin.base` | Stylix: Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, catppuccin-mocha-light cursors, Papirus Dark icons. Wallpaper is **not** managed here — it's set at runtime by waypaper + swww |
+
+### Aspect-adjacent infrastructure
+
+These live in `modules/flake/` rather than `aspects/` because they are flake-parts plumbing rather than system concerns:
+
+| Module | Path | Description |
+|--------|------|-------------|
+| `var` | `flake/var/` | Variable schema definition (`options.var.*`) contributed to base profiles |
+| `owner` | `flake/owner/` | `flake.meta.owner.username` — single place to set the primary username |
+| `home-manager bridges` | `flake/home-manager/` | Wires NixOS/Darwin profiles to Home Manager profiles |
+
+### Faye-specific aspect
+
+| Aspect | Path | Profile | Description |
+|--------|------|---------|-------------|
+| `volt` | `aspects/audio/volt.nix` | `nixos.volt` | WirePlumber rule that pins the Universal Audio Volt 476 to the `analog-surround-40` profile on connect. Without this, WirePlumber defaults to `pro-audio`, which breaks Discord and normal apps. Switch to `pro-audio` manually via `pactl set-card-profile` when using a DAW |

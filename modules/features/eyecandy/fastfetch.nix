@@ -1,5 +1,5 @@
 _: {
-  flake.modules.generic.eyecandyFastfetch = {pkgs, ...}: {
+  flake.modules.generic.eyecandyFastfetch = _: {
     programs.fastfetch = {
       enable = true;
       settings = {
