@@ -9,7 +9,6 @@
       docker
       tailscale
       volt # pins Volt 476 to stereo profile on connect
-      kraken
     ];
   };
 }
