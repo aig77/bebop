@@ -1,10 +1,10 @@
 _: {
-  flake.modules.homeManager.swww = {
+  flake.modules.homeManager.awww = {
     pkgs,
     var,
     ...
   }: let
-    swww-start = pkgs.writeShellScript "swww-start" ''
+    awww-start = pkgs.writeShellScript "awww-start" ''
       runtime="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
       until [ -S "$runtime/wayland-0" ] || [ -S "$runtime/wayland-1" ]; do
         sleep 0.1
@@ -12,7 +12,7 @@ _: {
       exec ${pkgs.awww}/bin/awww-daemon
     '';
 
-    swww-set-wallpaper = pkgs.writeShellScript "swww-set-wallpaper" ''
+    awww-set-wallpaper = pkgs.writeShellScript "awww-set-wallpaper" ''
       until ${pkgs.awww}/bin/awww query; do sleep 0.1; done
       mkdir -p "$HOME/.cache/bebop"
       saved=$(grep -m1 '^wallpaper' "$HOME/.config/waypaper/config.ini" | cut -d= -f2 | xargs | sed "s|^~|$HOME|")
@@ -31,31 +31,31 @@ _: {
       "CURRENT_WALLPAPER,${var.wallpaperPath}"
     ];
 
-    systemd.user.services.swww = {
+    systemd.user.services.awww = {
       Unit = {
-        Description = "swww wallpaper daemon";
+        Description = "awww wallpaper daemon";
         PartOf = ["graphical-session.target"];
         After = ["graphical-session.target"];
-        Wants = ["swww-wallpaper.service"];
+        Wants = ["awww-wallpaper.service"];
       };
       Service = {
         Type = "simple";
-        ExecStart = "${swww-start}";
+        ExecStart = "${awww-start}";
         Restart = "on-failure";
         RestartSec = "1s";
       };
       Install.WantedBy = ["graphical-session.target"];
     };
 
-    systemd.user.services.swww-wallpaper = {
+    systemd.user.services.awww-wallpaper = {
       Unit = {
-        Description = "Set wallpaper via swww";
-        After = ["swww.service"];
-        Requires = ["swww.service"];
+        Description = "Set wallpaper via awww";
+        After = ["awww.service"];
+        Requires = ["awww.service"];
       };
       Service = {
         Type = "oneshot";
-        ExecStart = "${swww-set-wallpaper}";
+        ExecStart = "${awww-set-wallpaper}";
       };
     };
   };

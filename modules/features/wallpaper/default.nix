@@ -8,6 +8,6 @@
   in {
     imports =
       [hm.waypaper]
-      ++ lib.optionals (var.wallpaperEngine == "awww") [hm.swww];
+      ++ lib.optionals (var.wallpaperEngine == "awww") [hm.awww];
   };
 }

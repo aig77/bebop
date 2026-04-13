@@ -20,7 +20,7 @@ _: {
               cat > "$config" <<'EOF'
       [Settings]
       folder = ~/Pictures/Wallpapers
-      wallpaper = ~/Pictures/Wallpapers
+      wallpaper =
       backend = ${var.wallpaperEngine}
       monitors = All
       fill = fill
