@@ -2,6 +2,10 @@ _: {
   flake.modules.homeManager.gui = {inputs, ...}: {
     imports = [inputs.nixcord.homeModules.nixcord];
 
+    # Discord overwrites settings.json at runtime, replacing HM's symlink with a
+    # real file. force=true prevents backup conflicts on subsequent activations.
+    xdg.configFile."discord/settings.json".force = true;
+
     programs.nixcord = {
       enable = true;
       discord.settings = {
