@@ -1,10 +1,13 @@
 _: {
-  flake.modules.homeManager.gui = {inputs, ...}: {
+  flake.modules.homeManager.gui = {inputs, lib, ...}: {
     imports = [inputs.nixcord.homeModules.nixcord];
 
     # Discord overwrites settings.json at runtime, replacing HM's symlink with a
-    # real file. force=true prevents backup conflicts on subsequent activations.
-    xdg.configFile."discord/settings.json".force = true;
+    # real file. Clear the stale backup before HM's link check so it can
+    # re-backup and re-link without conflicting.
+    home.activation.discordSettingsCleanup = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
+      rm -f "$HOME/.config/discord/settings.json.hm-backup"
+    '';
 
     programs.nixcord = {
       enable = true;
