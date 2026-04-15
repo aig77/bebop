@@ -31,6 +31,11 @@
 
     grub2-themes.url = "github:vinceliuice/grub2-themes";
 
+    helium = {
+      url = "github:AlvaroParker/helium-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
