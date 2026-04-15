@@ -4,6 +4,7 @@ _: {
       username = "arturo";
       hostname = "ed";
       shell = "zsh";
+      headless = true;
     };
   };
 }

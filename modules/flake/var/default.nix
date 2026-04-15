@@ -41,6 +41,10 @@
             type = lib.types.str;
             default = "$HOME/.cache/bebop/current-wallpaper";
           };
+          headless = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+          };
         };
       };
       default = {};
