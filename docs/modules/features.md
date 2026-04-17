@@ -44,50 +44,45 @@ Standalone components composable across multiple WM setups.
 |---------|------|---------|-------------|
 | HyprPanel | `features/hyprpanel/` | `hm.hyprpanelShell` | Bar config; layout varies by hostname. Weather widget reads API key via `osConfig.sops.templates` |
 | Waybar | `features/waybar/` | `hm.waybar` | Status bar for niri and Hyprland custom shell |
-| SwayNC | `features/swaync/` | `hm.customDesktopShell` | Notification center/daemon, bundled in `customDesktopShell` |
+| SwayNC | `features/notifications/` | `hm.customDesktopShell` | Notification center/daemon, bundled in `customDesktopShell` |
 | Hyprlock | `features/hyprlock/` | `hm.hyprlock` | Lock screen with Stylix-themed background from `var.wallpaperPath`, blur |
 | Hypridle | `features/hypridle/` | `hm.hypridle` | Idle daemon: dim at 4min, lock at 5min, suspend at 10min |
 | Fuzzel | `features/fuzzel/` | `hm.fuzzel` | App launcher shared between Hyprland and niri |
 | Quickshell | `features/quickshell/` | `hm.quickshell` | Quickshell bar/launcher widget framework |
 | Wallpaper | `features/wallpaper/` | `hm.wallpaperManager` | Three-file split: `swww.nix` (daemon + restore service), `waypaper.nix` (GTK picker + `post_command` symlink), `default.nix` (composite profile). Config written via `home.activation` so it stays writable at runtime |
 | Screenshot | `features/screenshot/` | `hm.screenshot` | grimblast scripts bound to Print keys |
-| File manager | `features/file-manager/` | `hm.gui` | Thunar with archive and media tag plugins |
+| File manager | `features/fileManager/` | `nixos.desktop` | Thunar with archive and media tag plugins |
 | Eyecandy | `features/eyecandy/` | `darwin.eyecandy`, `hm.eyecandyBase`, `hm.eyecandyNixos` | Sub-modules: `hm.fastfetch` (fastfetch config), `hm.krabby` (krabby + fetch alias), `hm.cava` (audio visualizer), `hm.eyecandyPackages` (cmatrix, pipes-rs, cbonsai, etc.). Composite: `hm.eyecandyBase` = fastfetch + krabby + packages (Darwin); `hm.eyecandyNixos` = eyecandyBase + cava + tty-clock (NixOS desktop) |
 
 ---
 
 ## Applications
 
-All Home Manager modules. Most contribute to `hm.base` or `hm.gui`.
+All Home Manager modules. Most contribute to `hm.shell` or `hm.gui`.
 
 ### Shell and Terminal
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
-| ZSH | `features/shell/zsh.nix` | `hm.base` | Completions, autosuggestions, syntax highlighting, vi mode, fzf-tab. Active when `var.shell == "zsh"` |
-| Fish | `features/shell/fish.nix` | `hm.base` | Fish shell config and abbreviations. Active when `var.shell == "fish"` |
-| Starship | `features/shell/starship.nix` | `hm.base` | Cross-shell prompt |
-| Direnv | `features/shell/direnv.nix` | `hm.base` | Automatic dev shell activation with nix-direnv |
-| FZF | `features/shell/fzf.nix` | `hm.base` | Fuzzy finder with shell integration |
-| Zoxide | `features/shell/zoxide.nix` | `hm.base` | Smart `cd` replacement |
-| Tmux | `features/shell/tmux.nix` | `hm.base` | Tmux with Catppuccin theme |
-| CLI packages | `features/shell/packages.nix` | `hm.base` | ripgrep, fd, bat, eza, jq, htop, wget, curl, unzip, etc. |
-| Ghostty | `features/terminal/ghostty.nix` | `hm.base` | Ghostty terminal (Stylix handles colors). Active when `var.terminal == "ghostty"` |
-| Alacritty | `features/terminal/alacritty.nix` | `hm.base` | Alacritty as fallback terminal. Active when `var.terminal == "alacritty"` |
-
-### Editors and Version Control
-
-| Feature | Path | Profile | Description |
-|---------|------|---------|-------------|
-| Neovim | `features/editor/neovim.nix` | `hm.base` | LSP, treesitter, mini.nvim, mason |
-| Vim | `features/editor/vim.nix` | `hm.base` | Minimal vim config as fallback |
-| Git | `features/git/git.nix` | `hm.base` | Username from `var.username`, email from sops secret at runtime |
-| Lazygit | `features/git/lazygit.nix` | `hm.base` | Lazygit TUI with Catppuccin theme |
+| ZSH | `features/shell/zsh.nix` | `hm.shell` | Completions, autosuggestions, syntax highlighting, vi mode, fzf-tab. Active when `var.shell == "zsh"` |
+| Fish | `features/shell/fish.nix` | `hm.shell` | Fish shell config and abbreviations. Active when `var.shell == "fish"` |
+| Starship | `features/shell/starship.nix` | `hm.shell` | Cross-shell prompt |
+| Direnv | `features/shell/direnv.nix` | `hm.shell` | Automatic dev shell activation with nix-direnv |
+| FZF | `features/shell/fzf.nix` | `hm.shell` | Fuzzy finder with shell integration |
+| Zoxide | `features/shell/zoxide.nix` | `hm.shell` | Smart `cd` replacement |
+| Tmux | `features/shell/tmux.nix` | `hm.shell` | Tmux with Catppuccin theme |
+| CLI packages | `features/shell/packages.nix` | `hm.shell` | ripgrep, fd, bat, eza, jq, htop, wget, curl, unzip, etc. |
+| Neovim | `features/editor/neovim.nix` | `hm.shell` | LSP, treesitter, mini.nvim, mason |
+| Vim | `features/editor/vim.nix` | `hm.shell` | Minimal vim config as fallback |
+| Git | `features/git/git.nix` | `hm.shell` | Username from `var.username`, email from sops secret at runtime |
+| Lazygit | `features/git/lazygit.nix` | `hm.shell` | Lazygit TUI with Catppuccin theme |
 
 ### GUI Applications
 
 | Feature | Path | Profile | Description |
 |---------|------|---------|-------------|
+| Ghostty | `features/terminal/ghostty.nix` | `hm.gui` | Ghostty terminal (Stylix handles colors). Active when `var.terminal == "ghostty"` |
+| Alacritty | `features/terminal/alacritty.nix` | `hm.gui` | Alacritty as fallback terminal. Active when `var.terminal == "alacritty"` |
 | Zen browser | `features/browser/zen.nix` | `hm.gui` | Privacy-hardened Firefox fork: containers, Brave search, uBlock Origin, Bitwarden, etc. |
 | Discord | `features/discord/nixcord.nix` | `hm.gui` | Discord via Nixcord (Vencord-patched), Stylix CSS theme |
 | Spotify | `features/media/spotify.nix` | `hm.gui` | Spotify via spicetify-nix with Catppuccin theme |

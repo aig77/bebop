@@ -1,10 +1,8 @@
 <p align="center">
-  <img src="https://i.redd.it/nalgeor130f31.png" alt="Swordfish" width="600"/>
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjBjdXI1eHRqZnluc2t0Y2p0a3k0aThseGc2bnM5ZWZrcjdidWd0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7bue6KjrDUzqhTJ6/giphy.gif" alt="Swordfish" width="300"/>
 </p>
 
 ---
-
-# bebop
 
 A declarative, multi-platform system configuration built with Nix Flakes and flake-parts. One repo manages NixOS desktops, macOS workstations, and a headless ARM server. Everything is reproducible and version-controlled, composed from the same module tree.
 
@@ -15,7 +13,7 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 | [Faye](docs/hosts/faye.md) | x86_64 NixOS | Desktop workstation: Hyprland, AMD GPU, gaming, full dev environment |
 | [Ed](docs/hosts/ed.md) | aarch64 NixOS | Headless Raspberry Pi: DNS, ad-blocking, monitoring |
 | [Ein](docs/hosts/ein.md) | aarch64 Darwin | MacBook, full configuration with Homebrew casks |
-| [Spike](docs/hosts/spike.md) | aarch64 Darwin | MacBook, lean configuration |
+| [Spike](docs/hosts/spike.md) | aarch64 Darwin | Mac Mini (server), lean configuration |
 
 ---
 
@@ -55,4 +53,6 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 
 ---
 
-<p align="center"><i>See You Space Cowboy...</i></p>
+<p align="center">
+  <img src="https://media1.tenor.com/m/M2GVG0KaRPkAAAAC/cowboy-bebop-cowboy.gif" alt="See you space cowboy..." width=300/>
+</p>

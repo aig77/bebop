@@ -61,7 +61,7 @@ All three use `deferredModule`, so multiple files can contribute to the same pro
 | Profile | Applied to | Contents |
 |---------|-----------|----------|
 | `base` | Every NixOS machine | nix daemon, users, networking, sops secrets, home-manager wiring |
-| `desktop` | Machines with a display | audio, boot, bluetooth, file-manager, Stylix theme |
+| `desktop` | Machines with a display | audio, boot, bluetooth, fileManager, Stylix theme |
 | `hyprland` | Hyprland compositor base | Hyprland system enablement, GDM, portals |
 | `hyprland-quickshell` | Hyprland + Quickshell bar | `nixos.hyprland` + Quickshell as bar/launcher |
 | `hyprland-hyprpanel` | Hyprland + HyprPanel bar | `nixos.hyprland` + HyprPanel as bar |
@@ -98,7 +98,6 @@ All three use `deferredModule`, so multiple files can contribute to the same pro
 | `gaming` | MangoHud, Heroic, Bottles, ProtonPlus |
 | `eyecandyBase` | fastfetch + krabby fetch alias + eye candy packages |
 | `eyecandyNixos` | `eyecandyBase` + cava audio visualizer + tty-clock |
-| `nvimStylix` | Neovim Stylix/Base16 color integration |
 | `fastfetch` | fastfetch config |
 | `krabby` | krabby + fastfetch shell aliases and greeting |
 | `eyecandyPackages` | cmatrix, pipes-rs, cbonsai, asciiquarium, etc. |
@@ -157,7 +156,7 @@ NixOS profiles don't directly import HM profiles. Each feature that spans both s
 | NixOS profile | HM profiles activated | Wiring lives in |
 |---------------|-----------------------|-----------------|
 | `base` | `hm.base` | `flake/home-manager/nixos.nix` |
-| `desktop` | `hm.gui`, `hm.eyecandyNixos`, `hm.nvimStylix` | `aspects/desktop/home.nix` |
+| `desktop` | `hm.shell`, `hm.gui`, `hm.eyecandyNixos` | `aspects/desktop/home.nix` |
 | `hyprland-quickshell` | `hm.hyprland`, `hm.quickshell`, `hm.screenshot` | `features/hyprland/quickshell.nix` |
 | `hyprland-hyprpanel` | `hm.hyprland`, `hm.hyprpanelShell`, `hm.screenshot` | `features/hyprland/hyprpanel.nix` |
 | `hyprland-custom` | `hm.hyprland`, `hm.customDesktopShell`, `hm.screenshot` | `features/hyprland/custom.nix` |
@@ -171,12 +170,12 @@ NixOS profiles don't directly import HM profiles. Each feature that spans both s
 
 ```
 nixos.base              -> nix, users, networking, secrets
-  hm.base               -> shell (var.shell), terminal (var.terminal), editors, git, CLI packages
+  hm.base               -> (empty, harmless no-op)
 
 nixos.desktop           -> audio, boot, bluetooth, theme
+  hm.shell              -> shell (var.shell), terminals (var.terminal), editors, git, CLI packages
   hm.gui                -> browser, discord, spotify, apps
   hm.eyecandyNixos      -> fastfetch, krabby, cava, eye candy packages
-  hm.nvimStylix         -> neovim color integration
 
 nixos.hyprland-quickshell -> Hyprland system, GDM, portals
   hm.hyprland           -> keybinds, window rules, animations
@@ -208,7 +207,7 @@ config.programs.zsh.enable             # HM option
 
 ## Darwin ↔ Home Manager Bridge
 
-`modules/flake/home-manager/darwin.nix` is infrastructure: it sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.nvimStylix` for every Darwin user. All Mac machines get these unconditionally since there are no headless Darwin configs here.
+`modules/flake/home-manager/darwin.nix` is infrastructure: it sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.shell` for every Darwin user. All Mac machines get these unconditionally since there are no headless Darwin configs here.
 
 Darwin also passes `var` and `inputs` into HM's `extraSpecialArgs` so HM modules can access `var.*` directly.
 

@@ -15,7 +15,7 @@ in {
         inherit inputs;
         inherit (config) var;
       };
-      users.${username}.imports = [hm.base hm.gui hm.nvimStylix];
+      users.${username}.imports = [hm.base hm.gui hm.shell];
     };
   };
 }

@@ -29,7 +29,7 @@ See [Features](features.md) for opt-in capabilities.
 | `audio` | `aspects/audio/` | `nixos.desktop` | PipeWire with PulseAudio compatibility, rtkit for real-time audio, dbus |
 | `bluetooth` | `aspects/bluetooth/` | `nixos.desktop` | `services.bluetooth` enabled, `blueman` applet |
 | `theme` | `aspects/theme/` | `nixos.desktop` / `darwin.base` | Stylix: Catppuccin Mocha, JetBrains Mono Nerd Font, DejaVu Sans/Serif, Noto Color Emoji, catppuccin-mocha-light cursors, Papirus Dark icons. Wallpaper is not managed here; it's set at runtime by waypaper + awww |
-| `desktop` (HM wiring) | `aspects/desktop/home.nix` | `nixos.desktop` | Wires `hm.gui`, `hm.eyecandyNixos`, `hm.nvimStylix` into the desktop profile. Separated from the system-level desktop aspects since `desktop` has no single owning directory. |
+| `desktop` (HM wiring) | `aspects/desktop/home.nix` | `nixos.desktop` | Wires `hm.shell`, `hm.gui`, `hm.eyecandyNixos` into the desktop profile. Separated from the system-level desktop aspects since `desktop` has no single owning directory. |
 
 ### Flake-level infrastructure
 

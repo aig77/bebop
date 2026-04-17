@@ -1,5 +1,5 @@
 _: {
-  flake.modules.homeManager.base = {pkgs, ...}: {
+  flake.modules.homeManager.shell = {pkgs, ...}: {
     home.packages = with pkgs; [
       alejandra
       bat

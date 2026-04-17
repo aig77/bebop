@@ -55,7 +55,7 @@ imports = with config.flake.modules.nixos; [
 
 HM profiles activated automatically via the bridge:
 
-`hm.base` + `hm.gui` + `hm.hyprland` + `hm.fuzzel` + `hm.hyprlock` + `hm.hypridle` + `hm.screenshot` + `hm.gaming`
+`hm.shell` + `hm.gui` + `hm.hyprland` + `hm.fuzzel` + `hm.hyprlock` + `hm.hypridle` + `hm.screenshot` + `hm.gaming`
 
 ---
 

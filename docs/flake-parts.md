@@ -84,7 +84,7 @@ Profile-to-HM wiring is not centralised here. Each feature that spans NixOS and 
 
 ### `flake/home-manager/darwin.nix`
 
-Infrastructure only. Sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.nvimStylix` for every Darwin user (all Darwin machines are GUI machines). Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
+Infrastructure only. Sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.shell` for every Darwin user (all Darwin machines are GUI machines). Also passes `var` and `inputs` into HM's `extraSpecialArgs`.
 
 ---
 

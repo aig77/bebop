@@ -6,7 +6,7 @@
   inherit (config.flake.meta.owner) username;
   hm = config.flake.modules.homeManager;
 in {
-  flake.modules.nixos.base = {config, lib, ...}: {
+  flake.modules.nixos.base = {config, ...}: {
     imports = [inputs.home-manager.nixosModules.home-manager];
     home-manager = {
       useGlobalPkgs = true;
@@ -16,7 +16,7 @@ in {
         inherit inputs;
         inherit (config) var;
       };
-      users.${username}.imports = lib.optionals (!config.var.headless) [hm.base];
+      users.${username}.imports = [hm.base];
     };
   };
 }

@@ -1,5 +1,5 @@
 _: {
-  flake.modules.homeManager.base = _: {
+  flake.modules.homeManager.shell = _: {
     programs.starship = {
       enable = true;
       settings = {
