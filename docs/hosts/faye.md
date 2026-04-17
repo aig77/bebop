@@ -1,4 +1,6 @@
-# Faye
+<p align="center">
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3lydDhpM3dqbTU2azI0aGxmZ3F2ZjVqdWgxc2VtYTA5bzloOHQ4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10VjiVoa9rWC4M/giphy.gif" alt="Faye" width="300"/>
+</p>
 
 ## Contents
 

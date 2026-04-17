@@ -1,4 +1,6 @@
-# Spike
+<p align="center">
+  <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDhtOHljdjB5ZWlmc3lhMmRvNGRuZ2t4OWU1eDY1cWM3aW5sdm54ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gQbVzXQQbGO7C/giphy.gif" alt="Spike" width="300"/>
+</p>
 
 ## Contents
 

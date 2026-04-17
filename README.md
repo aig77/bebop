@@ -54,5 +54,5 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 ---
 
 <p align="center">
-  <img src="https://media1.tenor.com/m/M2GVG0KaRPkAAAAC/cowboy-bebop-cowboy.gif" alt="See you space cowboy..." width=300/>
+  <img src="https://media1.tenor.com/m/M2GVG0KaRPkAAAAC/cowboy-bebop-cowboy.gif" alt="See you space cowboy..." width=250/>
 </p>

@@ -1,4 +1,6 @@
-# Ed
+<p align="center">
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3RkNWthcWVjNm1wcjIxdDNmNGx6em4yYzh0anp6bTV2dmdrcTloMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/udhngZK2IFTc4/giphy.gif" alt="Ed" width="300"/>
+</p>
 
 ## Contents
 

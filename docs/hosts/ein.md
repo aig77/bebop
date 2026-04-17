@@ -1,4 +1,6 @@
-# Ein
+<p align="center">
+  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTRyYWtzdHBidGNrbjFmMTlleG8zZHdhOXVyOThvdWpleGllNWI1YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/AWqRqyyLYhZxS/giphy.gif" alt="Ein" width="300"/>
+</p>
 
 ## Contents
 
