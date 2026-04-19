@@ -12,7 +12,7 @@ _: {
       description = "Enable Helium browser";
     };
 
-    config = lib.mkIf config.programs.helium.enable {
+    config = lib.mkIf (config.programs.helium.enable && pkgs.stdenv.isLinux) {
       home.packages = [inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default];
 
       home.file.".config/net.imput.helium/policies/managed/extensions.json".text = builtins.toJSON {
