@@ -9,7 +9,6 @@ _: {
       "proton-mail-bridge"
       "raycast"
       "tailscale-app"
-      "zen-browser"
     ];
   };
 }

@@ -8,7 +8,7 @@ _: {
       home = {
         homeDirectory = "/Users/${config.var.username}";
         stateVersion = "24.11";
-        packages = with pkgs; [claude-code opencode];
+        packages = with pkgs; [opencode];
         sessionVariables = {
           EDITOR = "nvim";
           XDG_CONFIG_HOME = "$HOME/.config";

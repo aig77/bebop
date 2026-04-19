@@ -1,11 +1,11 @@
 _: {
   configurations.darwin.ein.module = {
     homebrew.casks = [
-      "brave-browser"
       "claude"
       "discord"
       "docker-desktop"
       "ghostty"
+      "helium-browser"
       "httpie-desktop"
       "lm-studio"
       "raycast"

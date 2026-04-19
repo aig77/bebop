@@ -12,8 +12,6 @@ _: {
         packages = with pkgs; [
           amdgpu_top
           bitwarden-desktop
-          brave
-          claude-code
           inputs.claude-desktop.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop-fhs
           gnome-calculator
           httpie-desktop
