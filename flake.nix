@@ -53,6 +53,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
+
     niri.url = "github:sodiboo/niri-flake";
 
     nixcord = {
