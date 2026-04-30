@@ -1,5 +1,6 @@
 _: {
   flake.modules.homeManager.shell = {
+    pkgs,
     lib,
     config,
     ...
@@ -7,6 +8,9 @@ _: {
     enableStylix = false; # toggle to enable stylix theming
     priority = 900; # set loading priority (themes default at 1000)
   in {
+    # new nvim-treesitter rewrite builds parses from source using tree-sitter CLI
+    home.packages = [pkgs.tree-sitter];
+
     programs.neovim = {
       enable = true;
       defaultEditor = true;
