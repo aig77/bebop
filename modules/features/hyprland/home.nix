@@ -282,6 +282,11 @@ _: {
           "match:class waypaper, size 1000 750"
 
           "match:title Calculator, float on"
+
+          # xdg-desktop-portal screenshare screen picker
+          # might be hardcoded?
+          "match:title ^(Select what to share)$, float on"
+          "match:title ^(Select what to share)$, size 800 600"
         ];
 
         layerrule = [
