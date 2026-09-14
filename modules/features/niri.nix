@@ -12,28 +12,11 @@ in {
     pkgs,
     var,
     ...
-  }: {
-    home = {
-      packages = with pkgs; [
-        playerctl
-        brightnessctl
-        hyprpolkitagent
-      ];
-
-      sessionVariables = {
-        TERMINAL = var.terminal;
-        BROWSER = var.browser;
-        FILE_MANAGER = var.fileManager;
-        NIXOS_OZONE_WL = "1";
-        MOZ_ENABLE_WAYLAND = "1";
-        QT_QPA_PLATFORM = "wayland";
-        GDK_BACKEND = "wayland";
-        ELECTRON_OZONE_PLATFORM_HINT = "auto";
-        XCURSOR_SIZE = "24";
-      };
-    };
-
-    systemd.user.sessionVariables = {
+  }: let
+    sessionVariables = {
+      TERMINAL = var.terminal;
+      BROWSER = var.browser;
+      FILE_MANAGER = var.fileManager;
       NIXOS_OZONE_WL = "1";
       MOZ_ENABLE_WAYLAND = "1";
       QT_QPA_PLATFORM = "wayland";
@@ -41,6 +24,17 @@ in {
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
       XCURSOR_SIZE = "24";
     };
+  in {
+    home = {
+      inherit sessionVariables;
+      packages = with pkgs; [
+        playerctl
+        brightnessctl
+        hyprpolkitagent
+      ];
+    };
+
+    systemd.user = {inherit sessionVariables;};
 
     wayland.windowManager.niri = {
       enable = true;

@@ -23,32 +23,27 @@ in {
     pkgs,
     var,
     ...
-  }: {
+  }: let
+    sessionVariables = {
+      TERMINAL = var.terminal;
+      BROWSER = var.browser;
+      FILE_MANAGER = var.fileManager;
+      LOCATION = var.location;
+      HYPR_GAME_WORKSPACE = 10;
+    };
+  in {
     home = {
+      inherit sessionVariables;
       packages = with pkgs; [
         hyprpolkitagent
         playerctl
         brightnessctl
       ];
-
-      sessionVariables = {
-        TERMINAL = var.terminal;
-        BROWSER = var.browser;
-        FILE_MANAGER = var.fileManager;
-        LOCATION = var.location;
-        HYPR_GAME_WORKSPACE = 4;
-      };
     };
 
-    # Mirror session vars into systemd user session so GDM-launched Hyprland inherits them
-    # home.sessionVariables only reaches ~/.profile (login shells), not systemd user services
-    systemd.user.sessionVariables = {
-      TERMINAL = var.terminal;
-      BROWSER = var.browser;
-      FILE_MANAGER = var.fileManager;
-      LOCATION = var.location;
-      HYPR_GAME_WORKSPACE = 4;
-    };
+    # Mirror session vars into systemd user session so any
+    # desktop manager launched Hyprland inherits them
+    systemd.user = {inherit sessionVariables;};
 
     stylix.targets.hyprland.enable = false;
 
