@@ -12,6 +12,7 @@
         backup
         caddy
         cloudflared
+        dbgate
         tailscale-http
 
         actual-budget

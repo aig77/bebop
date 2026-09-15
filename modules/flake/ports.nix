@@ -90,6 +90,10 @@
         type = lib.types.port;
         default = 4030;
       };
+      dbgate = lib.mkOption {
+        type = lib.types.port;
+        default = 4040;
+      };
       unbound = lib.mkOption {
         type = lib.types.port;
         default = 5335;
