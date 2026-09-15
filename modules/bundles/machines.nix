@@ -9,7 +9,7 @@ in {
         base
         audio
         bluetooth
-        theme
+        stylix-catppuccin
         grub
         ly
         thunar
@@ -57,8 +57,8 @@ in {
         base
         audio
         bluetooth
+        stylix-catppuccin
         grub
-        theme
       ];
       home-manager.users.${username}.imports = with hm; [
         bitwarden
