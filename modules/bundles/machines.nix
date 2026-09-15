@@ -23,13 +23,11 @@ in {
         };
         gnome.gnome-keyring.enable = true;
         printing.enable = true;
-        power-profiles-daemon.enable = true;
-        upower.enable = true;
       };
       security.polkit.enable = true;
 
       home-manager.users.${username} = {
-        imports = with hm; [gui noctalia];
+        imports = with hm; [gui easyeffects noctalia];
         home.packages = [];
       };
     };
@@ -39,12 +37,16 @@ in {
         desktop
         protonvpn
       ];
-      services.keyd = {
-        enable = true;
-        keyboards.default = {
-          ids = ["*"];
-          settings.main = {
-            rightcontrol = "rightmeta";
+      services = {
+        power-profiles-daemon.enable = true;
+        upower.enable = true;
+        keyd = {
+          enable = true;
+          keyboards.default = {
+            ids = ["*"];
+            settings.main = {
+              rightcontrol = "rightmeta";
+            };
           };
         };
       };
