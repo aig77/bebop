@@ -53,7 +53,12 @@ in {
     home-manager.users.${username}.imports = [hm.stylix-catppuccin];
   };
 
-  flake.modules.homeManager.stylix-catppuccin = {config, ...}: let
+  flake.modules.homeManager.stylix-catppuccin = {
+    config,
+    pkgs,
+    lib,
+    ...
+  }: let
     colors = config.lib.stylix.colors.withHashtag;
     font = config.stylix.fonts.monospace.name;
   in {
@@ -78,6 +83,15 @@ in {
         base0F
         ;
       inherit font;
+    };
+
+    gtk.theme = lib.mkForce {
+      package = pkgs.catppuccin-gtk.override {
+        accents = ["blue"];
+        size = "standard";
+        variant = "mocha";
+      };
+      name = "catppuccin-mocha-blue-standard";
     };
   };
 }

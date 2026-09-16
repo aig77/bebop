@@ -10,5 +10,8 @@ _: {
       tumbler.enable = true;
     };
     environment.systemPackages = [pkgs.xarchiver];
+
+    programs.xfconf.enable = true;
+    xdg.mime.defaultApplications."inode/directory" = "thunar.desktop";
   };
 }
