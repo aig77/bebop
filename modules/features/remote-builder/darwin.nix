@@ -15,8 +15,7 @@ _: {
       };
     };
 
-    config.nix.settings = {
-      builders-use-substitutes = true;
+    config.nix = {
       buildMachines = lib.mkIf (config.remote-builder.host != null) (
         map (system: {
           inherit system;
@@ -27,6 +26,7 @@ _: {
         })
         config.remote-builder.systems
       );
+      settings.builders-use-substitutes = true;
     };
   };
 }
