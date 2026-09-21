@@ -6,8 +6,18 @@
 }: {
   options.configurations.nixos = lib.mkOption {
     type = lib.types.lazyAttrsOf (lib.types.submodule {
-      options.module = lib.mkOption {
-        type = lib.types.deferredModule;
+      options = {
+        module = lib.mkOption {
+          type = lib.types.deferredModule;
+        };
+        role = lib.mkOption {
+          type = lib.types.enum ["client" "server"];
+          default = "client";
+        };
+        nixpkgs = lib.mkOption {
+          type = lib.types.nullOr (lib.types.enum ["stable" "unstable"]);
+          default = null;
+        };
       };
     });
     default = {};
@@ -15,24 +25,18 @@
 
   config.flake.nixosConfigurations =
     lib.mapAttrs (
-      _name: {module}:
-        inputs.nixpkgs.lib.nixosSystem {
+      _name: cfg: let
+        channel = config.flake.nixpkgs.channelFor cfg;
+        channelModule = config.flake.nixpkgs.overlayModule channel;
+        pkgsConfig = config.flake.nixpkgs.pkgsConfig;
+      in
+        (config.flake.nixpkgs.srcFor channel).lib.nixosSystem {
           specialArgs = {inherit inputs;};
           modules = [
-            {
-              nixpkgs.config = {
-                allowUnfree = true;
-                allowBroken = true;
-                # bitwarden-desktop hardcodes electron_39 in nixpkgs despite upstream
-                # having moved to electron 34+. Remove once nixpkgs updates the package.
-                # Track: https://github.com/NixOS/nixpkgs/issues/526914
-                permittedInsecurePackages = [
-                  "electron-39.8.10"
-                ];
-              };
-            }
+            {nixpkgs.config = pkgsConfig;}
+            channelModule
             inputs.sops-nix.nixosModules.sops
-            module
+            cfg.module
           ];
         }
     )
