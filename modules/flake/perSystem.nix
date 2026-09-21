@@ -8,7 +8,7 @@
 
     apps.deploy = {
       type = "app";
-      program = "${pkgs.deploy-rs}/bin/deploy-rs";
+      program = "${pkgs.deploy-rs}/bin/deploy";
       meta.description = "Deploy NixOS hosts with deploy-rs";
     };
 
@@ -16,9 +16,13 @@
     # failure and rolls back any node already deployed in this run.
     apps.deploy-servers = {
       type = "app";
-      program = "${pkgs.writeShellScriptBin "deploy-servers" ''
-        exec ${pkgs.deploy-rs}/bin/deploy-rs --targets ".#ed" ".#jet" "$@"
-      ''}/bin/deploy-servers";
+      program = "${pkgs.writeShellApplication {
+        name = "deploy-servers";
+        runtimeInputs = [pkgs.deploy-rs];
+        text = ''
+          exec deploy --targets ".#ed" ".#jet" "$@"
+        '';
+      }}/bin/deploy-servers";
       meta.description = "Deploy all server hosts with deploy-rs";
     };
   };
