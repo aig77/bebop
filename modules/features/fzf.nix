@@ -2,10 +2,14 @@ _: {
   flake.modules.homeManager.fzf = {
     config,
     lib,
+    pkgs,
     ...
   }: {
     programs.fzf = {
       enable = true;
+      # nushell integration asserts fzf >= 0.73 (stable ships 0.72).
+      # pkgs.unstable.fzf is an identity alias on unstable-base hosts.
+      package = pkgs.unstable.fzf;
       tmux.enableShellIntegration = true;
       colors = lib.mkIf (config.lib ? stylix) (
         let
