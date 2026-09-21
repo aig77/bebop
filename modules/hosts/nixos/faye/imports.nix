@@ -8,6 +8,7 @@
         htpc
         steamos
         no-rgb
+        jet-builder
       ]);
   };
 }

@@ -10,6 +10,7 @@
         intelgpu
         gaming
         docker
+        jet-builder
       ]);
   };
 }
