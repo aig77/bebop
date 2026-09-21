@@ -9,6 +9,7 @@
     apps.deploy = {
       type = "app";
       program = "${pkgs.deploy-rs}/bin/deploy-rs";
+      meta.description = "Deploy NixOS hosts with deploy-rs";
     };
 
     # One command for both role=server hosts (ed then jet). Aborts on first
@@ -18,6 +19,7 @@
       program = "${pkgs.writeShellScriptBin "deploy-servers" ''
         exec ${pkgs.deploy-rs}/bin/deploy-rs --targets ".#ed" ".#jet" "$@"
       ''}/bin/deploy-servers";
+      meta.description = "Deploy all server hosts with deploy-rs";
     };
   };
 }
