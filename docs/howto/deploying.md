@@ -56,9 +56,9 @@ Design, per-package escapes, and gotchas: [Nixpkgs Channels](nixpkgs-channels.md
 
 ---
 
-## Fleet Deploy (deploy-rs)
+## Servers Deploy (deploy-rs)
 
-Both homelab servers (ed, jet) update with one command. Builder is **jet** (it
+Homelab servers update with one command. Builder is **jet** (it
 binfmt-builds ed's aarch64 closure). Launchers forward aarch64 builds to jet
 over ssh-ng via the `remote-builder` feature (`remote-builder.host = "jet"`);
 spike keeps its own binfmt as a fallback builder. Any client with
