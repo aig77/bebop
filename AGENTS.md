@@ -91,5 +91,6 @@ Fuller troubleshooting in [docs/howto/troubleshooting.md](docs/howto/troubleshoo
 - [Bundles](docs/modules/bundles.md): curated feature group reference
 - [Server Services](docs/modules/server.md): the var.services registry, exposure, auth, backups
 - [Flake-Parts Infrastructure](docs/flake-parts.md): output builders, bridges, dev shell
+- [Nixpkgs Channels](docs/howto/nixpkgs-channels.md): the stable/unstable channel split, base-by-role, per-package escapes
 - [Hosts](docs/hosts/): per-machine details (spike, ein, faye, jet, ed)
 - [How-To Guides](docs/howto/): deploying, adding modules/hosts, secrets, age keys, inputs, ssh

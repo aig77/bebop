@@ -28,6 +28,8 @@ modules/flake/
 ├── formatter.nix             # nix fmt (alejandra)
 ├── pre-commit.nix            # Git hooks
 ├── ports.nix                 # Central port registry for services
+├── nixpkgs.nix               # Channel policy + overlay bridge
+├── perSystem.nix             # perSystem pkgs for dev tools
 ├── shell.nix                 # Dev shell
 ├── home-manager/             # NixOS/Darwin to HM bridges
 │   ├── base.nix              # Minimal HM config every user gets

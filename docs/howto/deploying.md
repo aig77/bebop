@@ -40,6 +40,20 @@ Direct nixos-rebuild invocations also work if needed:
 sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
+### Updating Nixpkgs
+
+Two channels feed this flake (`nixpkgs-stable`, `nixpkgs-unstable`); hosts pick a base channel by role. Update per channel:
+
+```bash
+nix flake update nixpkgs-stable    # servers (jet, ed) + stable-following inputs
+nix flake update nixpkgs-unstable  # clients + home-manager + desktop inputs
+nix flake update                   # both
+```
+
+Afterwards: `git diff flake.lock` (only the intended channel's revs moved) plus `nix flake check`.
+
+Design, per-package escapes, and gotchas: [Nixpkgs Channels](nixpkgs-channels.md).
+
 ---
 
 ## Darwin Hosts

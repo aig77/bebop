@@ -8,6 +8,7 @@
 - [Module Anatomy](#module-anatomy)
 - [NixOS ↔ Home Manager Bridge](#nixos--home-manager-bridge)
 - [Darwin ↔ Home Manager Bridge](#darwin--home-manager-bridge)
+- [Nixpkgs Channels](#nixpkgs-channels)
 - [Variable Schema](#variable-schema)
 - [Theming](#theming)
 - [Secrets](#secrets)
@@ -115,6 +116,18 @@ config.programs.zsh.enable             # HM option
 `modules/flake/home-manager/darwin.nix` is infrastructure: it sets up the home-manager Darwin module and activates `hm.base`, `hm.gui`, and `hm.shell` for every Darwin user. All Darwin machines in this configuration are GUI machines, so these profiles are applied unconditionally.
 
 Darwin also passes `var` and `inputs` into HM's `extraSpecialArgs` so HM modules can access `var.*` directly.
+
+---
+
+## Nixpkgs Channels
+
+This flake feeds from two nixpkgs channels: `nixpkgs-stable` (nixos-26.05)
+and `nixpkgs-unstable` (nixos-unstable). Each host builds from one base
+channel, chosen by `role` (servers = stable, clients = unstable). An overlay
+exposes both channel sets on every host as `pkgs.stable` / `pkgs.unstable`,
+and an assertion locks servers to stable.
+
+Design, per-package escapes, and the update workflow: [Nixpkgs Channels](howto/nixpkgs-channels.md).
 
 ---
 
