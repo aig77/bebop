@@ -59,9 +59,10 @@ Design, per-package escapes, and gotchas: [Nixpkgs Channels](nixpkgs-channels.md
 ## Fleet Deploy (deploy-rs)
 
 Both homelab servers (ed, jet) update with one command. Builder is **jet** (it
-binfmt-builds ed's aarch64 closure). Any host with the `jet-builder` feature
-(spike, faye, ein NixOS, ein macOS) can launch the fleet deploy; builds are
-delegated to jet over ssh-ng.
+binfmt-builds ed's aarch64 closure). Launchers forward aarch64 builds to jet
+over ssh-ng via the `remote-builder` feature (`remote-builder.host = "jet"`);
+spike keeps its own binfmt as a fallback builder. Any client with
+`remote-builder` set can run the fleet deploy.
 
 ```bash
 nix run .#deploy-fleet     # build + deploy ed, then jet

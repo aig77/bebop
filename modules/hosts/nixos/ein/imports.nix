@@ -1,5 +1,6 @@
 {config, ...}: {
   configurations.nixos.ein.module = {inputs, ...}: {
+    remote-builder.host = "jet";
     facter.reportPath = ./facter.json;
     imports =
       [inputs.nixos-facter-modules.nixosModules.facter]
@@ -10,7 +11,7 @@
         intelgpu
         gaming
         docker
-        jet-builder
+        remote-builder
       ]);
   };
 }

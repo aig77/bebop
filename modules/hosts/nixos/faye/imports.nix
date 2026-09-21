@@ -1,5 +1,6 @@
 {config, ...}: {
   configurations.nixos.faye.module = {inputs, ...}: {
+    remote-builder.host = "jet";
     facter.reportPath = ./facter.json;
     imports =
       [inputs.nixos-facter-modules.nixosModules.facter]
@@ -8,7 +9,7 @@
         htpc
         steamos
         no-rgb
-        jet-builder
+        remote-builder
       ]);
   };
 }
