@@ -30,6 +30,7 @@ modules/flake/
 ├── ports.nix                 # Central port registry for services
 ├── nixpkgs.nix               # Channel policy + overlay bridge
 ├── perSystem.nix             # perSystem pkgs for dev tools
+├── deploy.nix                # deploy-rs nodes (servers) + fleet app
 ├── shell.nix                 # Dev shell
 ├── home-manager/             # NixOS/Darwin to HM bridges
 │   ├── base.nix              # Minimal HM config every user gets

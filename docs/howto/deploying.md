@@ -56,6 +56,32 @@ Design, per-package escapes, and gotchas: [Nixpkgs Channels](nixpkgs-channels.md
 
 ---
 
+## Fleet Deploy (deploy-rs)
+
+Both homelab servers (ed, jet) update with one command. Builder is **jet** (it
+binfmt-builds ed's aarch64 closure). Any host with the `jet-builder` feature
+(spike, faye, ein NixOS, ein macOS) can launch the fleet deploy; builds are
+delegated to jet over ssh-ng.
+
+```bash
+nix run .#deploy-fleet     # build + deploy ed, then jet
+```
+
+Semantics: ed deploys first, then jet. Failure aborts the run and rolls back
+any node already deployed, so the fleet never ends up mixed. Troubleshoot a
+single server:
+
+```bash
+nix run .#deploy -- .#jet                            # just jet
+nix run .#deploy -- --rollback .#ed                  # roll ed back manually
+```
+
+deploy-rs connects as root over ssh (repo root key is on every NixOS host);
+per-node `autoRollback` and `magicRollback` cover activation failures and
+unreachable nodes. Each node inherits its host's base nixpkgs channel.
+
+---
+
 ## Darwin Hosts
 
 ```bash
