@@ -65,7 +65,7 @@ spike keeps its own binfmt as a fallback builder. Any client with
 `remote-builder` set can run the fleet deploy.
 
 ```bash
-nix run .#deploy-fleet     # build + deploy ed, then jet
+nix run .#deploy-servers  # build + deploy ed, then jet
 ```
 
 Semantics: ed deploys first, then jet. Failure aborts the run and rolls back

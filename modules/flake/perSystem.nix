@@ -11,11 +11,13 @@
       program = "${pkgs.deploy-rs}/bin/deploy-rs";
     };
 
-    apps.deploy-fleet = {
+    # One command for both role=server hosts (ed then jet). Aborts on first
+    # failure and rolls back any node already deployed in this run.
+    apps.deploy-servers = {
       type = "app";
-      program = "${pkgs.writeShellScriptBin "deploy-fleet" ''
+      program = "${pkgs.writeShellScriptBin "deploy-servers" ''
         exec ${pkgs.deploy-rs}/bin/deploy-rs --targets ".#ed" ".#jet" "$@"
-      ''}/bin/deploy-fleet";
+      ''}/bin/deploy-servers";
     };
   };
 }
