@@ -15,6 +15,8 @@
         dbgate
         tailscale-http
 
+        trivy # container scanning
+
         actual-budget
         daily-stoic
         forgejo

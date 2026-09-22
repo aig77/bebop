@@ -93,4 +93,5 @@ Fuller troubleshooting in [docs/howto/troubleshooting.md](docs/howto/troubleshoo
 - [Flake-Parts Infrastructure](docs/flake-parts.md): output builders, bridges, dev shell
 - [Nixpkgs Channels](docs/howto/nixpkgs-channels.md): the stable/unstable channel split, base-by-role, per-package escapes
 - [Hosts](docs/hosts/): per-machine details (spike, ein, faye, jet, ed)
+- [Security](docs/howto/security.md): threat model, vulnix/trivy scanners
 - [How-To Guides](docs/howto/): deploying, adding modules/hosts, secrets, age keys, inputs, ssh

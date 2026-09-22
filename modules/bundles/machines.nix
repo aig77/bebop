@@ -72,7 +72,7 @@ in {
     };
 
     server = {lib, ...}: {
-      imports = with nixos; [healthchecks];
+      imports = with nixos; [healthchecks vulnix];
       services.getty.autologinUser = username;
       home-manager.users.${username}.imports = [hm.shell-lite];
       sops.age.keyFile = lib.mkForce "/etc/sops/age/keys.txt";
