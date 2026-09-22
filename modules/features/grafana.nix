@@ -40,14 +40,33 @@ _: {
 
       provision = {
         enable = true;
-        datasources.settings.datasources = [
-          {
-            name = "Prometheus";
-            type = "prometheus";
-            url = "http://127.0.0.1:${toString config.ports.prometheus}";
-            isDefault = true;
-          }
-        ];
+        datasources.settings = {
+          deleteDatasources = [
+            {
+              name = "Prometheus";
+              orgId = 1;
+            }
+            {
+              name = "Loki";
+              orgId = 1;
+            }
+          ];
+          datasources = [
+            {
+              name = "Prometheus";
+              type = "prometheus";
+              url = "http://127.0.0.1:${toString config.ports.prometheus}";
+              isDefault = true;
+            }
+            {
+              name = "Loki";
+              type = "loki";
+              uid = "loki";
+              url = "http://${config.var.network.hosts.jet}:${toString config.ports.loki}";
+              access = "proxy";
+            }
+          ];
+        };
         dashboards.settings.providers = [
           {
             name = "default";
@@ -65,6 +84,10 @@ _: {
       "grafana-dashboards/blocky.json".source = pkgs.fetchurl {
         url = "https://grafana.com/api/dashboards/13768/revisions/latest/download";
         sha256 = "sha256-gwPOcnVC7BXTlhOCRvENAXZfGdQGVCPEUrLCl4ASkVE=";
+      };
+      "grafana-dashboards/loki.json".source = pkgs.fetchurl {
+        url = "https://grafana.com/api/dashboards/13639/revisions/latest/download";
+        sha256 = "sha256-2dRUkooIA1E0Qshg58N+9duIW25iRruu1oW8ckBUNIA=";
       };
     };
   };

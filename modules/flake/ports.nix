@@ -94,6 +94,10 @@
         type = lib.types.port;
         default = 4040;
       };
+      loki = lib.mkOption {
+        type = lib.types.port;
+        default = 3160;
+      };
       unbound = lib.mkOption {
         type = lib.types.port;
         default = 5335;

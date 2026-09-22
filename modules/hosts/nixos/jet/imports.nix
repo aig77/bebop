@@ -15,6 +15,9 @@
         dbgate
         tailscale-http
 
+        alloy
+        loki
+
         trivy # container scanning
 
         actual-budget
