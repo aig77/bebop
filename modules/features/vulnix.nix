@@ -105,7 +105,7 @@ _: {
     systemd.timers.vulnix-scan = {
       wantedBy = ["timers.target"];
       timerConfig = {
-        OnCalendar = "daily";
+        OnCalendar = "Mon *-*-* 15:00:00";
         Persistent = true;
         Unit = "vulnix-scan.service";
       };
