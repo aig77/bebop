@@ -26,7 +26,7 @@ The exact feature lists live in the bundle files, so this section only says what
 - **`shells.nix`** - HM shell profiles (`shell`, `shell-lite`). The selected shell (zsh or fish) is chosen dynamically via `hm.${var.shell}`.
 - **`gui.nix`** - the HM GUI profile: the terminal selected dynamically via `hm.${var.terminal}`, plus the always-on GUI apps.
 - **`eyecandy.nix`** - terminal eye candy profiles (fastfetch, ASCII art packages).
-- **`machines.nix`** `desktop` also owns the Noctalia shell (Ly display manager, `var.desktop = "noctalia"`, the desktop services, and the `noctalia` HM profile). WM features (`hyprland`, `niri`) are imported separately by the host, so a machine can offer more than one session at the Ly picker.
+- **`machines.nix`** `desktop` also owns the Noctalia shell (`noctalia-greeter`, the desktop services, and the `noctalia` HM profile). WM features (`hyprland`, `niri`) are imported separately by the host, so a machine can offer more than one session at the desktop manager.
 - **`wallpaper.nix`** - waypaper GTK picker plus the wallpaper daemon, selected via `var.wallpaperEngine`.
 
 ## Where to See Real Composition

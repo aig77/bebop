@@ -11,7 +11,7 @@ in {
         bluetooth
         stylix-catppuccin
         grub
-        ly
+        noctalia
         thunar
       ];
 
@@ -27,7 +27,7 @@ in {
       security.polkit.enable = true;
 
       home-manager.users.${username} = {
-        imports = with hm; [gui easyeffects noctalia];
+        imports = with hm; [gui easyeffects];
         home.packages = [];
       };
     };
