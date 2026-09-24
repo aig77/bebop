@@ -9,6 +9,7 @@
         hyprland
         niri
         intelgpu
+        fingerprint-scan
         gaming
         docker
         remote-builder
