@@ -4,6 +4,7 @@
 
 - [New .nix File Not Picked Up](#new-nix-file-not-picked-up)
 - [attribute 'X' missing in Home Manager Module](#attribute-x-missing-in-home-manager-module)
+- [Downloaded Binary Will Not Run](#downloaded-binary-will-not-run)
 - [statix Warning: Replace {...}: with _:](#statix-warning-replace--with-_)
 - [deadnix Warning: Unused Variable](#deadnix-warning-unused-variable)
 - [SOPS Secrets Not Decrypting](#sops-secrets-not-decrypting)
@@ -51,6 +52,30 @@ osConfig.var.hostname
 ```nix
 config.programs.zsh.enable   # HM option - correct
 ```
+
+---
+
+## Downloaded Binary Will Not Run
+
+**Symptom:** A binary an app downloaded for itself, or an upstream release tarball, fails to launch. Either a bare `No such file or directory` even though the file is there, or:
+
+```text
+error while loading shared libraries: libfoo.so.1: cannot open shared object file
+```
+
+**Cause:** NixOS has no `/lib64/ld-linux-x86-64.so.2`. Binaries built for normal distributions hardcode that interpreter path, so the kernel cannot start them. [nix-ld](https://github.com/nix-community/nix-ld) shims the loader path so they work.
+
+`nix-ld` is enabled on the `desktop` bundle, which covers `spike`, `faye`, and `ein`. Servers and the HTPC do not have it, since they run no foreign binaries.
+
+**Fix for a missing library:** the error names the `.so` you need. Find which package provides it, then add that one package to the list in `modules/features/nix-ld.nix`:
+
+```bash
+nix run github:nix-community/nix-index-database -- lib/libfoo.so.1 --top-level
+```
+
+Do not paste a prebuilt list. The 120-entry list at [wiki.nixos.org/wiki/Nix-ld](https://wiki.nixos.org/wiki/Nix-ld) is a stopgap for running Steam, Unity, AppImages and SDL titles, it costs a multi-gigabyte buildEnv in every login shell, and it carries entries that no longer exist in nixpkgs. `modules/features/nix-ld.nix` documents this.
+
+**Not the same problem:** if the binary runs but the app cannot find it by name, that is a `PATH` problem, not a loader problem. `nix-ld` does not affect lookup. See `home.sessionPath` in Home Manager.
 
 ---
 

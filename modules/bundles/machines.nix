@@ -12,6 +12,7 @@ in {
         stylix-catppuccin
         grub
         gui
+        nix-ld
         noctalia
         thunar
       ];
