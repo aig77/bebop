@@ -11,6 +11,7 @@ in {
         bluetooth
         stylix-catppuccin
         grub
+        gui
         noctalia
         thunar
       ];
