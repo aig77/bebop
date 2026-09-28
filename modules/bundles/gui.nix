@@ -32,6 +32,7 @@ in {
       home.packages = with pkgs; [
         claude-desktop
         gnome-calculator
+        gram
         imv
         mission-center
         pavucontrol
