@@ -51,17 +51,6 @@ in {
       wget
       yazi
       zip
-
-      cargo
-      clippy
-      rustc
-      rust-analyzer
-      rustfmt
-      python3
-      uv
-      go
-      gopls
-      golangci-lint
     ];
   };
 
