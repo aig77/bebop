@@ -15,6 +15,7 @@ in {
       environment.systemPackages = with pkgs; [
         bitwarden-desktop
         bitwarden-cli
+        brave-origin
         claude-desktop
         easyeffects
         gnome-calculator
