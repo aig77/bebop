@@ -36,10 +36,6 @@
             type = lib.types.enum ["zen"];
             default = "zen";
           };
-          location = lib.mkOption {
-            type = lib.types.str;
-            default = "";
-          };
           fileManager = lib.mkOption {
             type = lib.types.enum ["thunar"];
             default = "thunar";

@@ -3,7 +3,6 @@ _: {
     var = {
       username = "arturo";
       hostname = "spike";
-      location = "Miami";
       shell = "zsh";
       terminal = "ghostty";
       browser = "zen";

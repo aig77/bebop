@@ -29,7 +29,6 @@ in {
       TERMINAL = var.terminal;
       BROWSER = var.browser;
       FILE_MANAGER = var.fileManager;
-      LOCATION = var.location;
       HYPR_GAME_WORKSPACE = 10;
     };
   in {
