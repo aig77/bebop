@@ -45,8 +45,7 @@ in {
       playerctl
 
       # plugin dependencies
-      glib # Battery Widget - also needs Upower
-      gpu-screen-recorder # Screen Recorder
+      glib # Battery Widget
       yt-dlp # Youtube Search
     ];
   };

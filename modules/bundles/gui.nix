@@ -14,6 +14,7 @@ in {
       imports = with nixos; [xserver keyring printing polkit];
       environment.systemPackages = with pkgs; [
         claude-desktop
+        easyeffects
         gnome-calculator
         gram
         imv

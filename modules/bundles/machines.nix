@@ -16,31 +16,15 @@ in {
         noctalia
         thunar
       ];
-
-      home-manager.users.${username} = {
-        imports = with hm; [easyeffects];
-        home.packages = [];
-      };
     };
 
     laptop = _: {
       imports = with nixos; [
         desktop
+        battery
         protonvpn
+        swap-rctl-for-super
       ];
-      services = {
-        power-profiles-daemon.enable = true;
-        upower.enable = true;
-        keyd = {
-          enable = true;
-          keyboards.default = {
-            ids = ["*"];
-            settings.main = {
-              rightcontrol = "rightmeta";
-            };
-          };
-        };
-      };
     };
 
     htpc = _: {
