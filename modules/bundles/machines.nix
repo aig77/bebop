@@ -18,7 +18,7 @@ in {
       ];
 
       home-manager.users.${username} = {
-        imports = with hm; [gui easyeffects];
+        imports = with hm; [easyeffects];
         home.packages = [];
       };
     };
