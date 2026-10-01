@@ -31,6 +31,7 @@ in {
         ]);
       home.packages = with pkgs; [
         claude-desktop
+        glib
         gnome-calculator
         gram
         imv
@@ -38,6 +39,7 @@ in {
         pavucontrol
         qpwgraph
         vlc
+        yt-dlp
       ];
     };
   };
