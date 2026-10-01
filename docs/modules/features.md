@@ -35,7 +35,7 @@ Features that span NixOS and Home Manager own their own wiring: the NixOS side a
 
 The list of actual features is `modules/features/` itself, so this page won't enumerate them and go stale. By category, what's in there:
 
-- **Desktop environments** - full compositor/WM setups (`hyprland`, `niri`, `gnome`), each owning its system enablement and HM config.
+- **Desktop environments** - full compositor/WM setup (`hyprland`) owning its system enablement and HM config.
 - **Desktop components** - bars, launchers, lock/idle daemons, wallpaper, screenshot, file manager, theming.
 - **System services** - display manager, audio, bluetooth, boot, GPU drivers, gaming, docker, tailscale, and the self-hosted stack.
 - **Server services** - caddy, cloudflared, dns, backup, and the individual self-hosted apps. See [Server Services](server.md).

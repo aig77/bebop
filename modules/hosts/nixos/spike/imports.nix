@@ -9,7 +9,6 @@
         remote-builder
         desktop
         hyprland
-        niri
         amdgpu
         gaming
         docker

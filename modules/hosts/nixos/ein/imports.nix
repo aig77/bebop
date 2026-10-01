@@ -7,7 +7,6 @@
       ++ (with config.flake.modules.nixos; [
         laptop
         hyprland
-        niri
         intelgpu
         gaming
         docker

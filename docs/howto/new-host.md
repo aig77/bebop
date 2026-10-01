@@ -27,7 +27,7 @@ modules/hosts/nixos/myhostname/
 {config, ...}: {
   configurations.nixos.myhostname.module = {
     imports = with config.flake.modules.nixos; [
-      desktop hyprland niri amdgpu
+      desktop hyprland amdgpu
     ];
   };
 }

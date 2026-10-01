@@ -12,14 +12,14 @@
 ## Overview
 
 **Platform:** x86_64 NixOS
-**Role:** Daily driver desktop workstation
+**Role:** Desktop workstation
 
-Full-featured desktop with Hyprland and niri on Wayland, AMD GPU, gaming, and development tooling. Catppuccin Mocha everywhere.
+Full-featured desktop with Hyprland on Wayland, AMD GPU, gaming, and development tooling. Catppuccin Mocha everywhere.
 
-- Hyprland + niri, Noctalia shell
+- Hyprland + Noctalia shell
 - Gaming: Steam with Proton, Heroic, Bottles, GameMode, MangoHud
 - Ghostty, Neovim, Tmux, Docker
-- Spotify (Spicetify), Discord (Nixcord), Obsidian, OBS, Zen browser
+- Spotify (Spicetify), Discord (Nixcord), Obsidian, Gram, OBS, Zen browser
 - Declarative disk partitioning via Disko (btrfs with subvolumes)
 
 ---

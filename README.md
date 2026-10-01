@@ -8,14 +8,14 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 
 ## Hosts
 
-| Host | Platform | Role |
-|------|----------|------|
-| [Spike](docs/hosts/spike.md) | x86_64 NixOS | Desktop: Hyprland + niri, AMD GPU, gaming, full dev environment |
-| [Ein](docs/hosts/ein_dawrin.md) | aarch64 Darwin | MacBook |
-| [Ein](docs/hosts/ein-nixos.md) | x86_64 NixOS | Framework Pro |
-| [Faye](docs/hosts/faye.md) | x86_64 NixOS | HTPC / Console PC |
-| [Jet](docs/hosts/jet.md) | x86_64 NixOS | Homelab |
-| [Ed](docs/hosts/ed.md) | aarch64 NixOS | Headless Raspberry Pi: DNS, ad-blocking, monitoring |
+| Host | Platform | Role | Details |
+|------|----------|------|---------|
+| [Spike](docs/hosts/spike.md) | x86_64 NixOS | Desktop | Workstation / Gaming PC: Hyprland + Noctalia, AMD GPU, gaming, full dev environment |
+| [Ein](docs/hosts/ein-nixos.md) | x86_64 NixOS | Laptop | Framework 13 Pro: Hyprland + Noctalia, Intel iGPU, gaming, full dev environment |
+| [Ein](docs/hosts/ein_dawrin.md) | aarch64 Darwin | Laptop | Macbook: Nix used for managing global OS config |
+| [Faye](docs/hosts/faye.md) | x86_64 NixOS | Desktop | HTPC / Console PC |
+| [Jet](docs/hosts/jet.md) | x86_64 NixOS | Server | Homelab |
+| [Ed](docs/hosts/ed.md) | aarch64 NixOS | Server | Raspberry Pi: DNS, ad-blocking, monitoring |
 
 
  Every machine joins the same tailnet.
