@@ -36,7 +36,6 @@ in {
         grub
       ];
       home-manager.users.${username}.imports = with hm; [
-        bitwarden
         discord
         shell-lite
         zen

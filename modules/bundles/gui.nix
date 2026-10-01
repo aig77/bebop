@@ -13,6 +13,8 @@ in {
     in {
       imports = with nixos; [xserver keyring printing polkit];
       environment.systemPackages = with pkgs; [
+        bitwarden-desktop
+        bitwarden-cli
         claude-desktop
         easyeffects
         gnome-calculator
@@ -33,7 +35,6 @@ in {
           eyecandy-nixos
           shell
 
-          bitwarden
           discord
           nixcord
           obsidian
