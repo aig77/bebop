@@ -1,10 +1,23 @@
 {config, ...}: let
   inherit (config.flake.meta.owner) username;
   inherit (config.flake.modules) nixos;
-  hm = config.flake.modules.homeManager;
 in {
-  flake.modules.nixos.noctalia = {pkgs, ...}: {
-    imports = [nixos.catppuccin-cursors];
+  flake.modules.nixos.noctalia = {
+    inputs,
+    pkgs,
+    ...
+  }: {
+    imports = [
+      inputs.noctalia.nixosModules.default
+      nixos.catppuccin-cursors
+    ];
+
+    programs.noctalia = {
+      enable = true;
+      recommendedServices.enable = true;
+      systemd.enable = true;
+    };
+
     services = {
       displayManager.noctalia-greeter = {
         enable = true;
@@ -26,21 +39,15 @@ in {
       logind.enable = true;
     };
 
-    environment.systemPackages = [pkgs.catppuccin-cursors];
+    environment.systemPackages = with pkgs; [
+      catppuccin-cursors
+      brightnessctl
+      playerctl
 
-    home-manager.users.${username}.imports = [hm.noctalia];
-  };
-
-  flake.modules.homeManager.noctalia = {
-    inputs,
-    pkgs,
-    ...
-  }: {
-    imports = [inputs.noctalia.homeModules.default];
-    programs.noctalia = {
-      enable = true;
-      systemd.enable = true;
-    };
-    home.packages = with pkgs; [playerctl brightnessctl];
+      # plugin dependencies
+      glib # Battery Widget - also needs Upower
+      gpu-screen-recorder # Screen Recorder
+      yt-dlp # Youtube Search
+    ];
   };
 }
