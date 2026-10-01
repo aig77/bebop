@@ -1,9 +1,11 @@
 {config, ...}: let
   inherit (config.flake.meta.owner) username;
+  inherit (config.flake.modules) nixos;
   hm = config.flake.modules.homeManager;
 in {
   flake.modules = {
     nixos.gaming = _: {
+      imports = [nixos.screen-record];
       programs = {
         steam.enable = true;
         steam.gamescopeSession = {
