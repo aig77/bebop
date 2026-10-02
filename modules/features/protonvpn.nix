@@ -1,25 +1,12 @@
-_: {
-  flake.modules.nixos.protonvpn = {pkgs, ...}: {
-    networking = {
-      wg-quick.interfaces = {
-        protonvpn = {
-          configFile = "/etc/wireguard/protonvpn.conf";
-          autostart = false;
-        };
-      };
-      firewall.checkReversePath = "loose";
+{config, ...}: {
+  flake.modules.nixos.protonvpn = {
+    sops.templates."protonvpn-wg-conf" = {
+      path = "/etc/wireguard/protonvpn.conf";
+      mode = "0600";
+      content = config.sops.placeholder."protonvpn/wg-conf";
     };
-    environment.systemPackages = with pkgs; [
-      wireguard-tools
-      (pkgs.writeShellScriptBin "protonvpn" ''
-        if systemctl is-active --quiet wg-quick-protonvpn; then
-          sudo systemctl stop wg-quick-protonvpn
-          echo "VPN disconnected"
-        else
-          sudo systemctl start wg-quick-protonvpn
-          echo "VPN connected"
-        fi
-      '')
-    ];
+    systemd.tmpfiles.rules = ["d /etc/wireguard 0755 root root -"];
+    # tunnel is a /32 on the host interface, strict rp_filter breaks the return path
+    networking.firewall.checkReversePath = "loose";
   };
 }
