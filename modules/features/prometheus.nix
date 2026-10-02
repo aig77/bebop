@@ -4,28 +4,28 @@ _: {
   in {
     var.services.prometheus = {
       subdomain = "prometheus";
-      port = config.ports.prometheus;
+      port = config.ports.prometheus.server;
       public = false;
       auth = false;
     };
 
     services.prometheus = {
       enable = true;
-      port = config.ports.prometheus;
+      port = config.ports.prometheus.server;
       retentionTime = "7d";
       exporters.node = {
         enable = true;
-        port = config.ports.nodeExporter;
+        port = config.ports.prometheus.nodeExporter;
       };
       scrapeConfigs = [
         {
           job_name = "prometheus";
-          static_configs = [{targets = ["127.0.0.1:${toString config.ports.prometheus}"];}];
+          static_configs = [{targets = ["127.0.0.1:${toString config.ports.prometheus.server}"];}];
         }
         {
           job_name = "node";
           static_configs = [
-            {targets = ["127.0.0.1:${toString config.ports.nodeExporter}" "${edIp}:${toString config.ports.nodeExporter}"];}
+            {targets = ["127.0.0.1:${toString config.ports.prometheus.nodeExporter}" "${edIp}:${toString config.ports.nodeExporter}"];}
           ];
         }
         {
@@ -39,8 +39,8 @@ _: {
   flake.modules.nixos.prometheus-client = {config, ...}: {
     services.prometheus.exporters.node = {
       enable = true;
-      port = config.ports.nodeExporter;
+      port = config.ports.prometheus.nodeExporter;
     };
-    networking.firewall.allowedTCPPorts = [config.ports.nodeExporter];
+    networking.firewall.allowedTCPPorts = [config.ports.prometheus.nodeExporter];
   };
 }

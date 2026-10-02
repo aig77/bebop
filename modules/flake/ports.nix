@@ -1,5 +1,39 @@
-{lib, ...}: {
-  flake.modules.nixos.base = {
+{lib, ...}: let
+  # Order matters: since a port is derived from its list position,
+  # append new names at the end to avoid shifting existing ports.
+  mkPortGroup = {
+    base,
+    names,
+    max ? 10,
+  }:
+    assert lib.assertMsg (lib.length names <= max)
+    "port group has ${toString (lib.length names)} entries, max is ${toString max}";
+    assert lib.assertMsg (lib.length (lib.unique names) == lib.length names)
+    "port group has duplicate names: ${toString names}";
+    assert lib.assertMsg (!(lib.elem "base" names))
+    "'base' is reserved in a port group";
+      lib.mkOption {
+        default = {};
+        type = lib.types.submodule ({config, ...}: let
+          mkPort = offset:
+            lib.mkOption {
+              type = lib.types.port;
+              default = config.base + offset;
+            };
+        in {
+          options =
+            {
+              base = lib.mkOption {
+                type = lib.types.port;
+                default = base;
+                description = "Starting port for this group.";
+              };
+            }
+            // lib.mergeAttrsList (lib.imap0 (i: name: {${name} = mkPort i;}) names);
+        });
+      };
+in {
+  flake.modules.nixos.base = {config, ...}: {
     # TODO: make ports a per-host registry instead of a global one.
     # Replace these per-port mkOptions with:
     #   options.ports = lib.mkOption {
@@ -25,17 +59,19 @@
         type = lib.types.port;
         default = 3000;
       };
-      invidious = lib.mkOption {
-        type = lib.types.port;
-        default = 3010;
-      };
-      invidiousCompanion = lib.mkOption {
-        type = lib.types.port;
-        default = 3011;
-      };
-      invidiousStatus = lib.mkOption {
-        type = lib.types.port;
-        default = 3012;
+      arr = mkPortGroup {
+        base = 3010;
+        names = [
+          "sonarr"
+          "radarr"
+          "prowlarr"
+          "bazarr"
+          "jellyfin"
+          "seerr"
+          "sabnzbd"
+          "qbittorrent"
+          "qbittorrentPeer"
+        ];
       };
       n8n = lib.mkOption {
         type = lib.types.port;
@@ -49,13 +85,9 @@
         type = lib.types.port;
         default = 3040;
       };
-      prometheus = lib.mkOption {
-        type = lib.types.port;
-        default = 3050;
-      };
-      nodeExporter = lib.mkOption {
-        type = lib.types.port;
-        default = 3051;
+      prometheus = mkPortGroup {
+        base = 3050;
+        names = ["server" "nodeExporter"];
       };
       dailyStoic = lib.mkOption {
         type = lib.types.port;
@@ -99,5 +131,30 @@
         default = 5335;
       };
     };
+
+    config.assertions = let
+      entries =
+        lib.collect (e: e ? id)
+        (lib.mapAttrsRecursive (path: port: {
+            inherit port;
+            id = lib.concatStringsSep "." path;
+            leaf = lib.last path;
+          })
+          config.ports);
+
+      # "base" mirrors a group's first port, so it would always clash with it
+      ports = lib.filter (e: e.leaf != "base") entries;
+
+      clashes = lib.filterAttrs (_: es: lib.length es > 1) (lib.groupBy (e: toString e.port) ports);
+    in [
+      {
+        assertion = clashes == {};
+        message =
+          "Port collisions: "
+          + lib.concatStringsSep "; " (lib.mapAttrsToList
+            (port: es: "${port} <- ${lib.concatMapStringsSep ", " (e: e.id) es}")
+            clashes);
+      }
+    ];
   };
 }
