@@ -64,6 +64,11 @@
 
     mac-app-util.url = "github:hraban/mac-app-util";
 
+    nixarr = {
+      url = "github:nix-media-server/nixarr";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     nixcord = {
