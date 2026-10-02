@@ -12,6 +12,9 @@ _: {
       shell = pkgs.${config.var.shell};
       openssh.authorizedKeys.keyFiles = [./secrets/ssh.pub];
     };
-    users.users.root.openssh.authorizedKeys.keyFiles = [./secrets/ssh.pub];
+    users.users.root.openssh.authorizedKeys.keyFiles = [
+      ./secrets/ssh.pub
+      ./secrets/builder.pub
+    ];
   };
 }

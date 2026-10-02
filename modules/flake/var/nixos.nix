@@ -20,6 +20,10 @@
             };
             default = {};
           };
+          home = lib.mkOption {
+            type = lib.types.str;
+            default = "/home/${config.username}";
+          };
           repoPath = lib.mkOption {
             type = lib.types.str;
             default = "/home/${config.username}/.config/bebop";
