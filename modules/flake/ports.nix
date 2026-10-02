@@ -67,7 +67,7 @@ in {
           "prowlarr"
           "bazarr"
           "jellyfin"
-          "seerr"
+          "jellyseerr"
           "sabnzbd"
           "qbittorrent"
           "qbittorrentPeer"
