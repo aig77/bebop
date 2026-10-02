@@ -25,7 +25,7 @@ _: {
         {
           job_name = "node";
           static_configs = [
-            {targets = ["127.0.0.1:${toString config.ports.prometheus.nodeExporter}" "${edIp}:${toString config.ports.nodeExporter}"];}
+            {targets = ["127.0.0.1:${toString config.ports.prometheus.nodeExporter}" "${edIp}:${toString config.ports.prometheus.nodeExporter}"];}
           ];
         }
         {

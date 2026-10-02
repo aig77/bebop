@@ -44,7 +44,7 @@ _: {
           {
             name = "Prometheus";
             type = "prometheus";
-            url = "http://127.0.0.1:${toString config.ports.prometheus}";
+            url = "http://127.0.0.1:${toString config.ports.prometheus.server}";
             isDefault = true;
           }
         ];
