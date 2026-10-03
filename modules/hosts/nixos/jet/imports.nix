@@ -16,6 +16,8 @@
         tailscale-http
         trivy
 
+        hetzner-storagebox
+
         actual-budget
         arr-stack
         daily-stoic

@@ -3,7 +3,7 @@
   inputs,
   ...
 }: let
-  inherit (config.flake) nixos;
+  inherit (config.flake.modules) nixos;
   stateDir = "/var/lib/nixarr";
 in {
   flake.modules.nixos.arr-stack = {
