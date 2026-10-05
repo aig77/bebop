@@ -5,10 +5,7 @@ _: {
     ...
   }: {
     var.services.subtrakr = {
-      subdomain = "subtrakr";
       port = config.ports.subtrakr;
-      public = false;
-      auth = false;
       backup = {
         paths = ["/var/lib/backups/subtrakr"];
         prepareCommand = ''

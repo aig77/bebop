@@ -5,17 +5,18 @@ _: {
     pkgs,
     ...
   }: let
-    publicServices = lib.filter (s: s.public) (lib.attrValues config.var.services);
+    local = svc: svc.host == config.var.hostname;
+    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.var.services);
     domain = config.sops.placeholder."cloudflare/service-domain";
     ingressRules =
       lib.concatMapStrings (svc: ''
-        - hostname: ${svc.subdomain}.${domain}
+        - hostname: ${svc.expose.subdomain}.${domain}
           service: https://localhost
           originRequest:
             noTLSVerify: true
-            originServerName: ${svc.subdomain}.${domain}
+            originServerName: ${svc.expose.subdomain}.${domain}
       '')
-      publicServices;
+      exposedServices;
   in {
     users.users.cloudflared = {
       isSystemUser = true;
@@ -25,8 +26,8 @@ _: {
 
     sops = {
       secrets = {
-        "cloudflare/tunnel-id" = {};
-        "cloudflare/tunnel-credentials" = {
+        "cloudflare/${config.var.hostname}/tunnel-id" = {};
+        "cloudflare/${config.var.hostname}/tunnel-credentials" = {
           mode = "0400";
           owner = "cloudflared";
         };
@@ -35,8 +36,8 @@ _: {
         owner = "cloudflared";
         restartUnits = ["cloudflared.service"];
         content = ''
-          tunnel: ${config.sops.placeholder."cloudflare/tunnel-id"}
-          credentials-file: ${config.sops.secrets."cloudflare/tunnel-credentials".path}
+          tunnel: ${config.sops.placeholder."cloudflare/${config.var.hostname}/tunnel-id"}
+          credentials-file: ${config.sops.secrets."cloudflare/${config.var.hostname}/tunnel-credentials".path}
           ingress:
           ${ingressRules}- service: http_status:404
         '';

@@ -5,10 +5,8 @@ _: {
     ...
   }: {
     var.services.vaultwarden = {
-      subdomain = "vault";
       port = config.ports.vaultwarden;
-      public = true;
-      auth = false;
+      expose = {subdomain = "vault";};
       backup = {
         paths = ["/var/lib/backups/vaultwarden"];
         prepareCommand = ''

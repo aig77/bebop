@@ -54,10 +54,8 @@ _: {
         ++ lib.concatMap (f: map (a: "catppuccin-${f}-${a}") catppuccinAccents) catppuccinFlavors);
   in {
     var.services.forgejo = {
-      inherit subdomain;
       port = config.ports.forgejo;
-      public = true;
-      auth = false;
+      expose = {inherit subdomain;};
       backup = {
         paths = [
           "/var/lib/backups/forgejo.sql"

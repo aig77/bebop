@@ -1,10 +1,7 @@
 _: {
   flake.modules.nixos.searx = {config, ...}: {
     var.services.searx = {
-      subdomain = "search";
       port = config.ports.searx;
-      public = false;
-      auth = false;
       monitor = {
         enable = true;
         type = "http";

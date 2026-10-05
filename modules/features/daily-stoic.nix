@@ -8,10 +8,8 @@ _: {
     imports = [inputs.daily-stoic.nixosModules.default];
 
     var.services.daily-stoic = {
-      subdomain = "stoic";
       port = config.ports.dailyStoic;
-      public = true;
-      auth = false;
+      expose = {subdomain = "stoic";};
       backup = {
         paths = ["/var/lib/backups/daily-stoic" "/var/lib/daily-stoic/database.json"];
         prepareCommand = ''

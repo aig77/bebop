@@ -11,8 +11,8 @@ _: {
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
       url =
         if svc.monitor.type == "http"
-        then "http://${svc.monitor.host}:${toString svc.port}${svc.monitor.path}"
-        else "tcp://${svc.monitor.host}:${toString svc.port}";
+        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.path}"
+        else "tcp://${config.var.network.addrOf svc.host}:${toString svc.port}";
     in {
       name = displayName;
       inherit url;
@@ -34,7 +34,7 @@ _: {
     extraEndpoints = [
       {
         name = "Blocky DNS";
-        url = "${config.var.network.hosts.ed}:53";
+        url = "${config.var.network.addrOf "ed"}:53";
         dns = {
           "query-type" = "A";
           "query-name" = "example.com";
@@ -52,10 +52,7 @@ _: {
     ];
   in {
     var.services.gatus = {
-      subdomain = "gatus";
       port = config.ports.gatus;
-      public = false;
-      auth = false;
       monitor = {
         enable = true;
         type = "http";

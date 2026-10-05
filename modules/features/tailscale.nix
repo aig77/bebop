@@ -1,4 +1,6 @@
-_: {
+{config, ...}: let
+  inherit (config.flake.modules) nixos;
+in {
   flake.modules = {
     nixos = {
       tailscale = {
@@ -8,13 +10,23 @@ _: {
         };
       };
 
-      tailscale-router = {config, ...}: {
+      # Joins the tailnet with the shared auth key. Reachable by MagicDNS but
+      # advertises no routes. Remote (off-LAN) servers use this.
+      tailscale-node = {config, ...}: {
         sops.secrets."tailscale/authkey" = {};
 
         services.tailscale = {
           enable = true;
-          useRoutingFeatures = "server";
           authKeyFile = config.sops.secrets."tailscale/authkey".path;
+          extraSetFlags = ["--accept-routes"];
+        };
+      };
+
+      tailscale-router = {config, ...}: {
+        imports = [nixos.tailscale-node];
+
+        services.tailscale = {
+          useRoutingFeatures = "server";
           extraUpFlags = ["--advertise-routes=${config.var.network.subnet}" "--reset"];
           openFirewall = true;
         };
@@ -27,13 +39,14 @@ _: {
         pkgs,
         ...
       }: let
-        privateServices = lib.filter (s: !s.public) (lib.attrValues config.var.services);
+        local = svc: svc.host == config.var.hostname;
+        privateServices = lib.filter (svc: svc.expose == null && local svc) (lib.attrValues config.var.services);
         tailscale = lib.getExe pkgs.tailscale;
         httpsPort = svc:
           if svc.servePort != null
           then svc.servePort
           else svc.port;
-        serveCmd = svc: "${tailscale} serve --bg --https=${toString (httpsPort svc)} http://localhost:${toString svc.port}";
+        serveCmd = svc: "${tailscale} serve --bg --https=${toString (httpsPort svc)} http://${config.var.network.addrOf svc.host}:${toString svc.port}";
       in {
         services.tailscale.enable = true;
 

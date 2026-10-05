@@ -1,10 +1,7 @@
 _: {
   flake.modules.nixos.n8n = {config, ...}: {
     var.services.n8n = {
-      subdomain = "n8n";
       port = config.ports.n8n;
-      public = false;
-      auth = false;
       backup.paths = ["/var/lib/n8n"];
       monitor = {
         enable = true;

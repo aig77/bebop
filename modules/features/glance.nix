@@ -4,6 +4,13 @@ _: {
     lib,
     ...
   }: let
+    # Local services are reached on this host's tailnet name; remote ones on
+    # theirs. `svc.host` is the hostname, so the tailnet URL follows it.
+    tsHostFor = svc:
+      if svc.host == config.var.hostname
+      then "\${TAILSCALE_HOST}"
+      else "${svc.host}.\${TAILNET}";
+
     mkSite = name: svc: let
       title =
         if svc.homepage.title != null
@@ -11,32 +18,31 @@ _: {
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
       checkUrl =
         if svc.monitor.type == "http"
-        then "http://${svc.monitor.host}:${toString svc.port}${svc.monitor.path}"
-        else "http://${svc.monitor.host}:${toString svc.port}";
+        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.path}"
+        else "http://${config.var.network.addrOf svc.host}:${toString svc.port}";
     in {
       inherit title;
       url =
-        if svc.public
-        then "https://${svc.subdomain}.\${SERVICE_DOMAIN}"
-        else if svc.servePort == null
-        then "https://\${TAILSCALE_HOST}:${toString svc.port}"
+        if svc.expose != null
+        then "https://${svc.expose.subdomain}.\${SERVICE_DOMAIN}"
         else if svc.servePort == 443
-        then "https://\${TAILSCALE_HOST}"
-        else "https://\${TAILSCALE_HOST}:${toString svc.servePort}";
+        then "https://${tsHostFor svc}"
+        else "https://${tsHostFor svc}:${toString (
+          if svc.servePort != null
+          then svc.servePort
+          else svc.port
+        )}";
       "check-url" = checkUrl;
       icon = svc.homepage.icon;
     };
 
     homepageServices = lib.filterAttrs (_: s: s.homepage.enable) config.var.services;
-    publicSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.public) homepageServices);
-    privateSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: !s.public) homepageServices);
+    publicSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose != null) homepageServices);
+    privateSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose == null) homepageServices);
   in {
     var.services.glance = {
-      subdomain = "glance";
       port = config.ports.glance;
       servePort = 443;
-      public = false;
-      auth = false;
     };
 
     sops = {
@@ -47,6 +53,7 @@ _: {
       templates."glance.env" = {
         content = ''
           TAILSCALE_HOST=${config.var.hostname}.${config.sops.placeholder."tailscale/tailnet"}
+          TAILNET=${config.sops.placeholder."tailscale/tailnet"}
           SERVICE_DOMAIN=${config.sops.placeholder."cloudflare/service-domain"}
         '';
       };

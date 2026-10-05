@@ -4,7 +4,7 @@ _: {
     lib,
     ...
   }: let
-    backupServices = lib.filterAttrs (_: s: s.backup != null) config.var.services;
+    backupServices = lib.filterAttrs (_: s: s.backup != null && s.host == config.var.hostname) config.var.services;
     allPaths = lib.concatMap (s: s.backup.paths) (lib.attrValues backupServices);
     prepareCommands = lib.concatStringsSep "\n" (
       lib.filter (s: s != "")

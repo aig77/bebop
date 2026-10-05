@@ -1,10 +1,7 @@
 _: {
   flake.modules.nixos.open-webui = {config, ...}: {
     var.services.open-webui = {
-      subdomain = "chat";
       port = config.ports.open-webui;
-      public = false;
-      auth = false;
       backup.paths = ["/var/lib/open-webui"];
       monitor = {
         enable = true;

@@ -5,10 +5,7 @@ _: {
     ...
   }: {
     var.services.grafana = {
-      subdomain = "grafana";
       port = config.ports.grafana;
-      public = false;
-      auth = false;
       backup.paths = ["/var/lib/grafana"];
       monitor = {
         enable = true;
@@ -44,7 +41,7 @@ _: {
           {
             name = "Prometheus";
             type = "prometheus";
-            url = "http://127.0.0.1:${toString config.ports.prometheus}";
+            url = "http://127.0.0.1:${toString config.ports.prometheus.server}";
             isDefault = true;
           }
         ];

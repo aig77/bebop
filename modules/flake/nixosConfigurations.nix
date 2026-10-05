@@ -31,7 +31,12 @@
         pkgsConfig = config.flake.nixpkgs.pkgsConfig;
       in
         (config.flake.nixpkgs.srcFor channel).lib.nixosSystem {
-          specialArgs = {inherit inputs;};
+          specialArgs = {
+            inherit inputs;
+            # Fleet host names, derived from the configurations registry so no
+            # separate inventory exists. Read by the var.network assertions.
+            fleetHosts = builtins.attrNames config.configurations.nixos;
+          };
           modules = [
             {nixpkgs.config = pkgsConfig;}
             channelModule

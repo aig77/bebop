@@ -1,10 +1,7 @@
 _: {
   flake.modules.nixos.actual-budget = {config, ...}: {
     var.services.actual-budget = {
-      subdomain = "budget";
       port = config.ports.actualBudget;
-      public = false;
-      auth = false;
       backup.paths = ["/var/lib/actual"];
       monitor = {
         enable = true;

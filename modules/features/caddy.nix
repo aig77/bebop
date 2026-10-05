@@ -5,51 +5,61 @@ _: {
     pkgs,
     ...
   }: let
-    publicServices = lib.filter (s: s.public) (lib.attrValues config.var.services);
+    local = svc: svc.host == config.var.hostname;
+    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.var.services);
     domain = config.sops.placeholder."cloudflare/service-domain";
 
+    target = svc: "${config.var.network.addrOf svc.host}:${toString svc.port}";
+
     mkVhost = svc: ''
-      ${svc.subdomain}.${domain} {
-        reverse_proxy localhost:${toString svc.port} {
+      ${svc.expose.subdomain}.${domain} {
+        reverse_proxy ${target svc} {
           header_up -X-Forwarded-For
         }
       }
     '';
 
     mkAuthVhost = svc: ''
-      ${svc.subdomain}.${domain} {
+      ${svc.expose.subdomain}.${domain} {
         handle {
           import ${config.sops.templates."caddy-basic-auth".path}
-          reverse_proxy localhost:${toString svc.port} {
+          reverse_proxy ${target svc} {
             header_up -X-Forwarded-For
           }
         }
       }
     '';
 
-    invidiousVhost = lib.optionalString (config.var.services ? invidious) ''
-      invidious.${domain} {
-        @authapi path /api/v1/auth/*
-        handle @authapi {
-          reverse_proxy localhost:${toString config.ports.invidious} {
-            header_up -X-Forwarded-For
+    invidiousVhost =
+      lib.optionalString (
+        config.var.services ? invidious
+        && local config.var.services.invidious
+        && config.var.services.invidious.expose != null
+      ) (let
+        svc = config.var.services.invidious;
+      in ''
+        ${svc.expose.subdomain}.${domain} {
+          @authapi path /api/v1/auth/*
+          handle @authapi {
+            reverse_proxy ${target svc} {
+              header_up -X-Forwarded-For
+            }
+          }
+          handle {
+            import ${config.sops.templates."caddy-basic-auth".path}
+            reverse_proxy ${target svc} {
+              header_up -X-Forwarded-For
+            }
           }
         }
-        handle {
-          import ${config.sops.templates."caddy-basic-auth".path}
-          reverse_proxy localhost:${toString config.ports.invidious} {
-            header_up -X-Forwarded-For
-          }
-        }
-      }
-    '';
+      '');
 
     otherVhosts = lib.concatMapStrings (
       svc:
-        if svc.auth
+        if svc.expose.basicAuth
         then mkAuthVhost svc
         else mkVhost svc
-    ) (lib.filter (s: s.subdomain != "invidious") publicServices);
+    ) (lib.filter (s: s.expose.subdomain != "invidious") exposedServices);
   in {
     sops = {
       secrets = {

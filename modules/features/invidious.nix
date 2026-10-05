@@ -6,10 +6,11 @@ _: {
       ...
     }: {
       var.services.invidious = {
-        subdomain = "invidious";
         port = config.ports.invidious;
-        public = true;
-        auth = true;
+        expose = {
+          subdomain = "invidious";
+          basicAuth = true;
+        };
         backup = {
           paths = ["/var/lib/backups/invidious.sql"];
           prepareCommand = ''
@@ -77,10 +78,8 @@ _: {
       ];
 
       var.services.invidious-status = {
-        subdomain = "invidious-status";
         port = config.ports.invidiousStatus;
-        public = true;
-        auth = false;
+        expose = {subdomain = "invidious-status";};
       };
 
       sops = {

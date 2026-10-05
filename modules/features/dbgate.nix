@@ -22,10 +22,7 @@ _: {
     networking.firewall.interfaces.podman0.allowedTCPPorts = [5432];
 
     var.services.dbgate = {
-      subdomain = "dbgate";
       port = config.ports.dbgate;
-      public = false;
-      auth = false;
       backup.paths = ["/var/lib/dbgate"];
       monitor = {
         enable = true;
