@@ -8,6 +8,8 @@ _: {
 
     services.prometheus = {
       enable = true;
+      # Loopback only: tailscale-http binds this same port on the tailnet IP.
+      listenAddress = "127.0.0.1";
       port = config.ports.prometheus.server;
       retentionTime = "7d";
       exporters.node = {

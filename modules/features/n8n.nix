@@ -37,6 +37,8 @@ _: {
       environment = {
         GENERIC_TIMEZONE = "America/New_York";
         N8N_HOST = "127.0.0.1";
+        # Loopback only: tailscale-http binds this same port on the tailnet IP.
+        N8N_LISTEN_ADDRESS = "127.0.0.1";
         N8N_PORT = toString config.ports.n8n;
         N8N_SECURE_COOKIE = "false";
         N8N_BLOCK_ENV_ACCESS_IN_NODE = "false";
