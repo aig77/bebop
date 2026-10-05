@@ -35,11 +35,12 @@ _: {
     };
   };
 
+  # Node exporter is scraped over the tailnet. tailscaled permits tailnet
+  # traffic, so no firewall opening is needed - the port stays off the LAN.
   flake.modules.nixos.prometheus-client = {config, ...}: {
     services.prometheus.exporters.node = {
       enable = true;
       port = config.ports.prometheus.nodeExporter;
     };
-    networking.firewall.allowedTCPPorts = [config.ports.prometheus.nodeExporter];
   };
 }

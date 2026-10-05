@@ -11,8 +11,8 @@ var.services.vaultwarden = {
   port = config.ports.vaultwarden;
   expose = {subdomain = "vault";};   # public; omit for tailnet-only
   backup = {
-    paths = ["/var/lib/backups/vaultwarden"];
-    prepareCommand = "...";
+    paths = ["/var/lib/vaultwarden/attachments"];
+    database = {type = "sqlite"; path = "/var/lib/vaultwarden/db.sqlite3";};
   };
 };
 ```
@@ -23,7 +23,7 @@ Fields:
 - `port` - where the service listens; pull it from this host's port registry, never invent your own number
 - `expose` - `null` (default) for a tailnet-only service, or `{subdomain; basicAuth ? false;}` to publish it through Caddy + Cloudflare
 - `servePort` - optional; HTTPS port the tailnet serves a private service on, defaults to `port` (glance sets 443)
-- `backup` - optional; `paths` plus an optional `prepareCommand` that stages a consistent snapshot
+- `backup` - optional; `paths` for raw files, plus `database` for a dumpable database
 - `monitor` - optional; gatus auto-registers a health check (http/tcp, path, thresholds, interval)
 - `homepage` - optional; glance auto-links the service (title, icon)
 
@@ -136,7 +136,7 @@ backup = {
 };
 ```
 
-Database dumps are transactionally consistent (`pg_dump`, sqlite `.backup`) and safe while the service writes. Raw `paths` are read live, so a file mid-write can be captured torn; a btrfs snapshot before the run is the fix, tracked as a TODO in `modules/flake/var/nixos.nix`. `prepareCommand` stays as an escape hatch for staging that cannot be derived.
+Database dumps are transactionally consistent (`pg_dump`, sqlite `.backup`) and safe while the service writes. Raw `paths` are read live, so a file mid-write can be captured torn; a btrfs snapshot before the run is the fix, tracked as a TODO in `modules/flake/var/nixos.nix`.
 
 Restore:
 

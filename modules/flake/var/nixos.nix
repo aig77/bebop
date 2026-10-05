@@ -115,11 +115,6 @@
                         type = lib.types.listOf lib.types.str;
                         default = [];
                       };
-                      # Escape hatch for staging that backup.nix cannot derive.
-                      prepareCommand = lib.mkOption {
-                        type = lib.types.nullOr lib.types.str;
-                        default = null;
-                      };
                       # A database this service owns. backup.nix generates the
                       # dump command and appends the dump path to the restic
                       # paths, so services do not hand-write either.

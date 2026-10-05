@@ -34,10 +34,7 @@ _: {
     allPaths = lib.concatMap (name: backupServices.${name}.backup.paths ++ dbPaths name backupServices.${name}) (lib.attrNames backupServices);
 
     prepareCommands = lib.concatStringsSep "\n" (
-      lib.filter (s: s != "") (
-        lib.mapAttrsToList dbPrepare backupServices
-        ++ lib.mapAttrsToList (_: s: lib.optionalString (s.backup.prepareCommand != null) s.backup.prepareCommand) backupServices
-      )
+      lib.filter (s: s != "") (lib.mapAttrsToList dbPrepare backupServices)
     );
   in {
     assertions =
