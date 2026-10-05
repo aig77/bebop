@@ -6,65 +6,20 @@
   inherit (config.flake.modules) nixos;
   stateDir = "/var/lib/nixarr";
 in {
-  flake.modules.nixos.arr-stack = {
+  flake.modules.nixos.arr = {config, ...}: {
     imports = [
       inputs.nixarr.nixosModules.default
       nixos.protonvpn
     ];
 
+    sops.secrets."arr/sabnzdb-api-key" = {};
+
     var.services = {
-      sonarr = {
-        subdomain = "sonarr";
-        port = config.ports.arr.sonarr;
-        public = false;
-        monitor = {
-          enable = true;
-          path = "/api/v3/health";
-        };
-      };
-      radarr = {
-        subdomain = "radarr";
-        port = config.ports.arr.radarr;
-        public = false;
-        monitor = {
-          enable = true;
-          path = "/api/v3/health";
-        };
-      };
-      prowlarr = {
-        subdomain = "prowlarr";
-        port = config.ports.arr.prowlarr;
-        public = false;
-        monitor = {
-          enable = true;
-          path = "/api/v1/health";
-        };
-        backup.paths = [stateDir]; # just add to one of them, not related to this service
-      };
-      bazarr = {
-        subdomain = "bazarr";
-        port = config.ports.arr.bazarr;
-        public = false;
-        monitor = {
-          enable = true;
-          path = "/api/health";
-        };
-      };
-      sabnzbd = {
-        subdomain = "sabnzbd";
-        port = config.ports.arr.sabnzbd;
-        public = false;
-        monitor = {
-          enable = true;
-          type = "tcp";
-        };
-      };
-      # monitored and linked: you touch these directly
+      # public
       jellyfin = {
         subdomain = "jellyfin";
         port = config.ports.arr.jellyfin;
         public = true;
-        auth = false;
         monitor = {
           enable = true;
           path = "/health";
@@ -73,11 +28,13 @@ in {
           enable = true;
           icon = "si:jellyfin";
         };
+        backup.paths = [stateDir]; # just add to one of them, not related to this service
       };
+
+      # private
       jellyseerr = {
-        subdomain = "seerr";
+        subdomain = "jellyseerr";
         port = config.ports.arr.jellyseerr;
-        public = false;
         monitor = {
           enable = true;
           type = "tcp";
@@ -87,11 +44,57 @@ in {
           icon = "di:jellyseerr";
         };
       };
-
+      sonarr = {
+        subdomain = "sonarr";
+        port = config.ports.arr.sonarr;
+        monitor = {
+          enable = true;
+          path = "/api/v3/health";
+        };
+        homepage = {
+          enable = true;
+          icon = "si:sonarr";
+        };
+      };
+      radarr = {
+        subdomain = "radarr";
+        port = config.ports.arr.radarr;
+        monitor = {
+          enable = true;
+          path = "/api/v3/health";
+        };
+        homepage = {
+          enable = true;
+          icon = "si:radarr";
+        };
+      };
+      prowlarr = {
+        subdomain = "prowlarr";
+        port = config.ports.arr.prowlarr;
+        monitor = {
+          enable = true;
+          path = "/api/v1/health";
+        };
+        homepage = {
+          enable = true;
+          icon = "si:prowlarr";
+        };
+      };
+      bazarr = {
+        subdomain = "bazarr";
+        port = config.ports.arr.bazarr;
+        monitor = {
+          enable = true;
+          path = "/api/health";
+        };
+        homepage = {
+          enable = true;
+          icon = "si:bazarr";
+        };
+      };
       transmission = {
         subdomain = "transmission";
-        port = config.ports.arr.qbittorrent;
-        public = false;
+        port = config.ports.arr.transmission;
         monitor = {
           enable = true;
           type = "tcp";
@@ -100,6 +103,19 @@ in {
         homepage = {
           enable = true;
           icon = "si:transmission";
+        };
+      };
+      sabnzbd = {
+        subdomain = "sabnzbd";
+        port = config.ports.arr.sabnzbd;
+        monitor = {
+          enable = true;
+          type = "tcp";
+          interval = "1m";
+        };
+        homepage = {
+          enable = true;
+          icon = "si:sabnzbd";
         };
       };
     };
@@ -115,38 +131,50 @@ in {
         proxyListenAddr = "127.0.0.1";
         exposeOnLAN = false;
         vpnTestService.enable = true;
-        openUdpPorts = [config.ports.arr.qbittorrentPeer];
+        openUdpPorts = [config.ports.arr.transmissionPeer];
       };
 
+      # Torrent Downloads
       transmission = {
         enable = true;
         vpn.enable = true;
-        peerPort = config.ports.arr.qbittorrentPeer;
-        uiPort = config.ports.arr.qbittorrent;
+        peerPort = config.ports.arr.transmissionPeer;
+        uiPort = config.ports.arr.transmission;
       };
 
+      # Usenet Downloads
+      sabnzbd = {
+        enable = true;
+        guiPort = config.ports.arr.sabnzbd;
+      };
+
+      # Streaming
       jellyfin = {
         enable = true;
         port = config.ports.arr.jellyfin;
       };
 
+      # Media Requesting
       seerr = {
         enable = true;
         port = config.ports.arr.jellyseerr;
       };
 
+      # TV Show Automation
       sonarr = {
         enable = true;
         port = config.ports.arr.sonarr;
         settings-sync.transmission.enable = true;
       };
 
+      # Movie Automation
       radarr = {
         enable = true;
         port = config.ports.arr.radarr;
         settings-sync.transmission.enable = true;
       };
 
+      # Index Manager
       prowlarr = {
         enable = true;
         port = config.ports.arr.prowlarr;
@@ -158,6 +186,7 @@ in {
         };
       };
 
+      # Subtitle Automation
       bazarr = {
         enable = true;
         port = config.ports.arr.bazarr;
@@ -174,11 +203,6 @@ in {
           radarr.enable = true;
           radarr.config.sync_only_monitored_movies = true;
         };
-      };
-
-      sabnzbd = {
-        enable = true;
-        guiPort = config.ports.arr.sabnzbd;
       };
     };
   };

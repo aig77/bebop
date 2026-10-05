@@ -19,7 +19,7 @@
         hetzner-storagebox
 
         actual-budget
-        arr-stack
+        arr
         daily-stoic
         forgejo
         gatus
