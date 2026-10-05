@@ -6,28 +6,23 @@
       ++ (with config.flake.modules.nixos; [
         base
         server
+        server-public
+        server-private
         grub-server
         aarch64-builder
 
         backup
-        caddy
-        cloudflared
         dbgate
-        tailscale-http
 
         trivy # container scanning
 
         actual-budget
         daily-stoic
         forgejo
-        gatus
-        glance
-        grafana
         # invidious # temporarily remove since its down. plan on updating module with docker setup
         # invidious-status
         n8n
         open-webui
-        prometheus
         searx
         subtrakr
         vaultwarden

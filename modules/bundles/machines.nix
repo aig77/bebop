@@ -45,11 +45,24 @@ in {
       services.libinput.enable = true;
     };
 
+    # Platform every server shares: health reporting, CVE scanning, and the
+    # private (tailnet HTTPS) exposure path. Ingress and dashboards are opt-in
+    # via server-public / server-private.
     server = {lib, ...}: {
-      imports = with nixos; [healthchecks vulnix];
+      imports = with nixos; [healthchecks vulnix tailscale-http];
       services.getty.autologinUser = username;
       home-manager.users.${username}.imports = [hm.shell-lite];
       sops.age.keyFile = lib.mkForce "/etc/sops/age/keys.txt";
+    };
+
+    # Public ingress: Caddy + Cloudflare tunnel. Each host runs its own tunnel.
+    server-public = _: {
+      imports = with nixos; [caddy cloudflared];
+    };
+
+    # Private dashboards and metrics: homepage + health dashboard + scraping.
+    server-private = _: {
+      imports = with nixos; [glance gatus grafana prometheus];
     };
   };
 }
