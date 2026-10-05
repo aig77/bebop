@@ -59,7 +59,7 @@ A service running on another machine is registered by the consuming host as a `v
 2. Create a feature that runs the app on localhost only and sets `var.services.<name>` with `port = config.ports.<name>`.
 3. Choose exposure:
    - **Public**: set `expose = {subdomain = "...";}`. The host needs `server-public` (Caddy + Cloudflared). Add `basicAuth = true` to gate it.
-   - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved.
+   - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved. Bind the app to `127.0.0.1` (see [Private exposure](#private-exposure-tailscale-https)).
    Optionally add a `monitor` block for an automatic gatus health check, and a `homepage` block so glance links the service. Both default to off; see the field list above.
 4. `git add` the new file, run `nix flake check`.
 
@@ -119,6 +119,8 @@ tailscale serve --bg --https=<servePort> http://addrOf(host):<port>
 ```
 
 The HTTPS port defaults to the service's own `port`; a service can claim a custom one by setting `servePort`. Glance sets `servePort = 443`, so it is reachable at the bare `https://<host>.<tailnet>` with no port suffix. No caddy, no cloudflared, no firewall opening needed. `tailscale serve reset` is wired into the service stop so the whole mapping collapses on rebuild.
+
+**Private services must bind `127.0.0.1`.** `tailscale serve` binds the service's port on the tailnet IP, so a service listening on `0.0.0.0` fights tailscaled for the socket and fails on its next restart. Set the app's listen/bind address to loopback (e.g. `services.prometheus.listenAddress = "127.0.0.1"`, `N8N_LISTEN_ADDRESS = "127.0.0.1"`).
 
 ## Backups
 
