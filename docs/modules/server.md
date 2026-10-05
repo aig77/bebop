@@ -122,7 +122,19 @@ The HTTPS port defaults to the service's own `port`; a service can claim a custo
 
 ## Backups
 
-Services opt in with a `backup` block. `features/backup.nix` collects every service that has one, concatenates the `prepareCommand`s (which stage consistent snapshots into `/var/lib/backups`, e.g. `pg_dump` or sqlite `.backup`), and runs a single restic job per host at 02:00 into a Cloudflare R2 bucket. Retention is pruned automatically.
+Services opt in with a `backup` block. `features/backup.nix` collects every backed-up service on this host and runs a single restic job at 02:00 into a Cloudflare R2 bucket; retention is pruned automatically.
+
+A service declares the database it owns; backup.nix generates the dump command and appends the dump path to the restic paths:
+
+```nix
+backup = {
+  paths = ["/var/lib/myapp/uploads"];   # raw files, read live by restic
+  database = {type = "sqlite"; path = "/var/lib/myapp/db.sqlite3";};
+  # or: database = {type = "postgres"; name = "myapp";};
+};
+```
+
+Database dumps are transactionally consistent (`pg_dump`, sqlite `.backup`) and safe while the service writes. Raw `paths` are read live, so a file mid-write can be captured torn; a btrfs snapshot before the run is the fix, tracked as a TODO in `modules/flake/var/nixos.nix`. `prepareCommand` stays as an escape hatch for staging that cannot be derived.
 
 Restore:
 

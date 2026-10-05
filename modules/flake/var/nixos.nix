@@ -69,12 +69,14 @@
             };
             default = {};
           };
-          # TODO: var.services schema improvements:
-          # Typed db backups. Add backup.database submodule
-          # (enum postgres/sqlite + name/path); backup.nix generates the
-          # pg_dump/sqlite3 prepareCommand and appends the dump file to
-          # restic paths. Covers invidious, forgejo (postgres), daily-stoic,
-          # vaultwarden, subtrakr (sqlite).
+          # TODO: consistent raw-file backups. Database dumps are
+          # transactionally consistent (pg_dump, sqlite3 .backup), but paths
+          # under backup.paths (vaultwarden attachments, forgejo repos, etc)
+          # are read live by restic and can be captured mid-write. The fix is
+          # a btrfs snapshot of the @data subvolume (mounted at /var/lib on
+          # jet) taken before restic runs: snapshot in backupPrepareCommand,
+          # point restic paths at it, delete it in backupCleanupCommand.
+          # Requires a @snapshots subvolume on jet (spike/ein have one).
           #
           # `host` is the machine the service runs on. It defaults to this
           # host, so a co-located service needs no field. Routing layers
@@ -111,9 +113,34 @@
                     options = {
                       paths = lib.mkOption {
                         type = lib.types.listOf lib.types.str;
+                        default = [];
                       };
+                      # Escape hatch for staging that backup.nix cannot derive.
                       prepareCommand = lib.mkOption {
                         type = lib.types.nullOr lib.types.str;
+                        default = null;
+                      };
+                      # A database this service owns. backup.nix generates the
+                      # dump command and appends the dump path to the restic
+                      # paths, so services do not hand-write either.
+                      database = lib.mkOption {
+                        type = lib.types.nullOr (lib.types.submodule {
+                          options = {
+                            type = lib.mkOption {
+                              type = lib.types.enum ["postgres" "sqlite"];
+                            };
+                            # postgres database name; defaults to the service key
+                            name = lib.mkOption {
+                              type = lib.types.nullOr lib.types.str;
+                              default = null;
+                            };
+                            # sqlite database file
+                            path = lib.mkOption {
+                              type = lib.types.nullOr lib.types.str;
+                              default = null;
+                            };
+                          };
+                        });
                         default = null;
                       };
                     };

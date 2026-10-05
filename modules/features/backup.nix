@@ -2,16 +2,51 @@ _: {
   flake.modules.nixos.backup = {
     config,
     lib,
+    pkgs,
     ...
   }: let
     backupServices = lib.filterAttrs (_: s: s.backup != null && s.host == config.var.hostname) config.var.services;
-    allPaths = lib.concatMap (s: s.backup.paths) (lib.attrValues backupServices);
+
+    # Postgres dump name defaults to the service key.
+    dbName = name: s:
+      if s.backup.database.name != null
+      then s.backup.database.name
+      else name;
+
+    dbPrepare = name: s:
+      if s.backup.database == null
+      then ""
+      else if s.backup.database.type == "postgres"
+      then ''
+        mkdir -p /var/lib/backups/${name}
+        ${pkgs.util-linux}/bin/runuser -u postgres -- ${pkgs.postgresql}/bin/pg_dump ${dbName name s} > /var/lib/backups/${name}/dump.sql
+      ''
+      else ''
+        mkdir -p /var/lib/backups/${name}
+        ${pkgs.sqlite}/bin/sqlite3 ${s.backup.database.path} ".backup '/var/lib/backups/${name}/${baseNameOf s.backup.database.path}'"
+      '';
+
+    dbPaths = name: s:
+      if s.backup.database == null
+      then []
+      else ["/var/lib/backups/${name}"];
+
+    allPaths = lib.concatMap (name: backupServices.${name}.backup.paths ++ dbPaths name backupServices.${name}) (lib.attrNames backupServices);
+
     prepareCommands = lib.concatStringsSep "\n" (
-      lib.filter (s: s != "")
-      (map (s: lib.optionalString (s.backup.prepareCommand != null) s.backup.prepareCommand)
-        (lib.attrValues backupServices))
+      lib.filter (s: s != "") (
+        lib.mapAttrsToList dbPrepare backupServices
+        ++ lib.mapAttrsToList (_: s: lib.optionalString (s.backup.prepareCommand != null) s.backup.prepareCommand) backupServices
+      )
     );
   in {
+    assertions =
+      lib.mapAttrsToList (name: s: {
+        assertion = s.backup.database == null || s.backup.database.type != "sqlite" || s.backup.database.path != null;
+        message = "var.services.${name}: backup.database.type = sqlite requires backup.database.path";
+      })
+      backupServices;
+
     sops = {
       secrets = {
         "restic/password" = {};

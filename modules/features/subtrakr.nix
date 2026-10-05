@@ -1,18 +1,12 @@
 _: {
-  flake.modules.nixos.subtrakr = {
-    config,
-    pkgs,
-    ...
-  }: {
+  flake.modules.nixos.subtrakr = {config, ...}: {
     var.services.subtrakr = {
       port = config.ports.subtrakr;
       backup = {
-        paths = ["/var/lib/backups/subtrakr"];
-        prepareCommand = ''
-          mkdir -p /var/lib/backups/subtrakr
-          ${pkgs.sqlite}/bin/sqlite3 /var/lib/subtrakr/subtrakr.db \
-            ".backup '/var/lib/backups/subtrakr/subtrakr.db'"
-        '';
+        database = {
+          type = "sqlite";
+          path = "/var/lib/subtrakr/subtrakr.db";
+        };
       };
       monitor = {
         enable = true;

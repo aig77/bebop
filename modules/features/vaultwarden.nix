@@ -1,21 +1,14 @@
 _: {
-  flake.modules.nixos.vaultwarden = {
-    config,
-    pkgs,
-    ...
-  }: {
+  flake.modules.nixos.vaultwarden = {config, ...}: {
     var.services.vaultwarden = {
       port = config.ports.vaultwarden;
       expose = {subdomain = "vault";};
       backup = {
-        paths = ["/var/lib/backups/vaultwarden"];
-        prepareCommand = ''
-          mkdir -p /var/lib/backups/vaultwarden
-          ${pkgs.sqlite}/bin/sqlite3 /var/lib/vaultwarden/db.sqlite3 \
-            ".backup '/var/lib/backups/vaultwarden/db.sqlite3'"
-          cp -r /var/lib/vaultwarden/attachments \
-            /var/lib/backups/vaultwarden/ 2>/dev/null || true
-        '';
+        paths = ["/var/lib/vaultwarden/attachments"];
+        database = {
+          type = "sqlite";
+          path = "/var/lib/vaultwarden/db.sqlite3";
+        };
       };
       monitor = {
         enable = true;

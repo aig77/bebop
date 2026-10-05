@@ -58,15 +58,14 @@ _: {
       expose = {inherit subdomain;};
       backup = {
         paths = [
-          "/var/lib/backups/forgejo.sql"
           "${stateDir}/repositories"
           "${stateDir}/data"
           customDir
         ];
-        prepareCommand = ''
-          mkdir -p /var/lib/backups
-          ${pkgs.util-linux}/bin/runuser -u postgres -- ${pkgs.postgresql}/bin/pg_dump ${config.services.forgejo.database.name} > /var/lib/backups/forgejo.sql
-        '';
+        database = {
+          type = "postgres";
+          name = config.services.forgejo.database.name;
+        };
       };
       monitor = {
         enable = true;

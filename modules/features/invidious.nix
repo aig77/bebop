@@ -1,10 +1,6 @@
 _: {
   flake.modules.nixos = {
-    invidious = {
-      config,
-      pkgs,
-      ...
-    }: {
+    invidious = {config, ...}: {
       var.services.invidious = {
         port = config.ports.invidious;
         expose = {
@@ -12,11 +8,10 @@ _: {
           basicAuth = true;
         };
         backup = {
-          paths = ["/var/lib/backups/invidious.sql"];
-          prepareCommand = ''
-            mkdir -p /var/lib/backups
-            ${pkgs.util-linux}/bin/runuser -u postgres -- ${pkgs.postgresql}/bin/pg_dump invidious > /var/lib/backups/invidious.sql
-          '';
+          database = {
+            type = "postgres";
+            name = "invidious";
+          };
         };
       };
 
