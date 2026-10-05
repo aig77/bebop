@@ -1,5 +1,5 @@
-{config, ...}: {
-  flake.modules.nixos.protonvpn = {
+_: {
+  flake.modules.nixos.protonvpn = {config, ...}: {
     sops.templates."protonvpn-wg-conf" = {
       path = "/etc/wireguard/protonvpn.conf";
       mode = "0600";
