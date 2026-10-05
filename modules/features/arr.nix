@@ -6,13 +6,40 @@
   inherit (config.flake.modules) nixos;
   stateDir = "/var/lib/nixarr";
 in {
-  flake.modules.nixos.arr = {config, ...}: {
+  flake.modules.nixos.arr = {config, ...}: let
+    downloadClients = [
+      {
+        name = "SABnzbd";
+        implementation = "Sabnzbd";
+        fields = {
+          host = "localhost";
+          port = config.ports.arr.sabnzbd;
+          apiKey.secret = config.sops.secrets."arr/sabnzbd-api-key".path;
+        };
+      }
+    ];
+  in {
     imports = [
       inputs.nixarr.nixosModules.default
       nixos.protonvpn
     ];
 
-    sops.secrets."arr/sabnzdb-api-key" = {};
+    users = {
+      groups.arr-secrets = {};
+      users = {
+        sonarr.extraGroups = ["arr-secrets"];
+        radarr.extraGroups = ["arr-secrets"];
+      };
+    };
+
+    sops.secrets."arr/sabnzbd-api-key" = {
+      mode = "0440";
+      group = "arr-secrets";
+      restartUnits = [
+        "sonarr-sync-config.service"
+        "radarr-sync-config.service"
+      ];
+    };
 
     var.services = {
       # public
@@ -164,14 +191,20 @@ in {
       sonarr = {
         enable = true;
         port = config.ports.arr.sonarr;
-        settings-sync.transmission.enable = true;
+        settings-sync = {
+          transmission.enable = true;
+          inherit downloadClients;
+        };
       };
 
       # Movie Automation
       radarr = {
         enable = true;
         port = config.ports.arr.radarr;
-        settings-sync.transmission.enable = true;
+        settings-sync = {
+          transmission.enable = true;
+          inherit downloadClients;
+        };
       };
 
       # Index Manager
@@ -204,6 +237,13 @@ in {
           radarr.config.sync_only_monitored_movies = true;
         };
       };
+    };
+
+    # Required for settings-sync to work
+    services = {
+      prowlarr.settings.auth.required = "DisabledForLocalAddresses";
+      sonarr.settings.auth.required = "DisabledForLocalAddresses";
+      radarr.settings.auth.required = "DisabledForLocalAddresses";
     };
   };
 }
