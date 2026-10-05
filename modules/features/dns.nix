@@ -63,13 +63,10 @@ _: {
 
     networking.firewall = {
       enable = true;
-      allowedTCPPorts = [
-        53
-        config.ports.blockyHttp
-      ];
-      allowedUDPPorts = [
-        53
-      ];
+      # 53 stays open for LAN DNS clients. Blocky's metrics endpoint
+      # (blockyHttp) is scraped over the tailnet, so it stays off the LAN.
+      allowedTCPPorts = [53];
+      allowedUDPPorts = [53];
     };
 
     systemd.services.blocky = {
