@@ -15,11 +15,7 @@ in {
       tailscale-node = {config, ...}: {
         sops.secrets."tailscale/authkey" = {};
 
-        services.tailscale = {
-          enable = true;
-          authKeyFile = config.sops.secrets."tailscale/authkey".path;
-          extraSetFlags = ["--accept-routes"];
-        };
+        services.tailscale.authKeyFile = config.sops.secrets."tailscale/authkey".path;
       };
 
       tailscale-router = {config, ...}: {
