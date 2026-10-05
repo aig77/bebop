@@ -29,7 +29,8 @@ These live in `modules/flake/` rather than `aspects/` because they are flake-par
 | Module | What it does |
 |--------|--------------|
 | `var` | Variable schema (`options.var.*`), contributed to base profiles |
-| `ports` | Port registry (`options.ports.*`), contributed to `nixos.base` |
+| `ports` | Per-host port registry (`options.ports.*`), contributed to `nixos.base` |
+| `network` | Network constants (`var.network`), contributed to `nixos.base` |
 | `owner` | `flake.meta.owner.username`, the single place to set the primary username |
 | home-manager bridges | Wires NixOS/Darwin profiles to Home Manager profiles |
 

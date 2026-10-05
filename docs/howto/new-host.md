@@ -15,6 +15,7 @@
 modules/hosts/nixos/myhostname/
 ├── imports.nix
 ├── variables.nix
+├── ports.nix           # this host's port registry (server hosts)
 ├── hardware.nix        # or facter.nix + facter.json (preferred)
 ├── disko.nix
 ├── home.nix
@@ -42,10 +43,8 @@ _: {
       username = "arturo";
       hostname = "myhostname";
       shell    = "zsh";
-      # LAN hosts: declare the subnet (only if this machine advertises routes)
-      # and IPv4 entries here:
-      # network.subnet = "192.168.68.0/24";
-      # network.hosts.myhostname = "192.168.68.x";
+      # Hosts are auto-discovered from the configurations.nixos registry, so
+      # nothing network-related goes here.
     };
   };
 }

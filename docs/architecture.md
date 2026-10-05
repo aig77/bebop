@@ -136,13 +136,12 @@ Design, per-package escapes, and the update workflow: [Nixpkgs Channels](howto/n
 Hosts set typed variables; feature modules read them. Never hardcode hostnames, usernames, or paths that vary between hosts.
 
 ```nix
-var.network = {                  # LAN topology registry
+var.network = {                  # network constants (modules/flake/network.nix)
   subnet = "192.168.68.0/24";
-  hosts.ed = "192.168.68.101";   # each host declares its own IPv4
 };
 ```
 
-`var.network` is the LAN address book: `tailscale.nix` advertises the subnet as routes, and `gatus.nix`/`prometheus.nix` reach remote hosts through `hosts.<name>` instead of hardcoded addresses.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book. `config.var.network.addrOf "<name>"` returns `"localhost"` for this host and the hostname itself otherwise; consumers use it instead of hardcoding addresses. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`, and an assertion rejects a `var.services.<name>.host` that is not a known host.
 
 ---
 

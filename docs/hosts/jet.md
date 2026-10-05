@@ -24,7 +24,7 @@ Service data backups are handled by restic which upload updated versions of crit
 List of services located in server [imports](../modules/hosts/nixos/jet/imports.nix)
 Deploying this host: see [deploying](../howto/deploying.md) and [age keys](../howto/age-keys.md).
 
-Monitors ed over the LAN: gatus health checks and prometheus scrape targets resolve ed through `var.network.hosts.ed` (declared in `jet/variables.nix`), no hardcoded IPs.
+Monitors ed over the tailnet: gatus health checks and prometheus scrape targets resolve ed through `config.var.network.addrOf "ed"` (MagicDNS), no hardcoded IPs.
 
 __Invidious requires either a complete migration to a docker setup or being dropped__
 

@@ -8,10 +8,8 @@ Every service feature registers itself in `var.services` (schema in `modules/fla
 
 ```nix
 var.services.vaultwarden = {
-  subdomain = "vault";
   port = config.ports.vaultwarden;
-  public = true;
-  auth = false;
+  expose = {subdomain = "vault";};   # public; omit for tailnet-only
   backup = {
     paths = ["/var/lib/backups/vaultwarden"];
     prepareCommand = "...";
@@ -21,44 +19,47 @@ var.services.vaultwarden = {
 
 Fields:
 
-- `subdomain` - hostname under the public domain (or tailnet hostname)
-- `port` - where the service listens on localhost; pull it from the port registry, never invent your own number
+- `host` - the machine the service runs on; defaults to this host, so a co-located service omits it
+- `port` - where the service listens; pull it from this host's port registry, never invent your own number
+- `expose` - `null` (default) for a tailnet-only service, or `{subdomain; basicAuth ? false;}` to publish it through Caddy + Cloudflare
 - `servePort` - optional; HTTPS port the tailnet serves a private service on, defaults to `port` (glance sets 443)
-- `public` - `true` for internet-exposed services, `false` for tailnet-only
-- `auth` - gate the public vhost behind basic auth
 - `backup` - optional; `paths` plus an optional `prepareCommand` that stages a consistent snapshot
 - `monitor` - optional; gatus auto-registers a health check (http/tcp, path, thresholds, interval)
 - `homepage` - optional; glance auto-links the service (title, icon)
 
-Ports live in one place, `modules/flake/ports.nix`. Features read them via `config.ports.<name>`; nothing hardcodes a port number.
+Ports are a **per-host registry** (`modules/flake/ports.nix` defines the option; each host fills it in `modules/hosts/nixos/<host>/ports.nix`). Features read them via `config.ports.<name>`; a group like `prometheus.nodeExporter` is a nested attrset. A collision assertion rejects duplicate values at eval.
 
-Six modules consume the registry and react to these flags. None of them know about individual services:
+Six modules consume the registry. None of them know about individual services:
 
 | Module | Reacts to | Effect |
 |--------|-----------|--------|
-| `features/caddy.nix` | `public` + `auth` | Vhost + TLS + basic auth for public services |
-| `features/cloudflared.nix` | `public` | Tunnel ingress rule for public services |
-| `features/tailscale.nix` | `!public` | `tailscale serve` for private services |
-| `features/backup.nix` | `backup` | One restic job covering all backed-up services |
-| `features/gatus.nix` | `monitor.enable` | Health-check endpoint on the Bebop dashboard |
-| `features/glance.nix` | `homepage.enable` | Homepage site entry |
+| `features/caddy.nix` | `expose != null`, local | Vhost + TLS + basic auth for public services |
+| `features/cloudflared.nix` | `expose != null`, local | Tunnel ingress rule for public services |
+| `features/tailscale.nix` | `expose == null`, local | `tailscale serve` for private services |
+| `features/backup.nix` | `backup`, local | One restic job covering all backed-up services |
+| `features/gatus.nix` | `monitor.enable` (any host) | Health-check endpoint on the Bebop dashboard |
+| `features/glance.nix` | `homepage.enable` (any host) | Homepage site entry |
+
+**Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.var.network.addrOf svc.host`. A non-local entry with `expose` set fails an assertion: this host's tunnel cannot reach another machine's service.
 
 ## The `var.network` registry
 
-The LAN topology lives in `var.network` (schema in `modules/flake/var/nixos.nix`), so feature modules never hardcode machine addresses:
+`var.network` (schema in `modules/flake/var/nixos.nix`, data in `modules/flake/network.nix`) holds network constants:
 
-- `subnet` - the LAN as a CIDR block; declared by the host that advertises routes (ed sets `192.168.68.0/24`)
-- `hosts` - an address book mapping hostname to IPv4; each host declares its own IP in its `variables.nix`
+- `subnet` - the LAN as a CIDR block, used by the subnet router
+- `addrOf` - `name -> "localhost"` for this host, the hostname otherwise
 
-Consumers read the registry instead of literals: `tailscale.nix` advertises `var.network.subnet` as subnet-router routes, and `gatus.nix` + `prometheus.nix` reach ed's DNS, node exporter, and blocky metrics via `var.network.hosts.ed`.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book to maintain. Consumers call `config.var.network.addrOf svc.host`; resolution happens at request time. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`; an assertion rejects a `var.services.<name>.host` that is not a known host.
+
+A service running on another machine is registered by the consuming host as a `var.services` entry with `host = "<name>"` (and `servePort = 443` so glance links it at `https://<name>.<tailnet>`). The entry drives monitoring and homepage only; routing and backup ignore it because it is not local.
 
 ## Adding a service
 
-1. Reserve a port in `modules/flake/ports.nix` (or reuse an existing one).
+1. Reserve a port in `modules/hosts/nixos/<host>/ports.nix` (or reuse an existing one).
 2. Create a feature that runs the app on localhost only and sets `var.services.<name>` with `port = config.ports.<name>`.
 3. Choose exposure:
-   - **Public**: `public = true`. The host needs `caddy` + `cloudflared` imported. Add `auth = true` if it should be behind basic auth.
-   - **Private**: `public = false`. The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no caddy involved.
+   - **Public**: set `expose = {subdomain = "...";}`. The host needs `server-public` (Caddy + Cloudflared). Add `basicAuth = true` to gate it.
+   - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved.
    Optionally add a `monitor` block for an automatic gatus health check, and a `homepage` block so glance links the service. Both default to off; see the field list above.
 4. `git add` the new file, run `nix flake check`.
 
@@ -70,12 +71,12 @@ Public services are reached through a Cloudflare tunnel. The path is:
 Client -> Cloudflare edge (TLS) -> tunnel -> cloudflared (localhost) -> Caddy (localhost) -> service
 ```
 
-- **Caddy** (`features/caddy.nix`) terminates TLS with its own certs via the Cloudflare DNS-01 plugin, then reverse-proxies to `localhost:<port>`. For each public service it emits a vhost for `<subdomain>.<domain>`; the domain comes from the `cloudflare/service-domain` sops secret.
-- **Cloudflared** (`features/cloudflared.nix`) maps each public service to an ingress rule pointing at `https://localhost` with TLS verification disabled, since Caddy already terminated it. Tunnel ID and credentials come from sops secrets.
+- **Caddy** (`features/caddy.nix`) terminates TLS with its own certs via the Cloudflare DNS-01 plugin, then reverse-proxies to `addrOf(host):<port>`. For each public service it emits a vhost for `<subdomain>.<domain>`; the domain comes from the `cloudflare/service-domain` sops secret.
+- **Cloudflared** (`features/cloudflared.nix`) maps each public service to an ingress rule pointing at `https://localhost` with TLS verification disabled, since Caddy already terminated it. Each host runs its **own tunnel**: the tunnel ID and credentials live at `cloudflare/<hostname>/tunnel-id` and `cloudflare/<hostname>/tunnel-credentials`. `service-domain` and `acme-token` are zone-scoped and shared.
 
 ### Auth
 
-With `auth = true`, Caddy imports a basic auth snippet rendered from sops (`caddy/basic-auth-user`, `caddy/basic-auth-hash`). The hash is a raw bcrypt string, embedded via a template so it avoids the base64 encoding Caddy's JSON config path requires.
+With `basicAuth = true`, Caddy imports a basic auth snippet rendered from sops (`caddy/basic-auth-user`, `caddy/basic-auth-hash`). The hash is a raw bcrypt string, embedded via a template so it avoids the base64 encoding Caddy's JSON config path requires.
 
 To rotate the password:
 
@@ -111,10 +112,10 @@ Then set `hash = lib.fakeHash`, build, and copy the `got:` value from the hash m
 
 ## Private exposure: Tailscale HTTPS
 
-Private services (`public = false`) are served straight over the tailnet. `features/tailscale.nix` contributes `tailscale-http`, which runs one `tailscale serve` command per private service:
+Private services (`expose = null`) are served straight over the tailnet. `features/tailscale.nix` contributes `tailscale-http`, which runs one `tailscale serve` command per local private service:
 
 ```bash
-tailscale serve --bg --https=<servePort> http://localhost:<port>
+tailscale serve --bg --https=<servePort> http://addrOf(host):<port>
 ```
 
 The HTTPS port defaults to the service's own `port`; a service can claim a custom one by setting `servePort`. Glance sets `servePort = 443`, so it is reachable at the bare `https://<host>.<tailnet>` with no port suffix. No caddy, no cloudflared, no firewall opening needed. `tailscale serve reset` is wired into the service stop so the whole mapping collapses on rebuild.
@@ -140,7 +141,7 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 `features/dns.nix` is the LAN side of the self-hosted stack:
 
-- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `var.network.hosts.ed`.
+- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.var.network.addrOf "ed"`.
 - **Unbound** - local recursive resolver with DNSSEC; Blocky's primary upstream, so LAN queries resolve locally and stay off the wire.
 - **Cloudflare DoH** - strict-order fallback: Blocky forwards to Unbound first, and only queries `one.one.one.one` when Unbound doesn't respond.
 - **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically.

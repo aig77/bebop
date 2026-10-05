@@ -12,7 +12,7 @@ Handles network services. No GUI, no desktop stack. Runs DNS and monitoring only
 - Blocky DNS server with ad-blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts))
 - Unbound recursive resolver with DNSSEC
 - Prometheus metrics collection
-- Tailscale subnet router: advertises `var.network.subnet` (`192.168.68.0/24`) and declares its own IP in `var.network.hosts.ed`; jet health-checks and scrapes it over the LAN via the registry
+- Tailscale subnet router: advertises `var.network.subnet` (`192.168.68.0/24`); jet health-checks and scrapes it over the tailnet via `var.network.addrOf "ed"`
 - Auto-expanding root partition, watchdog for auto-reboot
 - Builds as a flashable SD card image (`nix build .#images.ed`)
 

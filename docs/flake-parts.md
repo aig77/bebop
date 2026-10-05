@@ -27,7 +27,8 @@ modules/flake/
 ├── systems.nix               # Supported platforms
 ├── formatter.nix             # nix fmt (alejandra)
 ├── pre-commit.nix            # Git hooks
-├── ports.nix                 # Central port registry for services
+├── ports.nix                 # Per-host port registry option + collision assertion
+├── network.nix               # Network constants (subnet)
 ├── nixpkgs.nix               # Channel policy + overlay bridge
 ├── perSystem.nix             # perSystem pkgs for dev tools
 ├── deploy.nix                # deploy-rs nodes (servers) + fleet app
@@ -109,9 +110,13 @@ Same, contributed to `flake.modules.darwin.base`. Smaller set: `username`, `host
 
 ### `flake/ports.nix`
 
-Contributes `options.ports` to `flake.modules.nixos.base`. Central registry of service port numbers, so a port is assigned in exactly one place and features reference it via `config.ports.<name>` instead of hardcoding. NixOS only, no Darwin equivalent.
+Contributes `options.ports` and `options.mkPortGroup` to `flake.modules.nixos.base`, plus a collision assertion. The registry is **per host**: each host declares its own ports in `modules/hosts/nixos/<host>/ports.nix`, including any remote ports it reads. Features reference them via `config.ports.<name>` (a group is a nested attrset, e.g. `config.ports.prometheus.nodeExporter`). `mkPortGroup` derives a sequential group from a base. NixOS only, no Darwin equivalent.
 
-The full option list lives in `modules/flake/ports.nix`, not here. New services get a slot added in that file; existing ones are reused. See [Server Services](modules/server.md) for how services consume it.
+See [Server Services](modules/server.md) for how services consume it.
+
+### `flake/network.nix`
+
+Contributes network constants to `flake.modules.nixos.base`: `var.network.subnet`, used by the subnet router. Hosts are not listed here - every machine is on the tailnet and resolves by MagicDNS, and the fleet is the `configurations.nixos` registry. `var.network.addrOf` (schema in `modules/flake/var/nixos.nix`) returns `localhost` for this host and the hostname otherwise; the `fleetHosts` specialArg feeds a `svc.host` validity assertion.
 
 ---
 

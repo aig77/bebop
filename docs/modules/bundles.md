@@ -22,7 +22,7 @@ See [Features](features.md) for the full list of atomic capabilities. See [Aspec
 
 The exact feature lists live in the bundle files, so this section only says what each bundle is for:
 
-- **`machines.nix`** - machine-type profiles (`desktop`, `laptop`, `htpc`, `server`). Each composes the features that machine kind needs and wires in the appropriate HM shell. The `server` profile is the headless one, with no desktop stack.
+- **`machines.nix`** - machine-type profiles (`desktop`, `laptop`, `htpc`, `server`) plus the server sub-profiles. `server` is the headless base every server shares (health reporting, CVE scanning, tailnet HTTPS); `server-public` adds Caddy + Cloudflared ingress; `server-private` adds the dashboards and metrics (glance, gatus, grafana, prometheus). A host picks `server` plus whichever sub-profiles it needs.
 - **`shells.nix`** - HM shell profiles (`shell`, `shell-lite`). The selected shell (zsh or fish) is chosen dynamically via `hm.${var.shell}`.
 - **`gui.nix`** - the HM GUI profile: the terminal selected dynamically via `hm.${var.terminal}`, plus the always-on GUI apps.
 - **`eyecandy.nix`** - terminal eye candy profiles (fastfetch, ASCII art packages).
