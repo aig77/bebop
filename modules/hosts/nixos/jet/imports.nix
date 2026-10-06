@@ -25,6 +25,7 @@
         open-webui
         searx
         subtrakr
+        sure
         vaultwarden
       ]);
     nixpkgs.hostPlatform = "x86_64-linux";

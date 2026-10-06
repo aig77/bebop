@@ -20,6 +20,10 @@ _: {
       searx = 4020;
       forgejo = 4030;
       dbgate = 4040;
+      sure = config.mkPortGroup {
+        base = 4050;
+        names = ["webUI" "redis"];
+      };
     };
   };
 }
