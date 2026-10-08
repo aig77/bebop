@@ -91,7 +91,29 @@ _: {
                 widgets = [
                   {
                     type = "search";
-                    autofocus = true;
+                    new-tab = true;
+                    bangs = [
+                      {
+                        title = "Youtube";
+                        shortcut = "!yt";
+                        url = "https://www.youtube.com/results?search_query={QUERY}";
+                      }
+                      {
+                        title = "Nixpkgs Search - Unstable";
+                        shortcut = "!nixpkg";
+                        url = "https://search.nixos.org/packages?channel=unstable&query={QUERY}";
+                      }
+                      {
+                        title = "NixOS Options Search - Unstable";
+                        shortcut = "!nixopt";
+                        url = "https://search.nixos.org/options?channel=unstable&query={QUERY}&type=options";
+                      }
+                      {
+                        title = "Home Manager Options Search - Unstable";
+                        shortcut = "!hm";
+                        url = "https://home-manager-options.extranix.com/?query={QUERY}&release=master";
+                      }
+                    ];
                   }
                   {
                     type = "monitor";
