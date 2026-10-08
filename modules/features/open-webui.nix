@@ -12,7 +12,7 @@ _: {
       homepage = {
         enable = true;
         title = "Open WebUI";
-        icon = "si:chatbot";
+        icon = "di:open-webui";
       };
     };
 

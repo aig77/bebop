@@ -19,7 +19,7 @@ _: {
       };
       homepage = {
         enable = true;
-        icon = "si:bitwarden";
+        icon = "di:vaultwarden";
       };
     };
 

@@ -16,7 +16,7 @@ _: {
       };
       homepage = {
         enable = true;
-        icon = "mdi:credit-card-outline";
+        icon = "sh:subtrackr";
       };
     };
 

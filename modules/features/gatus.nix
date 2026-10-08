@@ -59,7 +59,7 @@ _: {
       };
       homepage = {
         enable = true;
-        icon = "si:statuspage";
+        icon = "di:gatus";
       };
     };
 

@@ -10,7 +10,7 @@ _: {
       homepage = {
         enable = true;
         title = "Actual Budget";
-        icon = "si:actualbudget";
+        icon = "di:actual-budget";
       };
     };
 

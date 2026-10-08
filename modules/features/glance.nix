@@ -68,197 +68,41 @@ _: {
         };
 
         branding = {
-          "logo-text" = "🎷";
+          "favicon-url" = "https://www.realclipart.com/png/small/132-1326331_zoom-edward-cowboy-bebop-png.png";
         };
 
         theme = {
           "background-color" = "240 21% 15%";
-          "primary-color" = "217 92% 76%";
+          "contrast-multiplier" = 1.2;
+          "primary-color" = "217 92% 83%";
           "positive-color" = "115 54% 76%";
-          "negative-color" = "343 81% 75%";
+          "negative-color" = "347 70% 65%";
         };
 
         pages = [
           {
-            name = "Home";
+            name = "Homelab";
+            width = "slim";
+            hide-desktop-navigation = true;
+            center-vertically = true;
             columns = [
-              {
-                size = "small";
-                widgets = [
-                  {
-                    type = "clock";
-                    "hour-format" = "12h";
-                  }
-                  {
-                    type = "calendar";
-                    "first-day-of-week" = "monday";
-                  }
-                  {
-                    type = "rss";
-                    limit = 10;
-                    "collapse-after" = 3;
-                    cache = "12h";
-                    feeds = [
-                      {
-                        url = "https://www.cnbc.com/id/10000664/device/rss/rss.html";
-                        title = "CNBC Markets";
-                      }
-                      {url = "https://selfh.st/rss/";}
-                      {url = "https://this-week-in-rust.org/rss.xml";}
-                      {url = "https://weekly.nixos.org/feeds/all.rss.xml";}
-                      {url = "https://samwho.dev/rss.xml";}
-                      {url = "https://www.jeffgeerling.com/blog.xml";}
-                    ];
-                  }
-                ];
-              }
               {
                 size = "full";
                 widgets = [
                   {
                     type = "search";
-                    "search-engine" = "https://search.brave.com/search?q={QUERY}";
-                    "new-tab" = true;
+                    autofocus = true;
                   }
-                  {
-                    type = "group";
-                    widgets = [
-                      {type = "hacker-news";}
-                      {type = "lobsters";}
-                      {
-                        type = "reddit";
-                        subreddit = "programming";
-                        "show-thumbnails" = true;
-                      }
-                    ];
-                  }
-                  {
-                    type = "videos";
-                    cache = "1h";
-                    channels = [
-                      "UC8ENHE5xdFSwx71u3fDH5Xw"
-                      "UCd3dNckv1Za2coSaHGHl5aA"
-                      "UC6biysICWOJ-C3P4Tyeggzg"
-                      "UC65_CVnMw6hvPET_DRDg3GA"
-                    ];
-                  }
-                  {
-                    type = "group";
-                    widgets = [
-                      {
-                        type = "reddit";
-                        subreddit = "selfhosted";
-                        "show-thumbnails" = true;
-                      }
-                      {
-                        type = "reddit";
-                        subreddit = "nixos";
-                        "show-thumbnails" = true;
-                      }
-                      {
-                        type = "reddit";
-                        subreddit = "stocks";
-                        "show-thumbnails" = true;
-                      }
-                      {
-                        type = "reddit";
-                        subreddit = "rust";
-                        "show-thumbnails" = true;
-                      }
-                      {
-                        type = "reddit";
-                        subreddit = "linux_gaming";
-                        "show-thumbnails" = true;
-                      }
-                    ];
-                  }
-                ];
-              }
-              {
-                size = "small";
-                widgets = [
-                  {
-                    type = "weather";
-                    location = "Miami, United States";
-                    units = "imperial";
-                    "hour-format" = "12h";
-                  }
-                  {
-                    type = "markets";
-                    markets = [
-                      {
-                        symbol = "SPY";
-                        name = "S&P 500";
-                      }
-                      {
-                        symbol = "^TNX";
-                        name = "10Y Treasury";
-                      }
-                      {
-                        symbol = "^VIX";
-                        name = "VIX";
-                      }
-                      {
-                        symbol = "VTI";
-                        name = "Total Market";
-                      }
-                      {
-                        symbol = "DX-Y.NYB";
-                        name = "USD Index";
-                      }
-                      {
-                        symbol = "BTC-USD";
-                        name = "Bitcoin";
-                      }
-                    ];
-                  }
-                  {
-                    type = "releases";
-                    cache = "1d";
-                    limit = 5;
-                    repositories = [
-                      "actualbudget/actual"
-                      "aristocratos/btop"
-                      "caddyserver/caddy"
-                      "cloudflare/cloudflared"
-                      "dani-garcia/vaultwarden"
-                      "danth/stylix"
-                      "ghostty-org/ghostty"
-                      "glanceapp/glance"
-                      "grafana/grafana"
-                      "hyprwm/Hyprland"
-                      "iv-org/invidious"
-                      "jesseduffield/lazygit"
-                      "Mic92/sops-nix"
-                      "neovim/neovim"
-                      "nix-community/home-manager"
-                      "YaLTeR/niri"
-                      "NixOS/nixpkgs"
-                      "tailscale/tailscale"
-                      "TwiN/gatus"
-                      "zen-browser/desktop"
-                    ];
-                  }
-                ];
-              }
-            ];
-          }
-          {
-            name = "Homelab";
-            columns = [
-              {
-                size = "full";
-                widgets = [
                   {
                     type = "monitor";
-                    title = "Public Services";
                     cache = "1m";
+                    title = "Public Services";
                     sites = publicSites;
                   }
                   {
                     type = "monitor";
-                    title = "Private Services";
                     cache = "1m";
+                    title = "Private Services";
                     sites = privateSites;
                   }
                 ];

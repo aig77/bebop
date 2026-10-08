@@ -78,7 +78,7 @@ _: {
       };
       homepage = {
         enable = true;
-        icon = "si:forgejo";
+        icon = "di:forgejo";
       };
     };
 

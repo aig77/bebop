@@ -11,7 +11,7 @@ _: {
       homepage = {
         enable = true;
         title = "n8n";
-        icon = "si:n8n";
+        icon = "di:n8n";
       };
     };
 

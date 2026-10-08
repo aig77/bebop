@@ -32,7 +32,7 @@ _: {
       homepage = {
         enable = true;
         title = "DbGate";
-        icon = "mdi:database";
+        icon = "di:dbgate";
       };
     };
 

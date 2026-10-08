@@ -11,7 +11,7 @@ _: {
       homepage = {
         enable = true;
         title = "SearXNG";
-        icon = "si:searxng";
+        icon = "di:searxng";
       };
     };
 

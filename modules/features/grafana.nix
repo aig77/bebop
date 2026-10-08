@@ -14,7 +14,7 @@ _: {
       };
       homepage = {
         enable = true;
-        icon = "si:grafana";
+        icon = "di:grafana";
       };
     };
 
