@@ -4,56 +4,49 @@ _: {
     lib,
     ...
   }: let
-    mkEndpoint = name: svc: let
+    mkProbeEndpoint = name: svc: let
       # Exactly one probe is set (asserted in the var schema).
-      probe =
-        if svc.monitor.http != null
-        then {
-          name = "http";
-          data = svc.monitor.http;
-        }
-        else if svc.monitor.tcp != null
-        then {
-          name = "tcp";
-          data = svc.monitor.tcp;
-        }
-        else {
-          name = "dns";
-          data = svc.monitor.dns;
-        };
+      hp = svc.monitor;
       displayName =
-        if probe.name == "dns"
+        if hp.dns != null
         then "DNS ${svc.host}"
         else if svc.homepage.enable && svc.homepage.title != null
         then svc.homepage.title
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
       addr = config.var.network.addrOf svc.host;
-      url =
-        if probe.name == "http"
-        then "http://${addr}:${toString svc.port}${probe.data.path}"
-        else if probe.name == "tcp"
-        then "tcp://${addr}:${toString svc.port}"
-        else "${addr}:${toString svc.port}";
-    in {
-      name = displayName;
-      inherit url;
-      dns = lib.optionalAttrs (probe.name == "dns") {
-        "query-type" = probe.data.queryType;
-        "query-name" = probe.data.queryName;
+      base = {
+        name = displayName;
+        interval = hp.interval;
+        alerts = [
+          {
+            type = "discord";
+            "failure-threshold" = hp.failureThreshold;
+            "success-threshold" = hp.successThreshold;
+          }
+        ];
       };
-      interval = svc.monitor.interval;
-      conditions = probe.data.conditions;
-      alerts = [
-        {
-          type = "discord";
-          "failure-threshold" = svc.monitor.failureThreshold;
-          "success-threshold" = svc.monitor.successThreshold;
-        }
-      ];
-    };
+    in
+      if hp.http != null
+      then base // {
+        url = "http://${addr}:${toString svc.port}${hp.http.path}";
+        conditions = hp.http.conditions;
+      }
+      else if hp.tcp != null
+      then base // {
+        url = "tcp://${addr}:${toString svc.port}";
+        conditions = hp.tcp.conditions;
+      }
+      else base // {
+        url = "${addr}:${toString svc.port}";
+        dns = {
+          "query-type" = hp.dns.queryType;
+          "query-name" = hp.dns.queryName;
+        };
+        conditions = hp.dns.conditions;
+      };
 
     generatedEndpoints =
-      lib.mapAttrsToList mkEndpoint
+      lib.mapAttrsToList mkProbeEndpoint
       (lib.filterAttrs (_: s: s.monitor.enable) config.var.services);
   in {
     var.services.gatus = {
