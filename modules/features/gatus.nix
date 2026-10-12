@@ -16,7 +16,7 @@ _: {
       addr = config.var.network.addrOf svc.host;
       base = {
         name = displayName;
-        interval = hp.interval;
+        inherit (hp) interval;
         alerts = [
           {
             type = "discord";
@@ -27,23 +27,29 @@ _: {
       };
     in
       if hp.http != null
-      then base // {
-        url = "http://${addr}:${toString svc.port}${hp.http.path}";
-        conditions = hp.http.conditions;
-      }
+      then
+        base
+        // {
+          url = "http://${addr}:${toString svc.port}${hp.http.path}";
+          conditions = hp.http.conditions;
+        }
       else if hp.tcp != null
-      then base // {
-        url = "tcp://${addr}:${toString svc.port}";
-        conditions = hp.tcp.conditions;
-      }
-      else base // {
-        url = "${addr}:${toString svc.port}";
-        dns = {
-          "query-type" = hp.dns.queryType;
-          "query-name" = hp.dns.queryName;
+      then
+        base
+        // {
+          url = "tcp://${addr}:${toString svc.port}";
+          conditions = hp.tcp.conditions;
+        }
+      else
+        base
+        // {
+          url = "${addr}:${toString svc.port}";
+          dns = {
+            "query-type" = hp.dns.queryType;
+            "query-name" = hp.dns.queryName;
+          };
+          conditions = hp.dns.conditions;
         };
-        conditions = hp.dns.conditions;
-      };
 
     generatedEndpoints =
       lib.mapAttrsToList mkProbeEndpoint
