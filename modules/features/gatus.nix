@@ -5,19 +5,44 @@ _: {
     ...
   }: let
     mkEndpoint = name: svc: let
+      # Exactly one probe is set (asserted in the var schema).
+      probe =
+        if svc.monitor.http != null
+        then {
+          name = "http";
+          data = svc.monitor.http;
+        }
+        else if svc.monitor.tcp != null
+        then {
+          name = "tcp";
+          data = svc.monitor.tcp;
+        }
+        else {
+          name = "dns";
+          data = svc.monitor.dns;
+        };
       displayName =
-        if svc.homepage.enable && svc.homepage.title != null
+        if probe.name == "dns"
+        then "DNS ${svc.host}"
+        else if svc.homepage.enable && svc.homepage.title != null
         then svc.homepage.title
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
+      addr = config.var.network.addrOf svc.host;
       url =
-        if svc.monitor.type == "http"
-        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.path}"
-        else "tcp://${config.var.network.addrOf svc.host}:${toString svc.port}";
+        if probe.name == "http"
+        then "http://${addr}:${toString svc.port}${probe.data.path}"
+        else if probe.name == "tcp"
+        then "tcp://${addr}:${toString svc.port}"
+        else "${addr}:${toString svc.port}";
     in {
       name = displayName;
       inherit url;
+      dns = lib.optionalAttrs (probe.name == "dns") {
+        "query-type" = probe.data.queryType;
+        "query-name" = probe.data.queryName;
+      };
       interval = svc.monitor.interval;
-      conditions = svc.monitor.conditions;
+      conditions = probe.data.conditions;
       alerts = [
         {
           type = "discord";
@@ -30,32 +55,12 @@ _: {
     generatedEndpoints =
       lib.mapAttrsToList mkEndpoint
       (lib.filterAttrs (_: s: s.monitor.enable) config.var.services);
-
-    extraEndpoints = [
-      {
-        name = "Blocky DNS";
-        url = "${config.var.network.addrOf "ed"}:53";
-        dns = {
-          "query-type" = "A";
-          "query-name" = "example.com";
-        };
-        interval = "1m";
-        conditions = ["[DNS_RCODE] == NOERROR"];
-        alerts = [
-          {
-            type = "discord";
-            "failure-threshold" = 2;
-            "success-threshold" = 1;
-          }
-        ];
-      }
-    ];
   in {
     var.services.gatus = {
       port = config.ports.gatus;
       monitor = {
         enable = true;
-        type = "http";
+        http = {};
       };
       homepage = {
         enable = true;
@@ -141,7 +146,7 @@ _: {
           '';
         };
         alerting.discord."webhook-url" = "\${DISCORD_WEBHOOK_URL}";
-        endpoints = generatedEndpoints ++ extraEndpoints;
+        endpoints = generatedEndpoints;
       };
     };
   };

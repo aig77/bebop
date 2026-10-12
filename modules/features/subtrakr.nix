@@ -10,9 +10,10 @@ _: {
       };
       monitor = {
         enable = true;
-        type = "http";
-        path = "/healthz";
-        conditions = ["[STATUS] == 200" "[BODY].status == healthy"];
+        http = {
+          path = "/healthz";
+          conditions = ["[STATUS] == 200" "[BODY].status == healthy"];
+        };
       };
       homepage = {
         enable = true;

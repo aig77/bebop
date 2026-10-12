@@ -17,8 +17,8 @@ _: {
         then svc.homepage.title
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
       checkUrl =
-        if svc.monitor.type == "http"
-        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.path}"
+        if svc.monitor.http != null
+        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.http.path}"
         else "http://${config.var.network.addrOf svc.host}:${toString svc.port}";
     in {
       inherit title;

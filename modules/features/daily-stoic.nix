@@ -18,8 +18,9 @@ _: {
       };
       monitor = {
         enable = true;
-        type = "http";
-        path = "/health";
+        http = {
+          path = "/health";
+        };
       };
       homepage = {
         enable = true;

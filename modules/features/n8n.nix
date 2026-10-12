@@ -5,8 +5,9 @@ _: {
       backup.paths = ["/var/lib/n8n"];
       monitor = {
         enable = true;
-        type = "http";
-        path = "/healthz";
+        http = {
+          path = "/healthz";
+        };
       };
       homepage = {
         enable = true;

@@ -69,12 +69,13 @@ _: {
       };
       monitor = {
         enable = true;
-        type = "http";
-        path = "/api/healthz";
-        conditions = [
-          "[STATUS] == 200"
-          "[BODY].status == pass"
-        ];
+        http = {
+          path = "/api/healthz";
+          conditions = [
+            "[STATUS] == 200"
+            "[BODY].status == pass"
+          ];
+        };
       };
       homepage = {
         enable = true;

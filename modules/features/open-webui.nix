@@ -5,9 +5,10 @@ _: {
       backup.paths = ["/var/lib/open-webui"];
       monitor = {
         enable = true;
-        type = "http";
-        path = "/health";
-        conditions = ["[STATUS] == 200" "[BODY].status == true"];
+        http = {
+          path = "/health";
+          conditions = ["[STATUS] == 200" "[BODY].status == true"];
+        };
       };
       homepage = {
         enable = true;

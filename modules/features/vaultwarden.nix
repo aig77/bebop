@@ -12,10 +12,10 @@ _: {
       };
       monitor = {
         enable = true;
-        type = "tcp";
         interval = "1m";
         failureThreshold = 1;
         successThreshold = 1;
+        tcp = {};
       };
       homepage = {
         enable = true;

@@ -8,9 +8,10 @@ _: {
       port = config.ports.sure.webUI;
       monitor = {
         enable = true;
-        type = "http";
-        path = "/up";
-        conditions = ["[STATUS] == 200"];
+        http = {
+          path = "/up";
+          conditions = ["[STATUS] == 200"];
+        };
       };
       homepage = {
         enable = true;

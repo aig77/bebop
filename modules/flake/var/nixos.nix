@@ -143,27 +143,15 @@
                   default = null;
                 };
                 monitor = lib.mkOption {
-                  type = lib.types.submodule ({config, ...}: {
+                  type = lib.types.submodule {
                     options = {
                       enable = lib.mkOption {
                         type = lib.types.bool;
                         default = false;
                       };
-                      type = lib.mkOption {
-                        type = lib.types.enum ["http" "tcp"];
-                        default = "http";
-                      };
-                      path = lib.mkOption {
-                        type = lib.types.str;
-                        default = "/";
-                      };
-                      conditions = lib.mkOption {
-                        type = lib.types.listOf lib.types.str;
-                        default =
-                          if config.type == "http"
-                          then ["[STATUS] == 200"]
-                          else ["[CONNECTED] == true"];
-                      };
+                      # Exactly one probe must be set when enable is true. Each
+                      # probe owns only its own fields, so http/path, tcp/dns,
+                      # and dns/query-type nonsense cannot be expressed at all.
                       interval = lib.mkOption {
                         type = lib.types.str;
                         default = "5m";
@@ -176,8 +164,51 @@
                         type = lib.types.int;
                         default = 1;
                       };
+                      http = lib.mkOption {
+                        type = lib.types.nullOr (lib.types.submodule {
+                          options = {
+                            path = lib.mkOption {
+                              type = lib.types.str;
+                              default = "/";
+                            };
+                            conditions = lib.mkOption {
+                              type = lib.types.listOf lib.types.str;
+                              default = ["[STATUS] == 200"];
+                            };
+                          };
+                        });
+                        default = null;
+                      };
+                      tcp = lib.mkOption {
+                        type = lib.types.nullOr (lib.types.submodule {
+                          options.conditions = lib.mkOption {
+                            type = lib.types.listOf lib.types.str;
+                            default = ["[CONNECTED] == true"];
+                          };
+                        });
+                        default = null;
+                      };
+                      dns = lib.mkOption {
+                        type = lib.types.nullOr (lib.types.submodule {
+                          options = {
+                            queryType = lib.mkOption {
+                              type = lib.types.str;
+                              default = "A";
+                            };
+                            queryName = lib.mkOption {
+                              type = lib.types.str;
+                              default = "example.com";
+                            };
+                            conditions = lib.mkOption {
+                              type = lib.types.listOf lib.types.str;
+                              default = ["[DNS_RCODE] == NOERROR"];
+                            };
+                          };
+                        });
+                        default = null;
+                      };
                     };
-                  });
+                  };
                   default = {};
                 };
                 homepage = lib.mkOption {
@@ -220,6 +251,17 @@
       ++ lib.mapAttrsToList (name: svc: {
         assertion = lib.elem svc.host fleetHosts;
         message = "var.services.${name}: host '${svc.host}' is not a known host";
+      })
+      config.var.services
+      # An enabled monitor must say exactly what to probe. Zero or two probes is
+      # a configuration error; gatus assumes exactly one is set.
+      ++ lib.mapAttrsToList (name: svc: let
+        probeCount =
+          lib.count (p: p != null)
+          [svc.monitor.http svc.monitor.tcp svc.monitor.dns];
+      in {
+        assertion = !svc.monitor.enable || probeCount == 1;
+        message = "var.services.${name}: monitor.enable requires exactly one probe (http, tcp, or dns), got ${toString probeCount}";
       })
       config.var.services;
   };

@@ -4,9 +4,10 @@ _: {
       port = config.ports.searx;
       monitor = {
         enable = true;
-        type = "http";
-        path = "/healthz";
-        conditions = ["[STATUS] == 200" "[BODY] == OK"];
+        http = {
+          path = "/healthz";
+          conditions = ["[STATUS] == 200" "[BODY] == OK"];
+        };
       };
       homepage = {
         enable = true;

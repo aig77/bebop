@@ -5,7 +5,7 @@ _: {
       backup.paths = ["/var/lib/actual"];
       monitor = {
         enable = true;
-        type = "http";
+        http = {};
       };
       homepage = {
         enable = true;

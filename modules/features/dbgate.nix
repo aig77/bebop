@@ -26,8 +26,8 @@ _: {
       backup.paths = ["/var/lib/dbgate"];
       monitor = {
         enable = true;
-        type = "tcp";
         interval = "1m";
+        tcp = {};
       };
       homepage = {
         enable = true;
