@@ -13,13 +13,14 @@ _: {
       vaultwarden = 3070;
       actualBudget = 3080;
       subtrakr = 3090;
-      # blockyHttp + nodeExporter are read from ed over the LAN; same numbers
-      # ed binds (modules/hosts/nixos/ed/ports.nix).
+      # blockyHttp + nodeExporter are scraped from ed over the tailnet; same
+      # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
       blockyHttp = 4000;
       open-webui = 4010;
       searx = 4020;
       forgejo = 4030;
       dbgate = 4040;
+      loki = 3160;
       sure = config.mkPortGroup {
         base = 4050;
         names = ["webUI" "redis"];

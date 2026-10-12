@@ -3,7 +3,7 @@
     imports = with config.flake.modules.nixos; [
       base
       server
-      prometheus-client
+      observability-agent
       dns
       tailscale-router
     ];

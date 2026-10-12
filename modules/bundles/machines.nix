@@ -60,9 +60,10 @@ in {
       imports = with nixos; [caddy cloudflared];
     };
 
-    # Private dashboards and metrics: homepage + health dashboard + scraping.
+    # Private dashboards and metrics: homepage + the observability stack
+    # (metrics, logs, health checks).
     server-private = _: {
-      imports = with nixos; [glance gatus grafana prometheus];
+      imports = with nixos; [glance observability];
     };
   };
 }

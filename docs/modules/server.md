@@ -122,6 +122,15 @@ The HTTPS port defaults to the service's own `port`; a service can claim a custo
 
 **Private services must bind `127.0.0.1`.** `tailscale serve` binds the service's port on the tailnet IP, so a service listening on `0.0.0.0` fights tailscaled for the socket and fails on its next restart. Set the app's listen/bind address to loopback (e.g. `services.prometheus.listenAddress = "127.0.0.1"`, `N8N_LISTEN_ADDRESS = "127.0.0.1"`).
 
+## Logs: Loki + Alloy
+
+The observability stack aggregates systemd journal logs. Each monitored host runs `alloy` (`modules/features/loki.nix`), which scrapes its own journal and pushes to the stack host's Loki over the tailnet:
+
+- On the stack host, Alloy pushes to `http://127.0.0.1:<loki port>`.
+- On an agent host, Alloy pushes to `https://<lokiHost>.<tailnet>:<loki port>`, through the same `tailscale serve` HTTPS path as any private service. The target comes from `LOKI_URL` in a sops-rendered env file; the tailnet suffix is the `tailscale/tailnet` secret.
+
+Loki listens loopback-only, is registered as a tailnet-private `var.services.loki` entry (backup + gatus monitor), and Grafana provisions it as a datasource (`uid = "loki"`, used by the supplied Loki dashboard).
+
 ## Backups
 
 Services opt in with a `backup` block. `features/backup.nix` collects every backed-up service on this host and runs a single restic job at 02:00 into a Cloudflare R2 bucket; retention is pruned automatically.
