@@ -69,6 +69,41 @@
             };
             default = {};
           };
+          # Host running the observability stack (Loki, Prometheus, Grafana,
+          # gatus). Agents ship journal logs and node metrics to it. Kept as a
+          # var so the stack can move to another machine without touching the
+          # feature modules that reference it.
+          observability = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                lokiHost = lib.mkOption {
+                  type = lib.types.str;
+                  default = "jet";
+                };
+                # Remote metrics targets scraped by the stack host's
+                # Prometheus. job "node" uses the node exporter's standard
+                # port; a service-specific exporter overrides `port` (e.g.
+                # blocky's metrics endpoint).
+                scrapeTargets = lib.mkOption {
+                  type = lib.types.listOf (lib.types.submodule {
+                    options = {
+                      host = lib.mkOption {type = lib.types.str;};
+                      job = lib.mkOption {
+                        type = lib.types.str;
+                        default = "node";
+                      };
+                      port = lib.mkOption {
+                        type = lib.types.nullOr lib.types.port;
+                        default = null;
+                      };
+                    };
+                  });
+                  default = [];
+                };
+              };
+            };
+            default = {};
+          };
           # TODO: consistent raw-file backups. Database dumps are
           # transactionally consistent (pg_dump, sqlite3 .backup), but paths
           # under backup.paths (vaultwarden attachments, forgejo repos, etc)

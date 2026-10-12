@@ -9,8 +9,9 @@ _: {
       backup.paths = ["/var/lib/grafana"];
       monitor = {
         enable = true;
-        type = "http";
-        path = "/api/health";
+        http = {
+          path = "/api/health";
+        };
       };
       homepage = {
         enable = true;
@@ -44,6 +45,13 @@ _: {
             url = "http://127.0.0.1:${toString config.ports.prometheus.server}";
             isDefault = true;
           }
+          {
+            name = "Loki";
+            type = "loki";
+            uid = "loki";
+            url = "http://${config.var.network.addrOf config.var.observability.lokiHost}:${toString config.ports.loki}";
+            access = "proxy";
+          }
         ];
         dashboards.settings.providers = [
           {
@@ -60,8 +68,12 @@ _: {
         sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
       };
       "grafana-dashboards/blocky.json".source = pkgs.fetchurl {
-        url = "https://grafana.com/api/dashboards/13768/revisions/latest/download";
+        url = "https://grafana.com/api/dashboards/13768/revisions/8/download";
         sha256 = "sha256-gwPOcnVC7BXTlhOCRvENAXZfGdQGVCPEUrLCl4ASkVE=";
+      };
+      "grafana-dashboards/loki.json".source = pkgs.fetchurl {
+        url = "https://grafana.com/api/dashboards/13639/revisions/2/download";
+        sha256 = "sha256-2dRUkooIA1E0Qshg58N+9duIW25iRruu1oW8ckBUNIA=";
       };
     };
   };

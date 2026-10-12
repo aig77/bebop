@@ -1,9 +1,41 @@
-_: {
-  flake.modules.nixos.prometheus = {config, ...}: let
-    edIp = config.var.network.addrOf "ed";
+{config, ...}: let
+  inherit (config.flake.modules) nixos;
+in {
+  flake.modules.nixos.prometheus = {
+    config,
+    lib,
+    ...
+  }: let
+    nodeExporterPort = config.ports.prometheus.nodeExporter;
+    # Every remote target is scraped on the tailnet; the stack itself is
+    # covered by the loopback target. job "node" uses the exporter's standard
+    # port unless the target overrides it.
+    mkTarget = t: "${config.var.network.addrOf t.host}:${toString (
+      if t.port != null
+      then t.port
+      else nodeExporterPort
+    )}";
+    targetsByJob = lib.groupBy (t: t.job) config.var.observability.scrapeTargets;
+    nodeTargets = map mkTarget (targetsByJob.node or []);
+    extraJobs =
+      lib.mapAttrsToList (job: targets: {
+        job_name = job;
+        static_configs = [{targets = map mkTarget targets;}];
+      })
+      (lib.removeAttrs targetsByJob ["node"]);
   in {
+    # The stack host scrapes its own metrics, so it runs the agent's node
+    # exporter too. The exporter definition lives in prometheus-client.
+    imports = [nixos.prometheus-client];
+
     var.services.prometheus = {
       port = config.ports.prometheus.server;
+      monitor = {
+        enable = true;
+        http = {
+          path = "/-/healthy";
+        };
+      };
     };
 
     services.prometheus = {
@@ -12,26 +44,18 @@ _: {
       listenAddress = "127.0.0.1";
       port = config.ports.prometheus.server;
       retentionTime = "7d";
-      exporters.node = {
-        enable = true;
-        port = config.ports.prometheus.nodeExporter;
-      };
-      scrapeConfigs = [
-        {
-          job_name = "prometheus";
-          static_configs = [{targets = ["127.0.0.1:${toString config.ports.prometheus.server}"];}];
-        }
-        {
-          job_name = "node";
-          static_configs = [
-            {targets = ["127.0.0.1:${toString config.ports.prometheus.nodeExporter}" "${edIp}:${toString config.ports.prometheus.nodeExporter}"];}
-          ];
-        }
-        {
-          job_name = "blocky";
-          static_configs = [{targets = ["${edIp}:${toString config.ports.blockyHttp}"];}];
-        }
-      ];
+      scrapeConfigs =
+        [
+          {
+            job_name = "prometheus";
+            static_configs = [{targets = ["127.0.0.1:${toString config.ports.prometheus.server}"];}];
+          }
+          {
+            job_name = "node";
+            static_configs = [{targets = ["127.0.0.1:${toString nodeExporterPort}"] ++ nodeTargets;}];
+          }
+        ]
+        ++ extraJobs;
     };
   };
 
