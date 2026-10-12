@@ -52,7 +52,7 @@ in {
           }
           {
             job_name = "node";
-            static_configs = [{targets = ["127.0.0.1:${toString nodeExporterPort}"] ++ nodeTargets;}];
+            static_configs = [{targets = ["${config.var.hostname}:${toString nodeExporterPort}"] ++ nodeTargets;}];
           }
         ]
         ++ extraJobs;
