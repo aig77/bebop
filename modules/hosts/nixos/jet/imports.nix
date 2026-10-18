@@ -13,6 +13,7 @@
 
         backup
         dbgate
+        hermes-readonly
 
         trivy # container scanning
 
