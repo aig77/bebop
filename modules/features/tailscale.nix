@@ -54,6 +54,7 @@ in {
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
+            ExecStartPre = "${pkgs.coreutils}/bin/timeout 60 ${pkgs.bash}/bin/bash -c 'until ${tailscale} status --json 2>/dev/null | grep -q BackendState....Running; do sleep 1; done'";
             Restart = "on-failure";
             RestartSec = "5s";
             ExecStart = map serveCmd privateServices;
