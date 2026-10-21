@@ -16,14 +16,15 @@ _: {
       addr = config.net.addrOf svc.host;
       base = {
         name = displayName;
+        # Gatus groups its endpoints by this name, so the dashboard shows
+        # the same categories as the glance homepage.
+        group = svc.category;
         inherit (hp) interval;
-        alerts = [
-          {
-            type = "discord";
-            "failure-threshold" = hp.failureThreshold;
-            "success-threshold" = hp.successThreshold;
-          }
-        ];
+        alerts = lib.optional hp.alert {
+          type = "discord";
+          "failure-threshold" = hp.failureThreshold;
+          "success-threshold" = hp.successThreshold;
+        };
       };
     in
       if hp.http != null
@@ -57,6 +58,7 @@ _: {
   in {
     serviceRegistry.gatus = {
       port = config.ports.gatus;
+      category = "Observability";
       monitor = {
         enable = true;
         http = {};
@@ -105,6 +107,7 @@ _: {
           header = "Bebop";
           "dashboard-heading" = "Is the ship running?";
           "dashboard-subheading" = null;
+          "default-sort-by" = "group";
           logo = "https://www.clipartmax.com/png/full/132-1326331_zoom-edward-cowboy-bebop-png.png";
           link = "https://github.com/aig77/bebop";
           favicon.default = "https://www.vhv.rs/viewpic/hoobhxi_swordfish-png-cowboy-bebop-transparent-png/#";

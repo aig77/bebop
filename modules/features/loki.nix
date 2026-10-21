@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.loki = {config, ...}: {
     serviceRegistry.loki = {
       port = config.ports.loki;
+      category = "Observability";
       backup.paths = ["/var/lib/loki"];
       monitor = {
         enable = true;

@@ -6,6 +6,7 @@ _: {
   }: {
     serviceRegistry.dbgate = {
       port = config.ports.dbgate;
+      category = "Development";
       backup.paths = ["/var/lib/dbgate"];
       monitor = {
         enable = true;

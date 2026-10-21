@@ -8,6 +8,7 @@ _: {
 
     serviceRegistry.daily-stoic = {
       port = config.ports.dailyStoic;
+      category = "Productivity";
       expose = {subdomain = "stoic";};
       backup = {
         paths = ["/var/lib/daily-stoic/database.json"];

@@ -30,6 +30,7 @@ in {
 
     serviceRegistry.prometheus = {
       port = config.ports.prometheus.server;
+      category = "Observability";
       monitor = {
         enable = true;
         http = {

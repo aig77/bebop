@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.searx = {config, ...}: {
     serviceRegistry.searx = {
       port = config.ports.searx;
+      category = "Productivity";
       monitor = {
         enable = true;
         http = {

@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.vaultwarden = {config, ...}: {
     serviceRegistry.vaultwarden = {
       port = config.ports.vaultwarden;
+      category = "Productivity";
       expose = {subdomain = "vault";};
       backup = {
         paths = ["/var/lib/vaultwarden/attachments"];

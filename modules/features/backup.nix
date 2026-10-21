@@ -5,6 +5,14 @@ _: {
     pkgs,
     ...
   }: let
+    # TODO: consistent raw-file backups. Database dumps are
+    # transactionally consistent (pg_dump, sqlite3 .backup), but paths
+    # under backup.paths (vaultwarden attachments, forgejo repos, etc)
+    # are read live by restic and can be captured mid-write. The fix is
+    # a btrfs snapshot of the @data subvolume (mounted at /var/lib on
+    # jet) taken before restic runs: snapshot in backupPrepareCommand,
+    # point restic paths at it, delete it in backupCleanupCommand.
+    # Requires a @snapshots subvolume on jet (spike/ein have one).
     backupServices = lib.filterAttrs (_: s: s.backup != null && s.host == config.var.hostname) config.serviceRegistry;
 
     # Postgres dump name defaults to the service key.

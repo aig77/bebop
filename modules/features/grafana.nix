@@ -6,6 +6,7 @@ _: {
   }: {
     serviceRegistry.grafana = {
       port = config.ports.grafana;
+      category = "Observability";
       backup.paths = ["/var/lib/grafana"];
       monitor = {
         enable = true;
@@ -74,6 +75,10 @@ _: {
       "grafana-dashboards/loki.json".source = pkgs.fetchurl {
         url = "https://grafana.com/api/dashboards/13639/revisions/2/download";
         sha256 = "sha256-2dRUkooIA1E0Qshg58N+9duIW25iRruu1oW8ckBUNIA=";
+      };
+      "grafana-dashboards/postgres.json".source = pkgs.fetchurl {
+        url = "https://grafana.com/api/dashboards/9628/revisions/8/download";
+        sha256 = "sha256-UhusNAZbyt7fJV/DhFUK4FKOmnTpG0R15YO2r+nDnMc=";
       };
     };
   };

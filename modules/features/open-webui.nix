@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.open-webui = {config, ...}: {
     serviceRegistry.open-webui = {
       port = config.ports.open-webui;
+      category = "AI";
       backup.paths = ["/var/lib/open-webui"];
       monitor = {
         enable = true;

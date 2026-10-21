@@ -30,36 +30,14 @@ _: {
       }
     '';
 
-    invidiousVhost =
-      lib.optionalString (
-        config.serviceRegistry ? invidious
-        && local config.serviceRegistry.invidious
-        && config.serviceRegistry.invidious.expose != null
-      ) (let
-        svc = config.serviceRegistry.invidious;
-      in ''
-        ${svc.expose.subdomain}.${domain} {
-          @authapi path /api/v1/auth/*
-          handle @authapi {
-            reverse_proxy ${target svc} {
-              header_up -X-Forwarded-For
-            }
-          }
-          handle {
-            import ${config.sops.templates."caddy-basic-auth".path}
-            reverse_proxy ${target svc} {
-              header_up -X-Forwarded-For
-            }
-          }
-        }
-      '');
-
-    otherVhosts = lib.concatMapStrings (
-      svc:
-        if svc.expose.basicAuth
-        then mkAuthVhost svc
-        else mkVhost svc
-    ) (lib.filter (s: s.expose.subdomain != "invidious") exposedServices);
+    otherVhosts =
+      lib.concatMapStrings (
+        svc:
+          if svc.expose.basicAuth
+          then mkAuthVhost svc
+          else mkVhost svc
+      )
+      exposedServices;
   in {
     sops = {
       secrets = {
@@ -97,7 +75,6 @@ _: {
               default_bind 127.0.0.1 ::1
             }
 
-            ${invidiousVhost}
             ${otherVhosts}
           '';
         };

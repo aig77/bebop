@@ -37,12 +37,42 @@ _: {
     };
 
     homepageServices = lib.filterAttrs (_: s: s.homepage.enable) config.serviceRegistry;
-    publicSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose != null) homepageServices);
-    privateSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose == null) homepageServices);
+
+    # Left column holds the services reachable from the internet, right
+    # column the tailnet-only ones. Exposure comes from `expose`, not from
+    # the category.
+    isWeb = svc: svc.expose != null;
+
+    # Keep the registry key so titles can fall back to it.
+    pairs = lib.mapAttrsToList (name: svc: {inherit name svc;}) homepageServices;
+
+    # Categories become sections. lib.attrNames sorts them alphabetically,
+    # so the enum order in the schema does not matter here.
+    byCategory = web: lib.groupBy (p: p.svc.category) (lib.filter (p: isWeb p.svc == web) pairs);
+
+    mkSection = web: category: {
+      type = "monitor";
+      title = category;
+      cache = "1m";
+      sites = lib.map (p: mkSite p.name p.svc) (byCategory web).${category};
+    };
+
+    sections = web: lib.map (mkSection web) (lib.attrNames (byCategory web));
+
+    # The html widget renders `source` verbatim, with no card of its own. The
+    # `widget` wrapper borrows the normal header styling and the spacing the
+    # column applies between widgets; `justify-center` centers the icon.
+    mkColumnTitle = icon: {
+      type = "html";
+      source = ''
+        <div class="widget"><div class="widget-header justify-center" style="font-size:calc(var(--font-size-h4) * 2)"><h2 class="uppercase">${icon}</h2></div></div>
+      '';
+    };
   in {
     serviceRegistry.glance = {
       port = config.ports.glance;
       servePort = 443;
+      category = "Infrastructure";
     };
 
     sops = {
@@ -79,55 +109,32 @@ _: {
           "negative-color" = "347 70% 65%";
         };
 
+        # The monitor widget lays its sites out in a `dynamic-columns` grid,
+        # which folds them side by side once the page column is wide. Pin it
+        # to a single column so every service is its own row, and drop the
+        # column borders that layout leaves behind.
+        document.head = ''
+          <style>
+            .widget-type-monitor .dynamic-columns { --columns-per-row: 1 !important; }
+            .widget-type-monitor .dynamic-columns > * { border-left: none; padding-left: 0; }
+          </style>
+        '';
+
         pages = [
           {
             name = "Homelab";
             width = "slim";
+            desktop-navigation-width = "slim";
             hide-desktop-navigation = true;
-            center-vertically = true;
+            center-vertically = false;
             columns = [
               {
                 size = "full";
-                widgets = [
-                  {
-                    type = "search";
-                    new-tab = true;
-                    bangs = [
-                      {
-                        title = "Youtube";
-                        shortcut = "!yt";
-                        url = "https://www.youtube.com/results?search_query={QUERY}";
-                      }
-                      {
-                        title = "Nixpkgs Search - Unstable";
-                        shortcut = "!nixpkg";
-                        url = "https://search.nixos.org/packages?channel=unstable&query={QUERY}";
-                      }
-                      {
-                        title = "NixOS Options Search - Unstable";
-                        shortcut = "!nixopt";
-                        url = "https://search.nixos.org/options?channel=unstable&query={QUERY}&type=options";
-                      }
-                      {
-                        title = "Home Manager Options Search - Unstable";
-                        shortcut = "!hm";
-                        url = "https://home-manager-options.extranix.com/?query={QUERY}&release=master";
-                      }
-                    ];
-                  }
-                  {
-                    type = "monitor";
-                    cache = "1m";
-                    title = "Public Services";
-                    sites = publicSites;
-                  }
-                  {
-                    type = "monitor";
-                    cache = "1m";
-                    title = "Private Services";
-                    sites = privateSites;
-                  }
-                ];
+                widgets = [(mkColumnTitle "🌐")] ++ sections true;
+              }
+              {
+                size = "full";
+                widgets = [(mkColumnTitle "🔒")] ++ sections false;
               }
             ];
           }

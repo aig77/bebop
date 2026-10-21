@@ -25,6 +25,10 @@ _: {
         base = 4050;
         names = ["webUI" "redis"];
       };
+      postgres = config.mkPortGroup {
+        base = 5432; # default
+        names = ["server" "exporter"];
+      };
     };
 
     # Remote metrics targets, scraped over the tailnet. This host's own
@@ -47,6 +51,7 @@ _: {
     serviceRegistry.blocky = {
       host = "ed";
       port = 53;
+      category = "Infrastructure";
       monitor = {
         enable = true;
         interval = "1m";

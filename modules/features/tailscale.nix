@@ -36,7 +36,7 @@ in {
         ...
       }: let
         local = svc: svc.host == config.var.hostname;
-        privateServices = lib.filter (svc: svc.expose == null && local svc) (lib.attrValues config.serviceRegistry);
+        privateServices = lib.filter (svc: svc.expose == null && local svc && svc.serve) (lib.attrValues config.serviceRegistry);
         tailscale = lib.getExe pkgs.tailscale;
         httpsPort = svc:
           if svc.servePort != null

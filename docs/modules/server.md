@@ -4,11 +4,12 @@ How self-hosted services get declared, exposed, authenticated, and backed up. Th
 
 ## The `serviceRegistry` registry
 
-Every service feature registers itself in `serviceRegistry` (schema in `modules/flake/var/nixos.nix`). A service entry looks like:
+Every service feature registers itself in `serviceRegistry` (schema in `modules/flake/service-registry.nix`). A service entry looks like:
 
 ```nix
 serviceRegistry.vaultwarden = {
   port = config.ports.vaultwarden;
+  category = "Productivity";
   expose = {subdomain = "vault";};   # public; omit for tailnet-only
   backup = {
     paths = ["/var/lib/vaultwarden/attachments"];
@@ -21,13 +22,15 @@ Fields:
 
 - `host` - the machine the service runs on; defaults to this host, so a co-located service omits it
 - `port` - where the service listens; pull it from this host's port registry, never invent your own number
+- `category` - functional grouping; glance renders one section per category, gatus groups endpoints by the same name (see [Categories](#categories))
 - `expose` - `null` (default) for a tailnet-only service, or `{subdomain; basicAuth ? false;}` to publish it through Caddy + Cloudflare
 - `servePort` - optional; HTTPS port the tailnet serves a private service on, defaults to `port` (glance sets 443)
+- `serve` - `true` (default) routes a private service over the tailnet with `tailscale serve`; set `false` for entries that are monitored or backed up but are not web services (a database), where an HTTPS proxy in front of the backend protocol makes no sense. Ignored when `expose` is set
 - `backup` - optional; `paths` for raw files, plus `database` for a dumpable database
-- `monitor` - optional; gatus auto-registers a health check (http/tcp, path, thresholds, interval)
+- `monitor` - optional; gatus auto-registers a health check (http/tcp/dns, path, conditions, thresholds, interval). Alerts on Discord by default; set `alert = false` to track without alerting
 - `homepage` - optional; glance auto-links the service (title, icon)
 
-Ports are a **per-host registry** (`modules/flake/ports.nix` defines the option; each host fills it in `modules/hosts/nixos/<host>/ports.nix`). Features read them via `config.ports.<name>`; a group like `prometheus.nodeExporter` is a nested attrset. A collision assertion rejects duplicate values at eval.
+Ports are a **per-host registry** (`modules/flake/ports.nix` defines the option; each host fills it in `modules/hosts/nixos/<host>/server.nix`). Features read them via `config.ports.<name>`; a group like `prometheus.nodeExporter` is a nested attrset. A collision assertion rejects duplicate values at eval.
 
 Six modules consume the registry. None of them know about individual services:
 
@@ -42,9 +45,24 @@ Six modules consume the registry. None of them know about individual services:
 
 **Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.net.addrOf svc.host`. A non-local entry with `expose` set fails an assertion: this host's tunnel cannot reach another machine's service.
 
+## Categories
+
+`category` groups services by what they are for, not by where they run. The value comes from a fixed enum in the schema (`AI`, `Development`, `Infrastructure`, `Media`, `Observability`, `Productivity`), and the enum doubles as the display name.
+
+Two consumers render it:
+
+- **Glance** puts the services in two columns, headed by a centered globe icon (🌐, public, left) and lock icon (🔒, private, right); the headings are `html` widgets at double the header font size, since columns have no title of their own. Each column stacks one monitor widget per category, titled with the category name. The widget's `dynamic-columns` grid would fold the sites side by side, so CSS injected through `document.head` pins it to one site per row. Categories are ordered alphabetically, so `AI` comes first and `Productivity` last.
+- **Gatus** sets the endpoint's native `group` field, so the health dashboard lists endpoints under the same names. The dashboard sorts by group.
+
+Adding a service means picking a category; nothing else changes. A new section appears on the homepage and a new group on the dashboard automatically.
+
+Gatus stores uptime under a `<group>_<name>` key, so an endpoint that changes group (or gets renamed) starts a fresh history in `/var/lib/gatus/data.db`. Changing a category is otherwise free and resets only that one endpoint's uptime.
+
+The enum has one lowercase value, `other`, as the default. It sorts after every capitalized category, so it would land at the bottom of the list. An assertion rejects a service that leaves `category` at the default, so `other` never shows up in practice.
+
 ## The `net` registry
 
-`net` (schema in `modules/flake/var/nixos.nix`, data in `modules/flake/network.nix`) holds network constants:
+`net` (schema and data in `modules/flake/net.nix`) holds network constants:
 
 - `subnet` - the LAN as a CIDR block, used by the subnet router
 - `addrOf` - `name -> "localhost"` for this host, the hostname otherwise
@@ -55,12 +73,12 @@ A service running on another machine is registered by the consuming host as a `s
 
 ## Adding a service
 
-1. Reserve a port in `modules/hosts/nixos/<host>/ports.nix` (or reuse an existing one).
-2. Create a feature that runs the app on localhost only and sets `serviceRegistry.<name>` with `port = config.ports.<name>`.
+1. Reserve a port in `modules/hosts/nixos/<host>/server.nix` (or reuse an existing one).
+2. Create a feature that runs the app on localhost only and sets `serviceRegistry.<name>` with `port = config.ports.<name>` and `category = "..."`.
 3. Choose exposure:
    - **Public**: set `expose = {subdomain = "...";}`. The host needs `server-public` (Caddy + Cloudflared). Add `basicAuth = true` to gate it.
    - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved. Bind the app to `127.0.0.1` (see [Private exposure](#private-exposure-tailscale-https)).
-   Optionally add a `monitor` block for an automatic gatus health check, and a `homepage` block so glance links the service. Both default to off; see the field list above.
+   Optionally add a `monitor` block for an automatic gatus health check, and a `homepage` block so glance links the service. Both default to off; see the field list above. A monitored service alerts on Discord unless the block sets `alert = false`.
 4. `git add` the new file, run `nix flake check`.
 
 ## Public exposure: Caddy + Cloudflared
@@ -85,8 +103,6 @@ nix shell nixpkgs#caddy --command caddy hash-password
 sops modules/aspects/secrets/secrets.yaml   # replace caddy/basic-auth-hash
 nh os switch -H <host>
 ```
-
-Invidious gets one extra rule: `/api/v1/auth/*` bypasses basic auth because API clients send their session token in the `Authorization` header, which `basic_auth` would otherwise consume.
 
 ### Updating the Caddy Cloudflare plugin
 
@@ -145,7 +161,7 @@ backup = {
 };
 ```
 
-Database dumps are transactionally consistent (`pg_dump`, sqlite `.backup`) and safe while the service writes. Raw `paths` are read live, so a file mid-write can be captured torn; a btrfs snapshot before the run is the fix, tracked as a TODO in `modules/flake/var/nixos.nix`.
+Database dumps are transactionally consistent (`pg_dump`, sqlite `.backup`) and safe while the service writes. Raw `paths` are read live, so a file mid-write can be captured torn; a btrfs snapshot before the run is the fix, tracked as a TODO in `modules/features/backup.nix`.
 
 Restore:
 
@@ -156,10 +172,6 @@ restic snapshots
 restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 ```
 
-## Invidious
-
-`features/invidious.nix` runs invidious alongside `invidious-companion`, which handles PO token acquisition so video playback works. Both are built from flake inputs tracking upstream master rather than nixpkgs. A daily timer rebuilds from the GitHub flake, and a monitor service restarts the rebuild if the instance stays down.
-
 ## DNS
 
 `features/dns.nix` is the LAN side of the self-hosted stack:
@@ -167,6 +179,6 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 - **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.net.addrOf "ed"`.
 - **Unbound** - local recursive resolver with DNSSEC; Blocky's primary upstream, so LAN queries resolve locally and stay off the wire.
 - **Cloudflare DoH** - strict-order fallback: Blocky forwards to Unbound first, and only queries `one.one.one.one` when Unbound doesn't respond.
-- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically.
+- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
 
 Ports and scrape targets come from the port registry and `net`, not from this doc.

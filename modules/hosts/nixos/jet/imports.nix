@@ -21,8 +21,6 @@
         actual-budget
         daily-stoic
         forgejo
-        # invidious # temporarily remove since its down. plan on updating module with docker setup
-        # invidious-status
         n8n
         open-webui
         searx

@@ -4,15 +4,6 @@
     fleetHosts,
     ...
   }: {
-    # TODO: consistent raw-file backups. Database dumps are
-    # transactionally consistent (pg_dump, sqlite3 .backup), but paths
-    # under backup.paths (vaultwarden attachments, forgejo repos, etc)
-    # are read live by restic and can be captured mid-write. The fix is
-    # a btrfs snapshot of the @data subvolume (mounted at /var/lib on
-    # jet) taken before restic runs: snapshot in backupPrepareCommand,
-    # point restic paths at it, delete it in backupCleanupCommand.
-    # Requires a @snapshots subvolume on jet (spike/ein have one).
-    #
     # `host` is the machine the service runs on. It defaults to this
     # host, so a co-located service needs no field. Routing layers
     # (caddy, cloudflared, tailscale-http, backup) only act on services
@@ -30,6 +21,27 @@
             type = lib.types.nullOr lib.types.port;
             default = null;
           };
+          # Functional grouping. Glance renders one section per category,
+          # gatus groups its endpoints by the same name. The value is the
+          # section title, so the enum doubles as the display name.
+          #
+          # Sections are ordered alphabetically, so the enum values are
+          # listed in alphabetical order too. "other" is the lowercase
+          # fallback: it sorts after every capitalized category and only
+          # shows up when a service forgets to pick one (an assertion
+          # rejects that).
+          category = lib.mkOption {
+            type = lib.types.enum [
+              "AI"
+              "Development"
+              "Infrastructure"
+              "Media"
+              "Observability"
+              "Productivity"
+              "other"
+            ];
+            default = "other";
+          };
           expose = lib.mkOption {
             type = lib.types.nullOr (lib.types.submodule {
               options = {
@@ -41,6 +53,15 @@
               };
             });
             default = null;
+          };
+          # Route this private service over the tailnet with `tailscale serve`.
+          # Set false for entries that exist to be monitored or backed up but
+          # are not web services (a database, for instance), where an HTTPS
+          # proxy in front of the backend protocol makes no sense. Ignored
+          # when `expose` is set, since public exposure goes through Caddy.
+          serve = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
           };
           backup = lib.mkOption {
             type = lib.types.nullOr (lib.types.submodule {
@@ -77,6 +98,13 @@
                 enable = lib.mkOption {
                   type = lib.types.bool;
                   default = false;
+                };
+                # Whether a failure raises an alert. Set to false for
+                # services that are nice to have but not worth paging
+                # about; the check still runs and shows on the dashboard.
+                alert = lib.mkOption {
+                  type = lib.types.bool;
+                  default = true;
                 };
                 interval = lib.mkOption {
                   type = lib.types.str;
@@ -170,6 +198,11 @@
       ++ lib.mapAttrsToList (name: svc: {
         assertion = lib.elem svc.host fleetHosts;
         message = "serviceRegistry.${name}: host '${svc.host}' is not a known host";
+      })
+      config.serviceRegistry
+      ++ lib.mapAttrsToList (name: svc: {
+        assertion = svc.category != "other";
+        message = "serviceRegistry.${name}: category not set (pick one of AI, Development, Infrastructure, Media, Observability, Productivity)";
       })
       config.serviceRegistry
       ++ lib.mapAttrsToList (name: svc: let

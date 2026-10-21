@@ -26,8 +26,6 @@ Deploying this host: see [deploying](../howto/deploying.md) and [age keys](../ho
 
 Monitors ed over the tailnet: gatus health checks and prometheus scrape targets resolve ed through `config.net.addrOf "ed"` (MagicDNS), no hardcoded IPs.
 
-__Invidious requires either a complete migration to a docker setup or being dropped__
-
 ---
 
 ## Disk Layout

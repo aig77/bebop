@@ -55,6 +55,7 @@ _: {
   in {
     serviceRegistry.forgejo = {
       port = config.ports.forgejo;
+      category = "Development";
       expose = {inherit subdomain;};
       backup = {
         paths = [

@@ -89,7 +89,7 @@ Fuller troubleshooting in [docs/howto/troubleshooting.md](docs/howto/troubleshoo
 - [Aspects](docs/modules/aspects.md): foundational system modules reference
 - [Features](docs/modules/features.md): opt-in capability modules reference
 - [Bundles](docs/modules/bundles.md): curated feature group reference
-- [Server Services](docs/modules/server.md): the var.services registry, exposure, auth, backups
+- [Server Services](docs/modules/server.md): the serviceRegistry registry, exposure, auth, backups
 - [Flake-Parts Infrastructure](docs/flake-parts.md): output builders, bridges, dev shell
 - [Nixpkgs Channels](docs/howto/nixpkgs-channels.md): the stable/unstable channel split, base-by-role, per-package escapes
 - [Hosts](docs/hosts/): per-machine details (spike, ein, faye, jet, ed)

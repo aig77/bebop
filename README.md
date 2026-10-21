@@ -58,10 +58,6 @@ A declarative, multi-platform system configuration built with Nix Flakes and fla
 - [Troubleshooting](docs/howto/troubleshooting.md): common errors and how to fix them
 - [Chezmoi](docs/howto/chezmoi.md): dotfile management
 
-### Service Guides
-
-- [Yattee](docs/services/yattee.md): ad-free YouTube on iPhone, iPad, and Apple TV via Invidious
-
 ---
 
 ## Acknowledgements

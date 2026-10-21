@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.subtrakr = {config, ...}: {
     serviceRegistry.subtrakr = {
       port = config.ports.subtrakr;
+      category = "Productivity";
       backup = {
         database = {
           type = "sqlite";

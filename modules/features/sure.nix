@@ -6,6 +6,7 @@ _: {
   }: {
     serviceRegistry.sure = {
       port = config.ports.sure.webUI;
+      category = "Productivity";
       monitor = {
         enable = true;
         http = {
