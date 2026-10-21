@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.vaultwarden = {config, ...}: {
-    var.services.vaultwarden = {
+    serviceRegistry.vaultwarden = {
       port = config.ports.vaultwarden;
       expose = {subdomain = "vault";};
       backup = {

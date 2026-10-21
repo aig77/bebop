@@ -53,7 +53,7 @@ _: {
         ++ map (a: "catppuccin-${a}-auto") catppuccinAccents
         ++ lib.concatMap (f: map (a: "catppuccin-${f}-${a}") catppuccinAccents) catppuccinFlavors);
   in {
-    var.services.forgejo = {
+    serviceRegistry.forgejo = {
       port = config.ports.forgejo;
       expose = {inherit subdomain;};
       backup = {

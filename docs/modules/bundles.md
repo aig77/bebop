@@ -23,12 +23,12 @@ See [Features](features.md) for the full list of atomic capabilities. See [Aspec
 The exact feature lists live in the bundle files, so this section only says what each bundle is for:
 
 - **`machines.nix`** - machine-type profiles (`desktop`, `laptop`, `htpc`, `server`) plus the server sub-profiles. `server` is the headless base every server shares (health reporting, CVE scanning, tailnet HTTPS); `server-public` adds Caddy + Cloudflared ingress; `server-private` adds the homepage and the observability stack (glance plus `observability`). A host picks `server` plus whichever sub-profiles it needs.
-- **`observability.nix`** - the homelab observability stack, split so it can move machines. `observability` is the stack-host profile (prometheus, grafana, loki, gatus, plus the agent so the host observes itself); `observability-agent` is the thin shipper every other monitored machine runs (alloy journal shipping + node exporter). Agents ship toward `var.observability.lokiHost`, one value that points the whole fleet at whichever host runs the stack.
+- **`observability.nix`** - the homelab observability stack, split so it can move machines. `observability` is the stack-host profile (prometheus, grafana, loki, gatus, plus the agent so the host observes itself); `observability-agent` is the thin shipper every other monitored machine runs (alloy journal shipping + node exporter). Agents ship toward `observability.lokiHost`, one value that points the whole fleet at whichever host runs the stack.
 - **`shells.nix`** - HM shell profiles (`shell`, `shell-lite`). The selected shell (zsh or fish) is chosen dynamically via `hm.${var.shell}`.
-- **`gui.nix`** - the HM GUI profile: the terminal selected dynamically via `hm.${var.terminal}`, plus the always-on GUI apps.
+- **`gui.nix`** - the HM GUI profile: terminal/browser/file manager imported via GUI bundle, plus the always-on GUI apps.
 - **`eyecandy.nix`** - terminal eye candy profiles (fastfetch, ASCII art packages).
 - **`machines.nix`** `desktop` also owns the Noctalia shell (`noctalia-greeter`, the desktop services, and the `noctalia` HM profile). WM features (`hyprland`) are imported separately by the host, so a machine can offer more than one session at the desktop manager.
-- **`wallpaper.nix`** - waypaper GTK picker plus the wallpaper daemon, selected via `var.wallpaperEngine`.
+- **`wallpaper.nix`** - waypaper GTK picker plus the wallpaper daemon.
 
 ## Where to See Real Composition
 

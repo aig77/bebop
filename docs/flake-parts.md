@@ -116,7 +116,7 @@ See [Server Services](modules/server.md) for how services consume it.
 
 ### `flake/network.nix`
 
-Contributes network constants to `flake.modules.nixos.base`: `var.network.subnet`, used by the subnet router. Hosts are not listed here - every machine is on the tailnet and resolves by MagicDNS, and the fleet is the `configurations.nixos` registry. `var.network.addrOf` (schema in `modules/flake/var/nixos.nix`) returns `localhost` for this host and the hostname otherwise; the `fleetHosts` specialArg feeds a `svc.host` validity assertion.
+Contributes network constants to `flake.modules.nixos.base`: `net.subnet`, used by the subnet router. Hosts are not listed here - every machine is on the tailnet and resolves by MagicDNS, and the fleet is the `configurations.nixos` registry. `net.addrOf` (schema in `modules/flake/var/nixos.nix`) returns `localhost` for this host and the hostname otherwise; the `fleetHosts` specialArg feeds a `svc.host` validity assertion.
 
 ---
 

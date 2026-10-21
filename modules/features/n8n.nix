@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.n8n = {config, ...}: {
-    var.services.n8n = {
+    serviceRegistry.n8n = {
       port = config.ports.n8n;
       backup.paths = ["/var/lib/n8n"];
       monitor = {

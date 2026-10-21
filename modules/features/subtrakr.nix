@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.subtrakr = {config, ...}: {
-    var.services.subtrakr = {
+    serviceRegistry.subtrakr = {
       port = config.ports.subtrakr;
       backup = {
         database = {

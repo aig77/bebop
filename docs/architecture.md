@@ -136,12 +136,12 @@ Design, per-package escapes, and the update workflow: [Nixpkgs Channels](howto/n
 Hosts set typed variables; feature modules read them. Never hardcode hostnames, usernames, or paths that vary between hosts.
 
 ```nix
-var.network = {                  # network constants (modules/flake/network.nix)
+net = {                  # network constants (modules/flake/network.nix)
   subnet = "192.168.68.0/24";
 };
 ```
 
-Every machine is on the tailnet and resolves by MagicDNS, so there is no address book. `config.var.network.addrOf "<name>"` returns `"localhost"` for this host and the hostname itself otherwise; consumers use it instead of hardcoding addresses. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`, and an assertion rejects a `var.services.<name>.host` that is not a known host.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book. `config.net.addrOf "<name>"` returns `"localhost"` for this host and the hostname itself otherwise; consumers use it instead of hardcoding addresses. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`, and an assertion rejects a `serviceRegistry.<name>.host` that is not a known host.
 
 ---
 

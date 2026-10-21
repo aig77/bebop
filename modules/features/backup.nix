@@ -5,7 +5,7 @@ _: {
     pkgs,
     ...
   }: let
-    backupServices = lib.filterAttrs (_: s: s.backup != null && s.host == config.var.hostname) config.var.services;
+    backupServices = lib.filterAttrs (_: s: s.backup != null && s.host == config.var.hostname) config.serviceRegistry;
 
     # Postgres dump name defaults to the service key.
     dbName = name: s:
@@ -40,7 +40,7 @@ _: {
     assertions =
       lib.mapAttrsToList (name: s: {
         assertion = s.backup.database == null || s.backup.database.type != "sqlite" || s.backup.database.path != null;
-        message = "var.services.${name}: backup.database.type = sqlite requires backup.database.path";
+        message = "serviceRegistry.${name}: backup.database.type = sqlite requires backup.database.path";
       })
       backupServices;
 

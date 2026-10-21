@@ -6,10 +6,10 @@ _: {
     ...
   }: let
     local = svc: svc.host == config.var.hostname;
-    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.var.services);
+    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.serviceRegistry);
     domain = config.sops.placeholder."cloudflare/service-domain";
 
-    target = svc: "${config.var.network.addrOf svc.host}:${toString svc.port}";
+    target = svc: "${config.net.addrOf svc.host}:${toString svc.port}";
 
     mkVhost = svc: ''
       ${svc.expose.subdomain}.${domain} {
@@ -32,11 +32,11 @@ _: {
 
     invidiousVhost =
       lib.optionalString (
-        config.var.services ? invidious
-        && local config.var.services.invidious
-        && config.var.services.invidious.expose != null
+        config.serviceRegistry ? invidious
+        && local config.serviceRegistry.invidious
+        && config.serviceRegistry.invidious.expose != null
       ) (let
-        svc = config.var.services.invidious;
+        svc = config.serviceRegistry.invidious;
       in ''
         ${svc.expose.subdomain}.${domain} {
           @authapi path /api/v1/auth/*

@@ -4,7 +4,7 @@ _: {
     pkgs,
     ...
   }: {
-    var.services.grafana = {
+    serviceRegistry.grafana = {
       port = config.ports.grafana;
       backup.paths = ["/var/lib/grafana"];
       monitor = {
@@ -49,7 +49,7 @@ _: {
             name = "Loki";
             type = "loki";
             uid = "loki";
-            url = "http://${config.var.network.addrOf config.var.observability.lokiHost}:${toString config.ports.loki}";
+            url = "http://${config.net.addrOf config.observability.lokiHost}:${toString config.ports.loki}";
             access = "proxy";
           }
         ];

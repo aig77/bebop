@@ -23,7 +23,7 @@ in {
 
         services.tailscale = {
           useRoutingFeatures = "server";
-          extraUpFlags = ["--advertise-routes=${config.var.network.subnet}" "--reset"];
+          extraUpFlags = ["--advertise-routes=${config.net.subnet}" "--reset"];
           openFirewall = true;
         };
       };
@@ -36,13 +36,13 @@ in {
         ...
       }: let
         local = svc: svc.host == config.var.hostname;
-        privateServices = lib.filter (svc: svc.expose == null && local svc) (lib.attrValues config.var.services);
+        privateServices = lib.filter (svc: svc.expose == null && local svc) (lib.attrValues config.serviceRegistry);
         tailscale = lib.getExe pkgs.tailscale;
         httpsPort = svc:
           if svc.servePort != null
           then svc.servePort
           else svc.port;
-        serveCmd = svc: "${tailscale} serve --bg --https=${toString (httpsPort svc)} http://${config.var.network.addrOf svc.host}:${toString svc.port}";
+        serveCmd = svc: "${tailscale} serve --bg --https=${toString (httpsPort svc)} http://${config.net.addrOf svc.host}:${toString svc.port}";
       in {
         services.tailscale.enable = true;
 

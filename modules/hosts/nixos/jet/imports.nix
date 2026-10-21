@@ -11,6 +11,7 @@
         grub-server
         aarch64-builder
 
+        postgres
         backup
         dbgate
         hermes-readonly

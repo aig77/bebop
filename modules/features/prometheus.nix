@@ -10,12 +10,12 @@ in {
     # Every remote target is scraped on the tailnet; the stack itself is
     # covered by the loopback target. job "node" uses the exporter's standard
     # port unless the target overrides it.
-    mkTarget = t: "${config.var.network.addrOf t.host}:${toString (
+    mkTarget = t: "${config.net.addrOf t.host}:${toString (
       if t.port != null
       then t.port
       else nodeExporterPort
     )}";
-    targetsByJob = lib.groupBy (t: t.job) config.var.observability.scrapeTargets;
+    targetsByJob = lib.groupBy (t: t.job) config.observability.scrapeTargets;
     nodeTargets = map mkTarget (targetsByJob.node or []);
     extraJobs =
       lib.mapAttrsToList (job: targets: {
@@ -28,7 +28,7 @@ in {
     # exporter too. The exporter definition lives in prometheus-client.
     imports = [nixos.prometheus-client];
 
-    var.services.prometheus = {
+    serviceRegistry.prometheus = {
       port = config.ports.prometheus.server;
       monitor = {
         enable = true;

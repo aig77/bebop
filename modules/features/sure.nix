@@ -4,7 +4,7 @@ _: {
     lib,
     ...
   }: {
-    var.services.sure = {
+    serviceRegistry.sure = {
       port = config.ports.sure.webUI;
       monitor = {
         enable = true;
@@ -72,13 +72,17 @@ _: {
       };
     };
 
-    services.postgresql = {
-      enable = true;
-      settings.listen_addresses = lib.mkForce "0.0.0.0";
-      authentication = lib.mkAfter ''
-        host all sure_user 10.88.0.0/16 scram-sha-256
-      '';
-    };
+    assertions = [
+      {
+        assertion = config.services.postgresql.enable;
+        message = "sure requires postgres service to be imported";
+      }
+    ];
+
+    # Allow sure_user TCP access from podman bridge (10.88.0.0/16) with password auth
+    services.postgresql.authentication = lib.mkAfter ''
+      host all sure_user 10.88.0.0/16 scram-sha-256
+    '';
 
     services.redis.servers."sure" = {
       enable = true;
@@ -93,7 +97,7 @@ _: {
       };
     };
 
-    networking.firewall.interfaces.podman0.allowedTCPPorts = [5432 config.ports.sure.redis];
+    networking.firewall.interfaces.podman0.allowedTCPPorts = [config.ports.sure.redis];
 
     systemd = {
       services = {

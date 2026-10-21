@@ -20,15 +20,11 @@ in {
     home-manager.users.${username}.imports = [hm.hyprland];
   };
 
-  flake.modules.homeManager.hyprland = {
-    pkgs,
-    var,
-    ...
-  }: let
+  flake.modules.homeManager.hyprland = {pkgs, ...}: let
     sessionVariables = {
-      TERMINAL = var.terminal;
-      BROWSER = var.browser;
-      FILE_MANAGER = var.fileManager;
+      TERMINAL = "ghostty";
+      BROWSER = "zen";
+      FILE_MANAGER = "thunar";
       HYPR_GAME_WORKSPACE = 10;
     };
   in {

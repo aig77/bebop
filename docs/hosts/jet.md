@@ -24,7 +24,7 @@ Service data backups are handled by restic which upload updated versions of crit
 List of services located in server [imports](../modules/hosts/nixos/jet/imports.nix)
 Deploying this host: see [deploying](../howto/deploying.md) and [age keys](../howto/age-keys.md).
 
-Monitors ed over the tailnet: gatus health checks and prometheus scrape targets resolve ed through `config.var.network.addrOf "ed"` (MagicDNS), no hardcoded IPs.
+Monitors ed over the tailnet: gatus health checks and prometheus scrape targets resolve ed through `config.net.addrOf "ed"` (MagicDNS), no hardcoded IPs.
 
 __Invidious requires either a complete migration to a docker setup or being dropped__
 
@@ -71,7 +71,7 @@ Service data is backed up with restic to a Cloudflare R2 bucket (S3-compatible).
 - **Module:** `modules/features/backup.nix` -> `flake.modules.nixos.backup`
 - **Schedule:** daily at 02:00 via a persistent systemd timer (`services.restic.backups.jet`)
 - **Credentials:** R2 repository URL, access key, and restic password injected from sops
-- **What gets backed up:** any service that declares a `backup` block in `var.services`. Each service stages a consistent snapshot (e.g. `pg_dump` for PostgreSQL, sqlite `.backup` plus attachments) into `/var/lib/backups` before upload, then that staging dir is cleaned up afterwards
+- **What gets backed up:** any service that declares a `backup` block in `serviceRegistry`. Each service stages a consistent snapshot (e.g. `pg_dump` for PostgreSQL, sqlite `.backup` plus attachments) into `/var/lib/backups` before upload, then that staging dir is cleaned up afterwards
 - **Retention:** pruned automatically, keeping daily backups for 7 days, weekly for 4 weeks, monthly for 3 months
 - **Repo initialized** automatically on first run (`initialize = true`)
 

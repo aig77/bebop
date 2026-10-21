@@ -6,7 +6,7 @@ _: {
     ...
   }: let
     local = svc: svc.host == config.var.hostname;
-    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.var.services);
+    exposedServices = lib.filter (svc: svc.expose != null && local svc) (lib.attrValues config.serviceRegistry);
     domain = config.sops.placeholder."cloudflare/service-domain";
     ingressRules =
       lib.concatMapStrings (svc: ''

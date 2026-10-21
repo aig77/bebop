@@ -13,7 +13,7 @@ _: {
         else if svc.homepage.enable && svc.homepage.title != null
         then svc.homepage.title
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
-      addr = config.var.network.addrOf svc.host;
+      addr = config.net.addrOf svc.host;
       base = {
         name = displayName;
         inherit (hp) interval;
@@ -53,9 +53,9 @@ _: {
 
     generatedEndpoints =
       lib.mapAttrsToList mkProbeEndpoint
-      (lib.filterAttrs (_: s: s.monitor.enable) config.var.services);
+      (lib.filterAttrs (_: s: s.monitor.enable) config.serviceRegistry);
   in {
-    var.services.gatus = {
+    serviceRegistry.gatus = {
       port = config.ports.gatus;
       monitor = {
         enable = true;

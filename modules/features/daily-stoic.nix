@@ -6,7 +6,7 @@ _: {
   }: {
     imports = [inputs.daily-stoic.nixosModules.default];
 
-    var.services.daily-stoic = {
+    serviceRegistry.daily-stoic = {
       port = config.ports.dailyStoic;
       expose = {subdomain = "stoic";};
       backup = {

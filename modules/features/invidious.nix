@@ -1,7 +1,7 @@
 _: {
   flake.modules.nixos = {
     invidious = {config, ...}: {
-      var.services.invidious = {
+      serviceRegistry.invidious = {
         port = config.ports.invidious;
         expose = {
           subdomain = "invidious";
@@ -67,12 +67,12 @@ _: {
     }: {
       assertions = [
         {
-          assertion = config.var.services ? invidious;
+          assertion = config.serviceRegistry ? invidious;
           message = "invidious-status requires invidious to be enabled";
         }
       ];
 
-      var.services.invidious-status = {
+      serviceRegistry.invidious-status = {
         port = config.ports.invidiousStatus;
         expose = {subdomain = "invidious-status";};
       };

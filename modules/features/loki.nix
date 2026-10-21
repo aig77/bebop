@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.loki = {config, ...}: {
-    var.services.loki = {
+    serviceRegistry.loki = {
       port = config.ports.loki;
       backup.paths = ["/var/lib/loki"];
       monitor = {
@@ -58,7 +58,7 @@ _: {
     pkgs,
     ...
   }: let
-    lokiHost = config.var.observability.lokiHost;
+    lokiHost = config.observability.lokiHost;
     # The stack host talks to Loki on loopback; agents reach it through
     # tailscale-http, which terminates TLS on the tailnet name.
     lokiUrl =

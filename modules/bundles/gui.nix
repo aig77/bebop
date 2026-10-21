@@ -29,20 +29,20 @@ in {
       home-manager.users.${username}.imports = [hm.gui];
     };
 
-    homeManager.gui = {var, ...}: {
-      imports =
-        [hm.${var.terminal}]
-        ++ (with hm; [
-          eyecandy-nixos
-          shell
+    homeManager.gui = _: {
+      imports = with hm; [
+        eyecandy-nixos
+        shell
 
-          discord
-          nixcord
-          obsidian
-          spotify
-          zathura
-          zen
-        ]);
+        alacritty
+        discord
+        ghostty
+        nixcord
+        obsidian
+        spotify
+        zathura
+        zen
+      ];
     };
   };
 }

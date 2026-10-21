@@ -26,5 +26,34 @@ _: {
         names = ["webUI" "redis"];
       };
     };
+
+    # Remote metrics targets, scraped over the tailnet. This host's own
+    # node exporter is scraped on loopback and is not listed here.
+    observability = {
+      scrapeTargets = [
+        {
+          job = "node";
+          host = "ed";
+        }
+        {
+          job = "blocky";
+          host = "ed";
+          port = config.ports.blockyHttp;
+        }
+      ];
+    };
+
+    # Remote DNS service on ed; gatus probes it with a real DNS query.
+    serviceRegistry.blocky = {
+      host = "ed";
+      port = 53;
+      monitor = {
+        enable = true;
+        interval = "1m";
+        dns = {
+          queryName = "example.com";
+        };
+      };
+    };
   };
 }

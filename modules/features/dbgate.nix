@@ -3,25 +3,8 @@ _: {
     config,
     lib,
     ...
-  }: let
-    image = "docker.io/dbgate/dbgate:latest";
-  in {
-    # Expose postgres to the podman default bridge so containerized workloads
-    # (dbgate, future pg-backed containers) can reach the host instance over TCP.
-    #
-    # Podman 5 defaults: bridge interface podman0, subnet 10.88.0.0/16, gateway
-    # 10.88.0.1. If the default network ever changes, update this whole module.
-    #
-    # Postgres binds 0.0.0.0 instead of "localhost,10.88.0.1" because podman0 is
-    # created lazily at container start, after postgres boots; binding a
-    # not-yet-existing address would crash postgres. Safety still comes from:
-    #   - pg_hba: only loopback (md5) and whatever line consumers add for
-    #     10.88.0.0/16 may connect over TCP (each consumer scopes its own role)
-    #   - the NixOS firewall: 5432 open on podman0 only, nothing on LAN/tailnet
-    services.postgresql.settings.listen_addresses = lib.mkForce "0.0.0.0";
-    networking.firewall.interfaces.podman0.allowedTCPPorts = [5432];
-
-    var.services.dbgate = {
+  }: {
+    serviceRegistry.dbgate = {
       port = config.ports.dbgate;
       backup.paths = ["/var/lib/dbgate"];
       monitor = {
@@ -36,8 +19,7 @@ _: {
       };
     };
 
-    # Trust auth from the podman bridge for the dbgate role only. No resource names
-    # hardcoded: dbgate connects to any database on the instance.
+    # Allow dbgate TCP access from podman bridge (10.88.0.0/16)
     services.postgresql.authentication = lib.mkAfter ''
       host all dbgate 10.88.0.0/16 trust
     '';
@@ -45,18 +27,6 @@ _: {
     # Connections are created in the DbGate UI and persisted in /root/.dbgate;
     # no CONNECTIONS env vars, so add/edit stays available and survives restic restores.
     systemd.tmpfiles.rules = ["d /var/lib/dbgate 0755 root root -"];
-
-    virtualisation = {
-      podman.enable = true;
-      oci-containers.containers.dbgate = {
-        inherit image;
-        ports = ["127.0.0.1:${toString config.ports.dbgate}:3000"];
-        volumes = [
-          "/var/lib:/data"
-          "/var/lib/dbgate:/root/.dbgate"
-        ];
-      };
-    };
 
     # DbGate postgres role: broad read/write via postgres's own pg_read_all_data /
     # pg_write_all_data roles, so no per-service grants are hardcoded here.
@@ -83,6 +53,18 @@ _: {
         GRANT pg_write_all_data TO dbgate;
         SQL
       '';
+    };
+
+    virtualisation = {
+      podman.enable = true;
+      oci-containers.containers.dbgate = {
+        image = "docker.io/dbgate/dbgate:latest";
+        ports = ["127.0.0.1:${toString config.ports.dbgate}:3000"];
+        volumes = [
+          "/var/lib:/data"
+          "/var/lib/dbgate:/root/.dbgate"
+        ];
+      };
     };
   };
 }

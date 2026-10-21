@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.searx = {config, ...}: {
-    var.services.searx = {
+    serviceRegistry.searx = {
       port = config.ports.searx;
       monitor = {
         enable = true;

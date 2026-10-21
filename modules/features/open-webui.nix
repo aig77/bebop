@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.open-webui = {config, ...}: {
-    var.services.open-webui = {
+    serviceRegistry.open-webui = {
       port = config.ports.open-webui;
       backup.paths = ["/var/lib/open-webui"];
       monitor = {

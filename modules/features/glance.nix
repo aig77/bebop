@@ -18,8 +18,8 @@ _: {
         else lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
       checkUrl =
         if svc.monitor.http != null
-        then "http://${config.var.network.addrOf svc.host}:${toString svc.port}${svc.monitor.http.path}"
-        else "http://${config.var.network.addrOf svc.host}:${toString svc.port}";
+        then "http://${config.net.addrOf svc.host}:${toString svc.port}${svc.monitor.http.path}"
+        else "http://${config.net.addrOf svc.host}:${toString svc.port}";
     in {
       inherit title;
       url =
@@ -36,11 +36,11 @@ _: {
       icon = svc.homepage.icon;
     };
 
-    homepageServices = lib.filterAttrs (_: s: s.homepage.enable) config.var.services;
+    homepageServices = lib.filterAttrs (_: s: s.homepage.enable) config.serviceRegistry;
     publicSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose != null) homepageServices);
     privateSites = lib.mapAttrsToList mkSite (lib.filterAttrs (_: s: s.expose == null) homepageServices);
   in {
-    var.services.glance = {
+    serviceRegistry.glance = {
       port = config.ports.glance;
       servePort = 443;
     };

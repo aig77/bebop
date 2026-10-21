@@ -1,10 +1,10 @@
 _: {
-  flake.modules.homeManager.git = {osConfig, ...}: {
+  flake.modules.homeManager.git = _: {
     programs.git = {
       enable = true;
       settings = {
-        user.name = osConfig.var.git.name;
-        user.email = osConfig.var.git.email;
+        user.name = "Arturo";
+        user.email = "29128253+aig77@users.noreply.github.com";
       };
     };
   };

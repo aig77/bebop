@@ -2,12 +2,12 @@
 
 How self-hosted services get declared, exposed, authenticated, and backed up. The heavy lifting lives in a handful of modules; this page explains how they fit together.
 
-## The `var.services` registry
+## The `serviceRegistry` registry
 
-Every service feature registers itself in `var.services` (schema in `modules/flake/var/nixos.nix`). A service entry looks like:
+Every service feature registers itself in `serviceRegistry` (schema in `modules/flake/var/nixos.nix`). A service entry looks like:
 
 ```nix
-var.services.vaultwarden = {
+serviceRegistry.vaultwarden = {
   port = config.ports.vaultwarden;
   expose = {subdomain = "vault";};   # public; omit for tailnet-only
   backup = {
@@ -40,23 +40,23 @@ Six modules consume the registry. None of them know about individual services:
 | `features/gatus.nix` | `monitor.enable` (any host) | Health-check endpoint on the Bebop dashboard |
 | `features/glance.nix` | `homepage.enable` (any host) | Homepage site entry |
 
-**Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.var.network.addrOf svc.host`. A non-local entry with `expose` set fails an assertion: this host's tunnel cannot reach another machine's service.
+**Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.net.addrOf svc.host`. A non-local entry with `expose` set fails an assertion: this host's tunnel cannot reach another machine's service.
 
-## The `var.network` registry
+## The `net` registry
 
-`var.network` (schema in `modules/flake/var/nixos.nix`, data in `modules/flake/network.nix`) holds network constants:
+`net` (schema in `modules/flake/var/nixos.nix`, data in `modules/flake/network.nix`) holds network constants:
 
 - `subnet` - the LAN as a CIDR block, used by the subnet router
 - `addrOf` - `name -> "localhost"` for this host, the hostname otherwise
 
-Every machine is on the tailnet and resolves by MagicDNS, so there is no address book to maintain. Consumers call `config.var.network.addrOf svc.host`; resolution happens at request time. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`; an assertion rejects a `var.services.<name>.host` that is not a known host.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book to maintain. Consumers call `config.net.addrOf svc.host`; resolution happens at request time. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`; an assertion rejects a `serviceRegistry.<name>.host` that is not a known host.
 
-A service running on another machine is registered by the consuming host as a `var.services` entry with `host = "<name>"` (and `servePort = 443` so glance links it at `https://<name>.<tailnet>`). The entry drives monitoring and homepage only; routing and backup ignore it because it is not local.
+A service running on another machine is registered by the consuming host as a `serviceRegistry` entry with `host = "<name>"` (and `servePort = 443` so glance links it at `https://<name>.<tailnet>`). The entry drives monitoring and homepage only; routing and backup ignore it because it is not local.
 
 ## Adding a service
 
 1. Reserve a port in `modules/hosts/nixos/<host>/ports.nix` (or reuse an existing one).
-2. Create a feature that runs the app on localhost only and sets `var.services.<name>` with `port = config.ports.<name>`.
+2. Create a feature that runs the app on localhost only and sets `serviceRegistry.<name>` with `port = config.ports.<name>`.
 3. Choose exposure:
    - **Public**: set `expose = {subdomain = "...";}`. The host needs `server-public` (Caddy + Cloudflared). Add `basicAuth = true` to gate it.
    - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved. Bind the app to `127.0.0.1` (see [Private exposure](#private-exposure-tailscale-https)).
@@ -129,7 +129,7 @@ The observability stack aggregates systemd journal logs. Each monitored host run
 - On the stack host, Alloy pushes to `http://127.0.0.1:<loki port>`.
 - On an agent host, Alloy pushes to `https://<lokiHost>.<tailnet>:<loki port>`, through the same `tailscale serve` HTTPS path as any private service. The target comes from `LOKI_URL` in a sops-rendered env file; the tailnet suffix is the `tailscale/tailnet` secret.
 
-Loki listens loopback-only, is registered as a tailnet-private `var.services.loki` entry (backup + gatus monitor), and Grafana provisions it as a datasource (`uid = "loki"`, used by the supplied Loki dashboard).
+Loki listens loopback-only, is registered as a tailnet-private `serviceRegistry.loki` entry (backup + gatus monitor), and Grafana provisions it as a datasource (`uid = "loki"`, used by the supplied Loki dashboard).
 
 ## Backups
 
@@ -164,9 +164,9 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 `features/dns.nix` is the LAN side of the self-hosted stack:
 
-- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.var.network.addrOf "ed"`.
+- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.net.addrOf "ed"`.
 - **Unbound** - local recursive resolver with DNSSEC; Blocky's primary upstream, so LAN queries resolve locally and stay off the wire.
 - **Cloudflare DoH** - strict-order fallback: Blocky forwards to Unbound first, and only queries `one.one.one.one` when Unbound doesn't respond.
 - **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically.
 
-Ports and scrape targets come from the port registry and `var.network`, not from this doc.
+Ports and scrape targets come from the port registry and `net`, not from this doc.

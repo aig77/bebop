@@ -20,7 +20,7 @@
       # nix-darwin evaluates specialArgs lazily in a way that causes infinite recursion
       # when inputs.self is present. Since no Darwin module needs inputs.self, it is
       # stripped here. NixOS does not have this issue.
-      specialArgs = {inputs = builtins.removeAttrs inputs ["self"];};
+      specialArgs = {inputs = removeAttrs inputs ["self"];};
       modules = [
         {nixpkgs.config = config.flake.nixpkgs.pkgsConfig;}
         darwinModule

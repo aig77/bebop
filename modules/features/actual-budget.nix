@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.actual-budget = {config, ...}: {
-    var.services.actual-budget = {
+    serviceRegistry.actual-budget = {
       port = config.ports.actualBudget;
       backup.paths = ["/var/lib/actual"];
       monitor = {

@@ -4,9 +4,6 @@ _: {
       username = "arturo";
       hostname = "faye";
       shell = "zsh";
-      terminal = "ghostty";
-      browser = "zen";
-      fileManager = "thunar";
     };
   };
 }
