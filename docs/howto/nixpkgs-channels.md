@@ -47,8 +47,8 @@ In short:
 | spike, faye, ein | client | unstable | `pkgs.unstable.foo` | `pkgs.stable.foo` |
 | ein (macOS) | - | unstable | `pkgs.unstable.foo` | `pkgs.stable.foo` |
 
-On the base channel the two spellings are the same object: `pkgs.blocky`
-equals `pkgs.stable.blocky` on a server. Reaching across channels is the only
+On the base channel the two spellings are the same object: `pkgs.fzf`
+equals `pkgs.stable.fzf` on a server. Reaching across channels is the only
 reason to write one of these explicitly.
 
 ## Using the Alternate Channel
@@ -115,8 +115,11 @@ channel's revisions moved. Then run `nix flake check`.
   is accepted.
 - A service module captures its package from the base channel at eval time.
   Replacing `pkgs.blocky` with `pkgs.unstable.blocky` does not swap the module
-  or its option schema. Watch version-sensitive services (blocky settings
-  schema) when stable lags unstable.
+  or its option schema. Watch version-sensitive services when stable lags
+  unstable: `features/dns.nix` pins blocky to unstable because the `/api/stats`
+  endpoint the glance DNS widget reads only exists from blocky 0.32 (stable
+  ships 0.29). The NixOS module's build-time config check runs against whichever
+  package is set, so a schema change surfaces at build, not silently at runtime.
 - Alternate-channel imports are lazy. They only cost evaluation when a package
   under `pkgs.stable` / `pkgs.unstable` is actually forced.
 - Darwin hosts are always base `unstable`; there is no `role` on macOS.

@@ -123,11 +123,17 @@ _: {
         pages = [
           {
             name = "Homelab";
-            width = "slim";
+            width = "wide";
             desktop-navigation-width = "slim";
             hide-desktop-navigation = true;
             center-vertically = false;
             columns = [
+              {
+                size = "small";
+                widgets =
+                  (config.glance.extraWidgets.dns or [])
+                  ++ (config.glance.extraWidgets.servers or []);
+              }
               {
                 size = "full";
                 widgets = [(mkColumnTitle "🌐")] ++ sections true;

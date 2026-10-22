@@ -16,6 +16,8 @@ _: {
       # blockyHttp + nodeExporter are scraped from ed over the tailnet; same
       # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
       blockyHttp = 4000;
+      # Remote glance agent on ed, read by this host's server-stats widget.
+      glanceAgent = 27973;
       open-webui = 4010;
       searx = 4020;
       forgejo = 4030;

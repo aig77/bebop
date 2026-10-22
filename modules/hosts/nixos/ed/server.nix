@@ -9,6 +9,8 @@ _: {
       loki = 3160;
       blockyHttp = 4000;
       unbound = 5335;
+      # Glance agent metrics API, read from jet over the tailnet.
+      glanceAgent = 27973;
     };
   };
 }

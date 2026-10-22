@@ -1,13 +1,23 @@
 _: {
-  flake.modules.nixos.dns = {config, ...}: {
+  flake.modules.nixos.dns = {
+    config,
+    pkgs,
+    ...
+  }: {
     services = {
       blocky = {
         enable = true;
+        # The /api/stats endpoint that feeds glance's DNS widget landed in
+        # blocky 0.32; stable ships 0.29, so pull the one package from unstable.
+        package = pkgs.unstable.blocky;
         settings = {
           ports = {
             dns = 53;
             http = config.ports.blockyHttp;
           };
+
+          # In-memory 24h stats, served as JSON at /api/stats (off by default).
+          statistics.enable = true;
 
           upstreams = {
             strategy = "strict";
@@ -71,8 +81,8 @@ _: {
 
     networking.firewall = {
       enable = true;
-      # 53 stays open for LAN DNS clients. Blocky's metrics endpoint
-      # (blockyHttp) is scraped over the tailnet, so it stays off the LAN.
+      # 53 stays open for LAN DNS clients. Blocky's metrics and stats API
+      # (blockyHttp) are read over the tailnet, so they stay off the LAN.
       allowedTCPPorts = [53];
       allowedUDPPorts = [53];
     };

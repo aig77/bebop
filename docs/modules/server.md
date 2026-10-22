@@ -51,7 +51,7 @@ Six modules consume the registry. None of them know about individual services:
 
 Two consumers render it:
 
-- **Glance** puts the services in two columns, headed by a centered globe icon (🌐, public, left) and lock icon (🔒, private, right); the headings are `html` widgets at double the header font size, since columns have no title of their own. Each column stacks one monitor widget per category, titled with the category name. The widget's `dynamic-columns` grid would fold the sites side by side, so CSS injected through `document.head` pins it to one site per row. Categories are ordered alphabetically, so `AI` comes first and `Productivity` last.
+- **Glance** lays the page out in three columns. The narrow far-left column stacks the DNS stats widget above the server stats widget. The next two full columns hold the public services, headed by a centered globe icon (🌐), and the tailnet-only services, headed by a lock icon (🔒). The icon headings are `html` widgets at double the header font size, since columns have no title of their own. Each service column stacks one monitor widget per category, titled with the category name. Feature modules fill the far-left column through the `glance.extraWidgets` hook (see [Glance widgets](#glance-widgets)). The widget's `dynamic-columns` grid would fold the sites side by side, so CSS injected through `document.head` pins it to one site per row. Categories are ordered alphabetically, so `AI` comes first and `Productivity` last.
 - **Gatus** sets the endpoint's native `group` field, so the health dashboard lists endpoints under the same names. The dashboard sorts by group.
 
 Adding a service means picking a category; nothing else changes. A new section appears on the homepage and a new group on the dashboard automatically.
@@ -176,9 +176,16 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 `features/dns.nix` is the LAN side of the self-hosted stack:
 
-- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.net.addrOf "ed"`.
+- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. `statistics.enable` turns on its in-memory 24h stats, served as JSON at `/api/stats` and rendered by glance's DNS widget (see [Glance widgets](#glance-widgets)). That endpoint landed in blocky 0.32, so `features/dns.nix` pulls `pkgs.unstable.blocky` on top of the stable base. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.net.addrOf "ed"`.
 - **Unbound** - local recursive resolver with DNSSEC; Blocky's primary upstream, so LAN queries resolve locally and stay off the wire.
 - **Cloudflare DoH** - strict-order fallback: Blocky forwards to Unbound first, and only queries `one.one.one.one` when Unbound doesn't respond.
 - **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
+
+## Glance widgets
+
+Glance's page layout is generated from `serviceRegistry` (see [Categories](#categories)) plus a far-left column contributed by feature modules through the `glance.extraWidgets` hook (`features/glance-widgets.nix` defines the option; `dns` and `servers` stack in that narrow column):
+
+- **DNS** (`features/glance-dns-stats.nix`) - a `custom-api` widget that renders blocky's `/api/stats` JSON (totals, a 24h query/blocked bar graph, top blocked domains). Glance's native `dns-stats` widget only speaks adguard / pihole / technitium, so this mimics its look. It reads the remote blocky on ed over the tailnet and only appears when a `blocky` service is registered.
+- **Servers** (`features/glance-server-stats.nix`) - glance's native `server-stats` widget. The stack host reads itself with the `local` probe; every other host in `observability.scrapeTargets` is read through its glance agent. The agent (`features/glance-agent.nix`, part of the `observability-agent` bundle) exposes CPU / memory / disk as JSON on `ports.glanceAgent`, tailnet-only with no token.
 
 Ports and scrape targets come from the port registry and `net`, not from this doc.

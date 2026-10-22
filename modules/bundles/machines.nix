@@ -61,9 +61,9 @@ in {
     };
 
     # Private dashboards and metrics: homepage + the observability stack
-    # (metrics, logs, health checks).
+    # (metrics, logs, health checks) + the glance widgets fed by them.
     server-private = _: {
-      imports = with nixos; [glance observability];
+      imports = with nixos; [glance-widgets glance glance-dns-stats glance-server-stats observability];
     };
   };
 }
