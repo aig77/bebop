@@ -13,9 +13,9 @@ _: {
       vaultwarden = 3070;
       actualBudget = 3080;
       subtrakr = 3090;
-      # blockyHttp + nodeExporter are scraped from ed over the tailnet; same
+      # dnsHttp + nodeExporter are scraped from ed over the tailnet; same
       # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
-      blockyHttp = 4000;
+      dnsHttp = 4000;
       # Remote glance agent on ed, read by this host's server-stats widget.
       glanceAgent = 27973;
       open-webui = 4010;
@@ -44,13 +44,13 @@ _: {
         {
           job = "blocky";
           host = "ed";
-          port = config.ports.blockyHttp;
+          port = config.ports.dnsHttp;
         }
       ];
     };
 
     # Remote DNS service on ed; gatus probes it with a real DNS query.
-    serviceRegistry.blocky = {
+    serviceRegistry.adguard = {
       host = "ed";
       port = 53;
       category = "Infrastructure";
@@ -60,6 +60,26 @@ _: {
         dns = {
           queryName = "example.com";
         };
+      };
+    };
+
+    # AdGuard Home admin UI on ed. ed serves it over the tailnet on 443, so
+    # the card links to https://ed.<tailnet>/ while the health check hits the
+    # plain-HTTP API port directly.
+    serviceRegistry.adguard-ui = {
+      host = "ed";
+      port = config.ports.dnsHttp;
+      servePort = 443;
+      category = "Infrastructure";
+      homepage = {
+        enable = true;
+        title = "AdGuard Home";
+        icon = "di:adguard-home";
+      };
+      monitor = {
+        enable = true;
+        interval = "1m";
+        http = {};
       };
     };
   };

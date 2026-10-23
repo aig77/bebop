@@ -1,5 +1,5 @@
 _: {
-  flake.modules.nixos.dns = {
+  flake.modules.nixos.blocky = {
     config,
     pkgs,
     ...
@@ -13,7 +13,7 @@ _: {
         settings = {
           ports = {
             dns = 53;
-            http = config.ports.blockyHttp;
+            http = config.ports.dnsHttp;
           };
 
           # In-memory 24h stats, served as JSON at /api/stats (off by default).
@@ -47,42 +47,12 @@ _: {
           };
         };
       };
-
-      unbound = {
-        enable = true;
-        settings = {
-          server = {
-            port = config.ports.unbound;
-            interface = "127.0.0.1";
-            access-control = [
-              "127.0.0.1 allow"
-              "::1 allow"
-            ];
-            do-ip4 = true;
-            do-ip6 = true;
-            prefer-ip6 = false;
-            harden-glue = true;
-            harden-dnssec-stripped = true;
-            use-caps-for-id = false;
-            edns-buffer-size = 1232;
-            prefetch = true;
-            prefetch-key = true;
-          };
-          remote-control.control-enable = false;
-          forward-zone = [
-            {
-              name = "ts.net";
-              forward-addr = ["100.100.100.100"];
-            }
-          ];
-        };
-      };
     };
 
     networking.firewall = {
       enable = true;
       # 53 stays open for LAN DNS clients. Blocky's metrics and stats API
-      # (blockyHttp) are read over the tailnet, so they stay off the LAN.
+      # (dnsHttp) are read over the tailnet, so they stay off the LAN.
       allowedTCPPorts = [53];
       allowedUDPPorts = [53];
     };

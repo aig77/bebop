@@ -116,9 +116,10 @@ channel's revisions moved. Then run `nix flake check`.
 - A service module captures its package from the base channel at eval time.
   Replacing `pkgs.blocky` with `pkgs.unstable.blocky` does not swap the module
   or its option schema. Watch version-sensitive services when stable lags
-  unstable: `features/dns.nix` pins blocky to unstable because the `/api/stats`
-  endpoint the glance DNS widget reads only exists from blocky 0.32 (stable
-  ships 0.29). The NixOS module's build-time config check runs against whichever
+  unstable: `features/blocky.nix` (the dormant previous resolver) pins blocky to
+  unstable because its `/api/stats` only exists from 0.32 (stable ships 0.29).
+  The active resolver, `features/adguard.nix`, ships from stable, so it carries
+  no such pin. The NixOS module's build-time config check runs against whichever
   package is set, so a schema change surfaces at build, not silently at runtime.
 - Alternate-channel imports are lazy. They only cost evaluation when a package
   under `pkgs.stable` / `pkgs.unstable` is actually forced.

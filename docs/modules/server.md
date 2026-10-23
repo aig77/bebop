@@ -174,18 +174,20 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 ## DNS
 
-`features/dns.nix` is the LAN side of the self-hosted stack:
+`features/adguard.nix` plus `features/unbound.nix` are the LAN side of the self-hosted stack (bundled as `dns`):
 
-- **Blocky** - DNS server with ad blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)), strict-order upstream chain, and prometheus metrics. `statistics.enable` turns on its in-memory 24h stats, served as JSON at `/api/stats` and rendered by glance's DNS widget (see [Glance widgets](#glance-widgets)). That endpoint landed in blocky 0.32, so `features/dns.nix` pulls `pkgs.unstable.blocky` on top of the stable base. No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a `customDNS.mapping` fed by `config.net.addrOf "ed"`.
-- **Unbound** - local recursive resolver with DNSSEC; Blocky's primary upstream, so LAN queries resolve locally and stay off the wire.
-- **Cloudflare DoH** - strict-order fallback: Blocky forwards to Unbound first, and only queries `one.one.one.one` when Unbound doesn't respond.
-- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
+- **AdGuard Home** - DNS server with ad blocking. Seeded declaratively but `mutableSettings` keeps the web UI authoritative, so most settings can still be changed from the dashboard. Filters are the [HaGeZi Multi PRO](https://github.com/hagezi/dns-blocklists) general list plus the HaGeZi TIF threat feed. The web UI/API binds on `0.0.0.0` but its port stays off the LAN (tailnet-only) and runs with no credentials. `statistics` is on, so `GET /control/stats` serves the JSON that glance's native DNS widget reads (see [Glance widgets](#glance-widgets)). No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a rewrite fed by `config.net.addrOf "ed"`.
+- **Unbound** - local recursive resolver with DNSSEC; AdGuard's primary upstream, so LAN queries resolve locally and stay off the wire.
+- **Cloudflare DoH** - AdGuard `fallback_dns`: queries go to Unbound first, and only hit `one.one.one.one` when Unbound doesn't respond.
+- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter dashboard provisioned automatically. AdGuard has no native Prometheus endpoint, so DNS has no dashboard; the blocky dashboard and its scrape target are left in place but dead. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
+
+`features/blocky.nix` is the previous resolver, kept in the tree but no longer part of the `dns` bundle.
 
 ## Glance widgets
 
 Glance's page layout is generated from `serviceRegistry` (see [Categories](#categories)) plus a far-left column contributed by feature modules through the `glance.extraWidgets` hook (`features/glance-widgets.nix` defines the option; `dns` and `servers` stack in that narrow column):
 
-- **DNS** (`features/glance-dns-stats.nix`) - a `custom-api` widget that renders blocky's `/api/stats` JSON (totals, a 24h query/blocked bar graph, top blocked domains). Glance's native `dns-stats` widget only speaks adguard / pihole / technitium, so this mimics its look. It reads the remote blocky on ed over the tailnet and only appears when a `blocky` service is registered.
+- **DNS** (`features/glance-dns-stats.nix`) - glance's native `dns-stats` widget in `adguard` mode, reading `GET /control/stats` from the AdGuard Home on ed over the tailnet. It only appears when an `adguard` service is registered.
 - **Servers** (`features/glance-server-stats.nix`) - glance's native `server-stats` widget. The stack host reads itself with the `local` probe; every other host in `observability.scrapeTargets` is read through its glance agent. The agent (`features/glance-agent.nix`, part of the `observability-agent` bundle) exposes CPU / memory / disk as JSON on `ports.glanceAgent`, tailnet-only with no token.
 
 Ports and scrape targets come from the port registry and `net`, not from this doc.

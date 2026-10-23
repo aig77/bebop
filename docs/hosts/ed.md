@@ -9,7 +9,8 @@
 
 Handles network services. No GUI, no desktop stack. Runs DNS and monitoring only.
 
-- Blocky DNS server with ad-blocking ([StevenBlack hosts list](https://github.com/StevenBlack/hosts)); its `/api/stats` JSON feeds glance's DNS widget on jet
+- AdGuard Home DNS server with ad-blocking ([HaGeZi Multi PRO](https://github.com/hagezi/dns-blocklists) + TIF); its `/control/stats` JSON feeds glance's native DNS widget on jet
+- AdGuard Home admin UI, served over the tailnet at `https://ed.<tailnet>/` (tailscale serve on 443 -> the plain-HTTP API port); glance shows it as the `AdGuard Home` card
 - Unbound recursive resolver with DNSSEC
 - Prometheus metrics collection
 - Glance agent: exposes CPU / memory / disk on `ports.glanceAgent`, read by jet's server-stats widget over the tailnet
