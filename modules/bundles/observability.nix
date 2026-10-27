@@ -5,7 +5,7 @@
     # Prometheus to scrape, and the glance agent exposes system stats for the
     # stack host's server-stats widget. No storage, no dashboards.
     observability-agent = {
-      imports = with config.flake.modules.nixos; [alloy prometheus-client glance-agent];
+      imports = with config.flake.modules.nixos; [alloy node-exporter glance-agent];
     };
 
     # The observability stack: metrics, logs, dashboards, health checks. Runs

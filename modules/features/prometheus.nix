@@ -25,8 +25,8 @@ in {
       (lib.removeAttrs targetsByJob ["node"]);
   in {
     # The stack host scrapes its own metrics, so it runs the agent's node
-    # exporter too. The exporter definition lives in prometheus-client.
-    imports = [nixos.prometheus-client];
+    # exporter too.
+    imports = with nixos; [node-exporter];
 
     serviceRegistry.prometheus = {
       port = config.ports.prometheus.server;
@@ -59,13 +59,5 @@ in {
         ++ extraJobs;
     };
   };
-
-  # Node exporter is scraped over the tailnet. tailscaled permits tailnet
-  # traffic, so no firewall opening is needed - the port stays off the LAN.
-  flake.modules.nixos.prometheus-client = {config, ...}: {
-    services.prometheus.exporters.node = {
-      enable = true;
-      port = config.ports.prometheus.nodeExporter;
-    };
-  };
 }
+
