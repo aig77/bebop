@@ -13,7 +13,7 @@ _: {
         settings = {
           ports = {
             dns = 53;
-            http = config.ports.dnsHttp;
+            http = config.ports.dns.http;
           };
 
           # In-memory 24h stats, served as JSON at /api/stats (off by default).
@@ -22,7 +22,7 @@ _: {
           upstreams = {
             strategy = "strict";
             groups.default = [
-              "tcp+udp:127.0.0.1:${toString config.ports.unbound}" # unbound: local recursion + DNSSEC
+              "tcp+udp:127.0.0.1:${toString config.ports.dns.unbound}" # unbound: local recursion + DNSSEC
               "https://one.one.one.one/dns-query" # cloudflare: strict-order failover
             ];
           };

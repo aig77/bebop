@@ -9,7 +9,7 @@ _: {
       # Web UI/API on all interfaces. The LAN port is firewalled, so only the
       # tailnet reaches it (same exposure blocky's API had).
       host = "0.0.0.0";
-      port = config.ports.dnsHttp;
+      port = config.ports.dns.http;
       # Seed the config from Nix, but keep the web UI authoritative afterwards
       # so settings can still be changed from the dashboard.
       mutableSettings = true;
@@ -21,7 +21,7 @@ _: {
           bind_hosts = ["0.0.0.0"];
           port = 53;
           # unbound does local recursion + DNSSEC; cloudflare is the failover.
-          upstream_dns = ["127.0.0.1:${toString config.ports.unbound}"];
+          upstream_dns = ["127.0.0.1:${toString config.ports.dns.unbound}"];
           fallback_dns = ["https://one.one.one.one/dns-query"];
           bootstrap_dns = ["1.1.1.1:53"];
           # Not internet-facing, so no query-rate limiting.

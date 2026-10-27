@@ -4,7 +4,7 @@ _: {
       enable = true;
       settings = {
         server = {
-          port = config.ports.unbound;
+          port = config.ports.dns.unbound;
           interface = "127.0.0.1";
           access-control = [
             "127.0.0.1 allow"
@@ -20,7 +20,10 @@ _: {
           prefetch = true;
           prefetch-key = true;
         };
-        remote-control.control-enable = false;
+        remote-control = {
+          control-enable = true;
+          control-interface = "/run/unbound/unbound.ctl";
+        };
         forward-zone = [
           {
             name = "ts.net";

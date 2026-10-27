@@ -7,8 +7,10 @@ _: {
       };
       # Remote Loki on jet, read by this host's alloy (`loki` feature).
       loki = 3160;
-      dnsHttp = 4000;
-      unbound = 5335;
+      dns = config.mkPortGroup {
+        base = 4000;
+        names = ["http" "unbound" "adguardExporter" "unboundExporter"];
+      };
       # Glance agent metrics API, read from jet over the tailnet.
       glanceAgent = 27973;
     };
@@ -17,7 +19,7 @@ _: {
     # makes the glance card link work; the API port itself stays plain HTTP and
     # is read directly over the tailnet by glance's DNS widget and gatus.
     serviceRegistry.adguard-ui = {
-      port = config.ports.dnsHttp;
+      port = config.ports.dns.http;
       servePort = 443;
       category = "Infrastructure";
     };

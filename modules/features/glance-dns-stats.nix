@@ -17,7 +17,7 @@ _: {
         service = "adguard";
         title = "DNS";
         hour-format = "24h";
-        url = "http://${config.net.addrOf "ed"}:${toString config.ports.dnsHttp}/";
+        url = "http://${config.net.addrOf "ed"}:${toString config.ports.dns.http}/";
       }
     ];
   };

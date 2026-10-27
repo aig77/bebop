@@ -13,9 +13,12 @@ _: {
       vaultwarden = 3070;
       actualBudget = 3080;
       subtrakr = 3090;
-      # dnsHttp + nodeExporter are scraped from ed over the tailnet; same
+      # dns.* + nodeExporter are scraped from ed over the tailnet; same
       # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
-      dnsHttp = 4000;
+      dns = config.mkPortGroup {
+        base = 4000;
+        names = ["http" "unbound" "adguardExporter" "unboundExporter"];
+      };
       # Remote glance agent on ed, read by this host's server-stats widget.
       glanceAgent = 27973;
       open-webui = 4010;
@@ -42,9 +45,14 @@ _: {
           host = "ed";
         }
         {
-          job = "blocky";
+          job = "adguard";
           host = "ed";
-          port = config.ports.dnsHttp;
+          port = config.ports.dns.adguardExporter;
+        }
+        {
+          job = "unbound";
+          host = "ed";
+          port = config.ports.dns.unboundExporter;
         }
       ];
     };
@@ -68,7 +76,7 @@ _: {
     # plain-HTTP API port directly.
     serviceRegistry.adguard-ui = {
       host = "ed";
-      port = config.ports.dnsHttp;
+      port = config.ports.dns.http;
       servePort = 443;
       category = "Infrastructure";
       homepage = {
