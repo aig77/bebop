@@ -19,6 +19,9 @@ _: {
         ExecStart = ''
           ${pkgs.prometheus-unbound-exporter}/bin/unbound_exporter \
             -unbound.host unix:///run/unbound/unbound.ctl \
+            -unbound.ca /var/lib/unbound/unbound_server.pem \
+            -unbound.cert /var/lib/unbound/unbound_control.pem \
+            -unbound.key /var/lib/unbound/unbound_control.key \
             -web.listen-address 127.0.0.1:${toString port}
         '';
       };
