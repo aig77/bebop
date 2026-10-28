@@ -173,12 +173,34 @@ _: {
         url = "http://127.0.0.1:${toString config.ports.forgejo}";
         tokenFile = config.sops.templates."forgejo-runner.env".path;
         labels = [
+          # GitHub-compatible names (work with most existing workflows)
           "ubuntu-latest:docker://catthehacker/ubuntu:act-latest"
           "ubuntu-24.04:docker://catthehacker/ubuntu:act-24.04"
           "ubuntu-22.04:docker://catthehacker/ubuntu:act-22.04"
+
+          # Language-specific, short names
+          "node:docker://node:22-bookworm"
+          "node-20:docker://node:20-bookworm"
+          "python:docker://python:3.13-bookworm"
+          "python-3.12:docker://python:3.12-bookworm"
+          "go:docker://golang:1.24-bookworm"
+          "rust:docker://rust:1-bookworm"
+          "java:docker://eclipse-temurin:21-jdk"
+          "dotnet:docker://mcr.microsoft.com/dotnet/sdk:9.0"
+
+          # Utility
+          "alpine:docker://alpine:3"
+          "debian:docker://debian:bookworm"
+          "docker:docker://docker:cli"
+          "nix:docker://nixos/nix:latest"
+          "nix-flakes:docker://nixpkgs/nix-flakes:latest"
         ];
         settings = {
-          container.options = "--memory=1g --cpus=2";
+          container.options = "--memory=4g --cpus=2 --pids-limit=512";
+          runner = {
+            capacity = 2;
+            timeout = "30m";
+          };
         };
       };
     };
