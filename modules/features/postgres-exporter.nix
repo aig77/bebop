@@ -17,10 +17,5 @@ _: {
         static_configs = [{targets = ["127.0.0.1:${toString config.ports.postgres.exporter}"];}];
       }
     ];
-
-    observability.grafanaDashboards."postgres.json" = {
-      url = "https://grafana.com/api/dashboards/9628/revisions/8/download";
-      sha256 = "sha256-UhusNAZbyt7fJV/DhFUK4FKOmnTpG0R15YO2r+nDnMc=";
-    };
   };
 }

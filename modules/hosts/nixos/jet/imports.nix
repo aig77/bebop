@@ -13,6 +13,8 @@
 
         postgres
         postgres-exporter
+        grafana-dashboards-postgres
+        grafana-dashboards-unbound
         backup
         dbgate
         hermes-readonly

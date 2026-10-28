@@ -17,6 +17,8 @@
         grafana
         loki
         gatus
+        grafana-dashboards-node-exporter
+        grafana-dashboards-loki
       ];
     };
   };
