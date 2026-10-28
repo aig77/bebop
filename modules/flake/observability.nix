@@ -23,6 +23,20 @@
             });
             default = [];
           };
+          grafanaDashboards = lib.mkOption {
+            type = lib.types.attrsOf (lib.types.submodule {
+              options = {
+                url = lib.mkOption {type = lib.types.str;};
+                sha256 = lib.mkOption {type = lib.types.str;};
+                name = lib.mkOption {
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
+                };
+              };
+            });
+            default = {};
+            description = "Dashboards to provision into Grafana via environment.etc";
+          };
         };
       };
       default = {};

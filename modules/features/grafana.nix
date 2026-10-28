@@ -2,6 +2,7 @@ _: {
   flake.modules.nixos.grafana = {
     config,
     pkgs,
+    lib,
     ...
   }: {
     serviceRegistry.grafana = {
@@ -63,23 +64,19 @@ _: {
       };
     };
 
-    environment.etc = {
-      "grafana-dashboards/node-exporter.json".source = pkgs.fetchurl {
-        url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
-        sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
-      };
-      "grafana-dashboards/blocky.json".source = pkgs.fetchurl {
-        url = "https://grafana.com/api/dashboards/13768/revisions/8/download";
-        sha256 = "sha256-gwPOcnVC7BXTlhOCRvENAXZfGdQGVCPEUrLCl4ASkVE=";
-      };
-      "grafana-dashboards/loki.json".source = pkgs.fetchurl {
-        url = "https://grafana.com/api/dashboards/13639/revisions/2/download";
-        sha256 = "sha256-2dRUkooIA1E0Qshg58N+9duIW25iRruu1oW8ckBUNIA=";
-      };
-      "grafana-dashboards/postgres.json".source = pkgs.fetchurl {
-        url = "https://grafana.com/api/dashboards/9628/revisions/8/download";
-        sha256 = "sha256-UhusNAZbyt7fJV/DhFUK4FKOmnTpG0R15YO2r+nDnMc=";
-      };
-    };
+    environment.etc =
+      lib.mapAttrs'
+      (filename: dash: let
+        finalName =
+          if dash.name != null
+          then dash.name
+          else filename;
+      in
+        lib.nameValuePair "grafana-dashboards/${finalName}" {
+          source = pkgs.fetchurl {
+            inherit (dash) url sha256;
+          };
+        })
+      config.observability.grafanaDashboards;
   };
 }
