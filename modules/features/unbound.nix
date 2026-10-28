@@ -2,10 +2,12 @@ _: {
   flake.modules.nixos.unbound = {config, ...}: {
     services.unbound = {
       enable = true;
+      localControlSocketPath = "/run/unbound/unbound.ctl";
       settings = {
         server = {
           port = config.ports.dns.unbound;
           interface = "127.0.0.1";
+          extended-statistics = true;
           access-control = [
             "127.0.0.1 allow"
             "::1 allow"
@@ -19,10 +21,6 @@ _: {
           edns-buffer-size = 1232;
           prefetch = true;
           prefetch-key = true;
-        };
-        remote-control = {
-          control-enable = true;
-          control-interface = "/run/unbound/unbound.ctl";
         };
         forward-zone = [
           {

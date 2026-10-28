@@ -13,8 +13,8 @@ _: {
       vaultwarden = 3070;
       actualBudget = 3080;
       subtrakr = 3090;
-      # dns.* + nodeExporter are scraped from ed over the tailnet; same
-      # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
+      # dns.* and the node exporter are scraped from ed over the tailnet;
+      # same numbers ed binds (modules/hosts/nixos/ed/server.nix).
       dns = config.mkPortGroup {
         base = 4000;
         names = ["http" "unbound" "unboundExporter"];

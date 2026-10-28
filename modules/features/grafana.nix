@@ -66,16 +66,15 @@ _: {
 
     environment.etc =
       lib.mapAttrs'
-      (filename: dash: let
-        finalName =
-          if dash.name != null
-          then dash.name
-          else filename;
-      in
-        lib.nameValuePair "grafana-dashboards/${finalName}" {
-          source = pkgs.fetchurl {
-            inherit (dash) url sha256;
-          };
+      (filename: dash:
+        lib.nameValuePair "grafana-dashboards/${filename}" {
+          source =
+            if dash.source != null
+            then dash.source
+            else
+              pkgs.fetchurl {
+                inherit (dash) url sha256;
+              };
         })
       config.observability.grafanaDashboards;
   };

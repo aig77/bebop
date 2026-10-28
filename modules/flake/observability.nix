@@ -26,16 +26,22 @@
           grafanaDashboards = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
               options = {
-                url = lib.mkOption {type = lib.types.str;};
-                sha256 = lib.mkOption {type = lib.types.str;};
-                name = lib.mkOption {
+                source = lib.mkOption {
+                  type = lib.types.nullOr (lib.types.either lib.types.path lib.types.package);
+                  default = null;
+                };
+                url = lib.mkOption {
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
+                };
+                sha256 = lib.mkOption {
                   type = lib.types.nullOr lib.types.str;
                   default = null;
                 };
               };
             });
             default = {};
-            description = "Dashboards to provision into Grafana via environment.etc";
+            description = "Grafana dashboards to provision: local source file or remote url+sha256";
           };
         };
       };
