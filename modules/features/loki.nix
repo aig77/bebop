@@ -52,7 +52,6 @@ _: {
         };
       };
     };
-
   };
 
   flake.modules.nixos.alloy = {
