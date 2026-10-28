@@ -17,7 +17,7 @@ _: {
       # numbers ed binds (modules/hosts/nixos/ed/ports.nix).
       dns = config.mkPortGroup {
         base = 4000;
-        names = ["http" "unbound" "adguardExporter" "unboundExporter"];
+        names = ["http" "unbound" "unboundExporter"];
       };
       # Remote glance agent on ed, read by this host's server-stats widget.
       glanceAgent = 27973;
@@ -43,11 +43,6 @@ _: {
         {
           job = "node";
           host = "ed";
-        }
-        {
-          job = "adguard";
-          host = "ed";
-          port = config.ports.dns.adguardExporter;
         }
         {
           job = "unbound";

@@ -9,7 +9,7 @@ _: {
       loki = 3160;
       dns = config.mkPortGroup {
         base = 4000;
-        names = ["http" "unbound" "adguardExporter" "unboundExporter"];
+        names = ["http" "unbound" "unboundExporter"];
       };
       # Glance agent metrics API, read from jet over the tailnet.
       glanceAgent = 27973;

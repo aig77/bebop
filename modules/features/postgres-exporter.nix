@@ -1,5 +1,9 @@
 _: {
-  flake.modules.nixos.postgres-exporter = {config, lib, ...}: {
+  flake.modules.nixos.postgres-exporter = {
+    config,
+    lib,
+    ...
+  }: {
     services.prometheus.exporters.postgres = lib.mkIf config.services.postgresql.enable {
       enable = true;
       runAsLocalSuperUser = true;
