@@ -11,13 +11,13 @@
         grub-server
         aarch64-builder
 
-        postgres
-        postgres-exporter
-        grafana-dashboards-postgres
-        grafana-dashboards-unbound
         backup
         dbgate
+        grafana-dashboards-postgres
+        grafana-dashboards-unbound
         hermes-readonly
+        postgres
+        postgres-exporter
 
         trivy # container scanning
 
