@@ -12,6 +12,7 @@
         aarch64-builder
 
         postgres
+        postgres-exporter
         backup
         dbgate
         hermes-readonly
