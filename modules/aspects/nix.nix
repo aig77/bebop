@@ -9,7 +9,7 @@ _: {
       settings = {
         auto-optimise-store = true;
         experimental-features = ["nix-command" "flakes" "pipe-operators"];
-        trusted-users = ["root" config.var.username];
+        trusted-users = ["@wheel"];
         substituters = [
           "https://cache.nixos.org"
           "https://devenv.cachix.org"
@@ -36,7 +36,7 @@ _: {
       flake = config.var.repoPath;
       clean = {
         enable = true;
-        extraArgs = "--keep-since 7d --keep 5";
+        extraArgs = "--keep-since 15d --keep 10";
       };
     };
   };
