@@ -28,6 +28,19 @@ in {
       NIRI_GAME_WORKSPACE = "games";
     };
 
+    # Attach descriptions shown in Niri's Important Hotkeys overlay.
+    withTitle = title: action:
+      {
+        _props."hotkey-overlay-title" = title;
+      }
+      // action;
+
+    withTitleAndProps = title: props: action:
+      {
+        _props = props // {"hotkey-overlay-title" = title;};
+      }
+      // action;
+
     # Niri matches outputs by connector name or by the full make/model/serial
     # string. Prefer the hardware identity so the rule survives port changes.
     monitorName = m: let
@@ -58,10 +71,11 @@ in {
         else toString i;
     in [
       {
-        "Super+${key}".focus-workspace = i;
+        "Super+${key}" = withTitle "Focus Workspace ${toString i}" {focus-workspace = i;};
       }
       {
-        "Super+Shift+${key}".move-window-to-workspace = i;
+        "Super+Shift+${key}" =
+          withTitle "Move Window to Workspace ${toString i}" {move-window-to-workspace = i;};
       }
     ]) (lib.range 1 10));
   in {
@@ -93,7 +107,10 @@ in {
 
       settings = {
         prefer-no-csd = {};
-        hotkey-overlay.skip-at-startup = {};
+        hotkey-overlay = {
+          skip-at-startup = {};
+          hide-not-bound = {};
+        };
         screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
         environment = {
@@ -223,94 +240,81 @@ in {
 
         binds =
           {
-            "Super+grave" = {
-              _props.repeat = false;
-              toggle-overview = {};
-            };
+            "Super+Shift+Slash" = withTitle "Show Keybindings (Niri)" {show-hotkey-overlay = {};};
+            "Super+Slash" = withTitle "Show Keybindings" {spawn = ["noctalia" "msg" "panel-toggle" "blackbartblues/keymap:panel"];};
+            "Super+grave" = withTitleAndProps "Toggle Overview" {repeat = false;} {toggle-overview = {};};
 
-            "Super+Return".spawn = [sessionVariables.TERMINAL];
-            "Super+B".spawn = [sessionVariables.BROWSER];
-            "Super+Shift+F".spawn = [sessionVariables.FILE_MANAGER];
+            "Super+Return" = withTitle "Open Terminal" {spawn = [sessionVariables.TERMINAL];};
+            "Super+B" = withTitle "Open Browser" {spawn = [sessionVariables.BROWSER];};
+            "Super+Shift+F" = withTitle "Open File Manager" {spawn = [sessionVariables.FILE_MANAGER];};
 
-            "Super+Q" = {
-              _props.repeat = false;
-              close-window = {};
-            };
-            "Super+Shift+Q".quit._props."skip-confirmation" = true;
+            "Super+Q" = withTitleAndProps "Close Window" {repeat = false;} {close-window = {};};
+            "Super+Shift+Q" = withTitle "Quit Niri" {quit._props."skip-confirmation" = true;};
 
-            "Super+T".toggle-window-floating = {};
-            "Super+F".fullscreen-window = {};
-            "Super+M".maximize-window-to-edges = {};
+            "Super+T" = withTitle "Toggle Floating" {toggle-window-floating = {};};
+            "Super+F" = withTitle "Toggle Fullscreen" {fullscreen-window = {};};
+            "Super+M" = withTitle "Maximize Window" {maximize-window-to-edges = {};};
 
-            "Super+Tab".focus-window-down = {};
-            "Super+Shift+Tab".focus-window-up = {};
+            "Super+Tab" = withTitle "Focus Next Window" {focus-window-down = {};};
+            "Super+Shift+Tab" = withTitle "Focus Previous Window" {focus-window-up = {};};
 
-            "Super+H".focus-column-left = {};
-            "Super+J".focus-window-down = {};
-            "Super+K".focus-window-up = {};
-            "Super+L".focus-column-right = {};
+            "Super+H" = withTitle "Focus Left" {focus-column-left = {};};
+            "Super+J" = withTitle "Focus Down" {focus-window-down = {};};
+            "Super+K" = withTitle "Focus Up" {focus-window-up = {};};
+            "Super+L" = withTitle "Focus Right" {focus-column-right = {};};
 
-            "Super+Shift+H".move-column-left = {};
-            "Super+Shift+J".move-window-down = {};
-            "Super+Shift+K".move-window-up = {};
-            "Super+Shift+L".move-column-right = {};
+            "Super+Shift+H" = withTitle "Move Window Left" {move-column-left = {};};
+            "Super+Shift+J" = withTitle "Move Window Down" {move-window-down = {};};
+            "Super+Shift+K" = withTitle "Move Window Up" {move-window-up = {};};
+            "Super+Shift+L" = withTitle "Move Window Right" {move-column-right = {};};
 
-            "Super+bracketleft".switch-preset-column-width-back = {};
-            "Super+bracketright".switch-preset-column-width = {};
-            "Super+backslash".consume-or-expel-window-right = {};
+            "Super+bracketleft" = withTitle "Shrink Column" {switch-preset-column-width-back = {};};
+            "Super+bracketright" = withTitle "Expand Column" {switch-preset-column-width = {};};
+            "Super+backslash" = withTitle "Consume or Expel Window" {consume-or-expel-window-right = {};};
 
-            "Super+right".set-column-width = "+10%";
-            "Super+left".set-column-width = "-10%";
-            "Super+up".set-window-height = "-10%";
-            "Super+down".set-window-height = "+10%";
+            "Super+right" = withTitle "Resize Right" {set-column-width = "+10%";};
+            "Super+left" = withTitle "Resize Left" {set-column-width = "-10%";};
+            "Super+up" = withTitle "Resize Up" {set-window-height = "-10%";};
+            "Super+down" = withTitle "Resize Down" {set-window-height = "+10%";};
 
-            "Super+S".focus-workspace = "scratchpad";
-            "Super+Shift+S".move-window-to-workspace = "scratchpad";
+            "Super+S" = withTitle "Go to Scratchpad" {focus-workspace = "scratchpad";};
+            "Super+Shift+S" = withTitle "Move to Scratchpad" {move-window-to-workspace = "scratchpad";};
 
-            "Super+Space".spawn = ["noctalia" "msg" "panel-toggle" "launcher"];
-            "Super+C".spawn = ["noctalia" "msg" "panel-toggle" "control-center"];
-            "Super+P".spawn = ["noctalia" "msg" "panel-toggle" "session"];
-            "Ctrl+Alt+L".spawn = ["noctalia" "msg" "session" "lock"];
-            "Super+V".spawn = ["noctalia" "msg" "panel-toggle" "clipboard"];
-            "Super+O".spawn = ["noctalia" "msg" "settings-toggle"];
+            "Super+Space" = withTitle "Open Launcher" {spawn = ["noctalia" "msg" "panel-toggle" "launcher"];};
+            "Super+C" = withTitle "Open Control Center" {spawn = ["noctalia" "msg" "panel-toggle" "control-center"];};
+            "Super+P" = withTitle "Open Session Menu" {spawn = ["noctalia" "msg" "panel-toggle" "session"];};
+            "Ctrl+Alt+L" = withTitle "Lock Screen" {spawn = ["noctalia" "msg" "session" "lock"];};
+            "Super+V" = withTitle "Open Clipboard History" {spawn = ["noctalia" "msg" "panel-toggle" "clipboard"];};
+            "Super+O" = withTitle "Open Noctalia Settings" {spawn = ["noctalia" "msg" "settings-toggle"];};
 
-            "Print".spawn = ["noctalia" "msg" "screenshot-region"];
-            "Shift+Print".spawn = ["noctalia" "msg" "screenshot-fullscreen"];
+            "Print" = withTitle "Screenshot Region" {spawn = ["noctalia" "msg" "screenshot-region"];};
+            "Shift+Print" = withTitle "Screenshot Screen" {spawn = ["noctalia" "msg" "screenshot-fullscreen"];};
 
-            "XF86AudioRaiseVolume" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioRaiseVolume" = withTitleAndProps "Volume Up" {"allow-when-locked" = true;} {
               spawn-sh = "wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED && wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+";
             };
-            "XF86AudioLowerVolume" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioLowerVolume" = withTitleAndProps "Volume Down" {"allow-when-locked" = true;} {
               spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
             };
-            "XF86AudioMute" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioMute" = withTitleAndProps "Mute Audio" {"allow-when-locked" = true;} {
               spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
             };
-            "XF86AudioMicMute" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioMicMute" = withTitleAndProps "Mute Microphone" {"allow-when-locked" = true;} {
               spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"];
             };
-            "XF86MonBrightnessUp" = {
-              _props."allow-when-locked" = true;
+            "XF86MonBrightnessUp" = withTitleAndProps "Brightness Up" {"allow-when-locked" = true;} {
               spawn = ["brightnessctl" "-e4" "-n2" "set" "5%+"];
             };
-            "XF86MonBrightnessDown" = {
-              _props."allow-when-locked" = true;
+            "XF86MonBrightnessDown" = withTitleAndProps "Brightness Down" {"allow-when-locked" = true;} {
               spawn = ["brightnessctl" "-e4" "-n2" "set" "5%-"];
             };
-            "XF86AudioNext" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioNext" = withTitleAndProps "Next Track" {"allow-when-locked" = true;} {
               spawn = ["playerctl" "next"];
             };
-            "XF86AudioPlay" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioPlay" = withTitleAndProps "Play or Pause" {"allow-when-locked" = true;} {
               spawn = ["playerctl" "play-pause"];
             };
-            "XF86AudioPrev" = {
-              _props."allow-when-locked" = true;
+            "XF86AudioPrev" = withTitleAndProps "Previous Track" {"allow-when-locked" = true;} {
               spawn = ["playerctl" "previous"];
             };
           }
