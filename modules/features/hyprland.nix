@@ -2,19 +2,11 @@
   inherit (config.flake.meta.owner) username;
   hm = config.flake.modules.homeManager;
 in {
-  flake.modules.nixos.hyprland = {
-    inputs,
-    pkgs,
-    ...
-  }: let
-    inherit (pkgs.stdenv.hostPlatform) system;
-  in {
+  flake.modules.nixos.hyprland = _: {
     programs.hyprland = {
       enable = true;
       withUWSM = true;
       xwayland.enable = true;
-      package = inputs.hyprland.packages.${system}.hyprland;
-      portalPackage = inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
     };
 
     home-manager.users.${username}.imports = [hm.hyprland];

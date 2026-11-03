@@ -1,5 +1,9 @@
 _: {
-  flake.modules.nixos.n8n = {config, ...}: {
+  flake.modules.nixos.n8n = {
+    config,
+    pkgs,
+    ...
+  }: {
     serviceRegistry.n8n = {
       port = config.ports.n8n;
       category = "AI";
@@ -36,6 +40,14 @@ _: {
 
     services.n8n = {
       enable = true;
+      # nixpkgs release-26.05 has a stale pnpm deps hash after the SQLite
+      # backport (NixOS/nixpkgs#553231). Same source, different sqlite3 .dump
+      # output. Remove once NixOS/nixpkgs#580585 is in the pinned stable.
+      package = pkgs.n8n.overrideAttrs (old: {
+        pnpmDeps = old.pnpmDeps.override {
+          hash = "sha256-kSv/8YxvwCFxrSRTqYHP+TAmDgu5OPbcwolHVIqCGDA=";
+        };
+      });
       environment = {
         GENERIC_TIMEZONE = "America/New_York";
         N8N_HOST = "127.0.0.1";

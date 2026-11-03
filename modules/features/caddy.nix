@@ -91,7 +91,7 @@ _: {
         ];
         # Hash is for the combined caddy+plugin source. To update: set hash = lib.fakeHash,
         # build, and copy the "got:" value from the hash mismatch error.
-        hash = "sha256-xRJ5evsAJ2akg47j3Bt6YDXJOgX88B/rKNP50KSVyNY=";
+        hash = "sha256-tubXIDCJnO2mvdnPlZclwDhNGaeeYLSt7lnni3+pXDo=";
       };
       configFile = config.sops.templates."Caddyfile".path;
     };

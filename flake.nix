@@ -47,11 +47,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
 
     nixos-anywhere = {
@@ -64,6 +59,12 @@
 
     mac-app-util.url = "github:hraban/mac-app-util";
 
+    mangowm = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     nixcord = {
@@ -71,10 +72,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
