@@ -14,9 +14,9 @@
 **Platform:** x86_64 NixOS
 **Role:** Framework 13 Pro
 
-Full-featured desktop with Hyprland and Mango on Wayland, Intel iGPU, gaming, and development tooling. Catppuccin Mocha everywhere.
+Full-featured desktop with Hyprland, Mango, and Niri on Wayland, Intel iGPU, gaming, and development tooling. Catppuccin Mocha everywhere.
 
-- Hyprland or Mango + Noctalia
+- Hyprland, Mango, or Niri + Noctalia
 - Gaming: Steam with Proton, Heroic, Bottles, GameMode, MangoHud
 - Ghostty, Neovim, Tmux, Docker
 - Spotify (Spicetify), Discord (Nixcord), Obsidian, Gram, OBS, Zen browser

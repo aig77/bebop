@@ -10,6 +10,7 @@
         desktop
         hyprland
         mango
+        niri
         amdgpu
         gaming
         docker

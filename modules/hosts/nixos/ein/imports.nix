@@ -8,6 +8,7 @@
         laptop
         hyprland
         mango
+        niri
         intelgpu
         gaming
         docker
