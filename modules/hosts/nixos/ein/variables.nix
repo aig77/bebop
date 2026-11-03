@@ -10,6 +10,7 @@ _: {
           width = 2880;
           height = 1920;
           framerate = 120;
+          scale = 2.0;
         }
       ];
     };
