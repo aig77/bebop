@@ -3,6 +3,7 @@
   hm = config.flake.modules.homeManager;
 in {
   flake.modules.nixos.mango = {
+    config,
     inputs,
     pkgs,
     ...
@@ -18,12 +19,28 @@ in {
       inputs.mangowm.hmModules.mango
       hm.mango
     ];
+
+    # Checks if monitor rules are configured properly
+    assertions =
+      [
+        {
+          assertion = config.var.monitors != [];
+          message = "Mango requires at least one entry in var.monitors.";
+        }
+      ]
+      ++ map (m: {
+        assertion =
+          m.name != null || m.make != null || m.model != null || m.serial != null;
+        message = "Each var.monitors entry needs at least one of name, make, model, or serial.";
+      })
+      config.var.monitors;
   };
 
   flake.modules.homeManager.mango = {
     config,
     lib,
     pkgs,
+    var,
     ...
   }: let
     c = config.lib.stylix.colors;
@@ -47,6 +64,22 @@ in {
       FILE_MANAGER = "thunar";
       MANGO_GAME_TAG = gameTag;
     };
+
+    monitorRules =
+      map (
+        m: "${monitorId m},width:${toString m.width},height:${toString m.height},refresh:${toString m.framerate},x:${toString m.x},y:${toString m.y},scale:${toString m.scale}"
+      )
+      var.monitors;
+
+    monitorId = m:
+      lib.concatStringsSep "," (
+        lib.filter (v: v != "") [
+          (lib.optionalString (m.name != null) "name:${m.name}")
+          (lib.optionalString (m.make != null) "make:${m.make}")
+          (lib.optionalString (m.model != null) "model:${m.model}")
+          (lib.optionalString (m.serial != null) "serial:${m.serial}")
+        ]
+      );
   in {
     home = {
       inherit sessionVariables;
@@ -95,7 +128,7 @@ in {
         gap_inner_vertical = 0;
         gap_outer_horizontal = 0;
         gap_outer_vertical = 0;
-        border_px = 1;
+        border_px = 2;
         border_radius = 0;
         focused_opacity = 1.0;
         unfocused_opacity = 1.0;
@@ -215,9 +248,7 @@ in {
         scratchpad_cross_monitor = 0;
         single_scratchpad = 1;
 
-        monitor_rule = [
-          "name:^DP-2$,width:3840,height:2160,refresh:240,x:0,y:0,scale:1"
-        ];
+        monitor_rule = monitorRules;
 
         tag_rule = tagRules;
 
