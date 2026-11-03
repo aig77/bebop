@@ -7,6 +7,7 @@
       ++ (with config.flake.modules.nixos; [
         laptop
         hyprland
+        mango
         intelgpu
         gaming
         docker

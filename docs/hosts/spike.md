@@ -14,9 +14,9 @@
 **Platform:** x86_64 NixOS
 **Role:** Desktop workstation
 
-Full-featured desktop with Hyprland on Wayland, AMD GPU, gaming, and development tooling. Catppuccin Mocha everywhere.
+Full-featured desktop with Hyprland and Mango on Wayland, AMD GPU, gaming, and development tooling. Catppuccin Mocha everywhere.
 
-- Hyprland + Noctalia shell
+- Hyprland or Mango + Noctalia shell
 - Gaming: Steam with Proton, Heroic, Bottles, GameMode, MangoHud
 - Ghostty, Neovim, Tmux, Docker
 - Spotify (Spicetify), Discord (Nixcord), Obsidian, Gram, OBS, Zen browser

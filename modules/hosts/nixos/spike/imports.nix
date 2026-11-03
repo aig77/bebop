@@ -9,6 +9,7 @@
         remote-builder
         desktop
         hyprland
+        mango
         amdgpu
         gaming
         docker
