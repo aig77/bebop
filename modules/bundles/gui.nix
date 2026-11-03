@@ -19,7 +19,7 @@ in {
         claude-desktop
         easyeffects
         gnome-calculator
-        gram
+        # gram
         imv
         mission-center
         pavucontrol
