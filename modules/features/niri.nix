@@ -25,7 +25,7 @@ in {
       TERMINAL = "ghostty";
       BROWSER = "zen";
       FILE_MANAGER = "thunar";
-      NIRI_GAME_WORKSPACE = "games";
+      NIRI_GAME_WORKSPACE = "󰊴";
     };
 
     # Attach descriptions shown in Niri's Important Hotkeys overlay.
@@ -65,19 +65,16 @@ in {
       var.monitors;
 
     workspaceBinds = lib.mergeAttrsList (lib.concatMap (i: let
-      key =
-        if i == 10
-        then "0"
-        else toString i;
+      name = toString i;
     in [
       {
-        "Super+${key}" = withTitle "Focus Workspace ${toString i}" {focus-workspace = i;};
+        "Super+${name}" = withTitle "Focus Workspace ${name}" {focus-workspace = name;};
       }
       {
-        "Super+Shift+${key}" =
-          withTitle "Move Window to Workspace ${toString i}" {move-window-to-workspace = i;};
+        "Super+Shift+${name}" =
+          withTitle "Move Window to Workspace ${name}" {move-window-to-workspace = name;};
       }
-    ]) (lib.range 1 10));
+    ]) (lib.range 1 5));
   in {
     home = {
       inherit sessionVariables;
@@ -277,8 +274,15 @@ in {
             "Super+up" = withTitle "Resize Up" {set-window-height = "-10%";};
             "Super+down" = withTitle "Resize Down" {set-window-height = "+10%";};
 
-            "Super+S" = withTitle "Go to Scratchpad" {focus-workspace = "scratchpad";};
-            "Super+Shift+S" = withTitle "Move to Scratchpad" {move-window-to-workspace = "scratchpad";};
+            "Super+S" = withTitle "Go to Scratchpad" {focus-workspace = "";};
+            "Super+Shift+S" = withTitle "Move to Scratchpad" {
+              move-window-to-workspace._args = [""];
+              move-window-to-workspace._props.focus = false;
+            };
+            "Super+Alt+S" = withTitle "Return from Scratchpad" {focus-workspace-previous = {};};
+
+            "Super+G" = withTitle "Go to Gaming" {focus-workspace = "󰊴";};
+            "Super+Alt+G" = withTitle "Return from Gaming" {focus-workspace-previous = {};};
 
             "Super+Space" = withTitle "Open Launcher" {spawn = ["noctalia" "msg" "panel-toggle" "launcher"];};
             "Super+C" = withTitle "Open Control Center" {spawn = ["noctalia" "msg" "panel-toggle" "control-center"];};
@@ -321,9 +325,17 @@ in {
           // workspaceBinds;
 
         _children =
-          [
-            {workspace._args = ["games"];}
-            {workspace._args = ["scratchpad"];}
+          map (i: {workspace._args = [(toString i)];}) (lib.range 1 5)
+          ++ [
+            {
+              workspace = {
+                _args = [""];
+                _children = [
+                  {layout.gaps = 8;}
+                ];
+              };
+            }
+            {workspace._args = ["󰊴"];}
           ]
           ++ monitorOutputs
           ++ [
@@ -372,7 +384,7 @@ in {
             }
             {
               window-rule._children = [
-                {match._props.title = "Calculator";}
+                {match._props."app-id" = "^org\\.gnome\\.Calculator$";}
                 {open-floating = true;}
               ];
             }
@@ -385,20 +397,43 @@ in {
               ];
             }
 
+            # Steam toast notifications are ordinary toplevels. Keep them
+            # floating, out of the way, and prevent them from stealing focus.
+            {
+              window-rule._children = [
+                {
+                  match._props = {
+                    "app-id" = "^steam$";
+                    title = "^notificationtoasts_\\d+_desktop$";
+                  };
+                }
+                {open-floating = true;}
+                {open-focused = false;}
+                {
+                  default-floating-position._props = {
+                    x = 8;
+                    y = 8;
+                    "relative-to" = "bottom-right";
+                  };
+                }
+                {block-out-from = "screencast";}
+              ];
+            }
+
             # Steam/Proton games open on the named games workspace. The title
             # exclude skips helper windows with no title.
             {
               window-rule._children = [
                 {match._props."app-id" = "^steam_app_";}
                 {exclude._props.title = "^$";}
-                {open-on-workspace = "games";}
+                {open-on-workspace = "󰊴";}
                 {open-fullscreen = true;}
               ];
             }
             {
               window-rule._children = [
                 {match._props."app-id" = ".*gamescope.*";}
-                {open-on-workspace = "games";}
+                {open-on-workspace = "󰊴";}
                 {open-fullscreen = true;}
               ];
             }

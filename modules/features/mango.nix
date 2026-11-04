@@ -44,19 +44,23 @@ in {
     ...
   }: let
     c = config.lib.stylix.colors;
-    gameTag = 10;
+    gameTag = 6;
 
-    tagRules = map (i: "id:${toString i},no_hide:1,layout_name:scroller") (lib.range 1 10);
+    tagRules = map (i: "id:${toString i},no_hide:1,layout_name:scroller") (lib.range 1 6);
 
-    tagBinds = lib.concatMap (i: let
-      key =
-        if i == 10
-        then "0"
-        else toString i;
-    in [
-      "SUPER,${key},view,${toString i},0"
-      "SUPER+SHIFT,${key},tag,${toString i},0"
-    ]) (lib.range 1 10);
+    # Tags 1-5 are the fixed workspaces. The gaming tag is view-only, so no
+    # bind can move a window onto it; the Steam rules place games there.
+    tagBinds =
+      lib.concatMap (i: let
+        key = toString i;
+      in [
+        "SUPER,${key},view,${toString i},0"
+        "SUPER+SHIFT,${key},tag,${toString i},0"
+      ]) (lib.range 1 5)
+      ++ [
+        "SUPER,${toString gameTag},view,${toString gameTag},0"
+        "SUPER,G,view,${toString gameTag},0"
+      ];
 
     sessionVariables = {
       TERMINAL = "ghostty";
@@ -193,7 +197,7 @@ in {
         tag_animation_direction = 0;
 
         # Layouts
-        tag_num = 10;
+        tag_num = 6;
         circle_layout = "scroller,tile";
         scroller_structs = 20;
         scroller_default_proportion = 0.5;
@@ -233,7 +237,10 @@ in {
         trackpad_disable_while_typing = 1;
 
         # Behavior
-        focus_on_activate = 1;
+        # Mango switches tags on xdg-activation, so games and Steam popups
+        # keep pulling the view back to their tag. New windows still get
+        # focused through the normal map path.
+        focus_on_activate = 0;
         sloppy_focus = 1;
         warp_cursor = 1;
         focus_cross_monitor = 1;
@@ -261,7 +268,10 @@ in {
           "is_floating:1,app_id:nm-connection-editor"
           "is_floating:1,title:Calculator"
           "is_floating:1,width:800,height:600,title:^(Select what to share)$"
-          "is_fullscreen:1,tags:${toString gameTag},app_id:^steam_app_.*"
+          # Proton/Wine splash windows have no title and mango reports that as
+          # "broken". Exclude it so the fullscreen rule only hits the real game
+          # window and does not churn its fullscreen state.
+          "is_fullscreen:1,tags:${toString gameTag},confine_pointer:1,app_id:^steam_app_,title:^(?!broken$).+"
           "is_fullscreen:1,tags:${toString gameTag},app_id:.*gamescope.*"
           "idle_inhibit_when_focus:1,app_id:.*zen.*,title:.*YouTube.*"
         ];

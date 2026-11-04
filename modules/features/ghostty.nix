@@ -23,6 +23,7 @@ _: {
         window-padding-y = 16;
         window-padding-balance = true;
         shell-integration-features = "ssh-env,ssh-terminfo";
+        background-blur = !isDarwin;
         background-opacity = lib.mkForce (
           if isDarwin
           then 1.0

@@ -6,48 +6,57 @@ in {
     # Hyprland ships two session entries: plain Hyprland and a UWSM-managed
     # variant. Keep UWSM for proper systemd session handling, but hide the
     # plain entry and present the UWSM one simply as "Hyprland".
-    hyprlandUwsmOnly = let
-      pkg =
-        (pkgs.hyprland.override {
-          withUWSM = true;
-          enableXWayland = true;
-        }).overrideAttrs (old: {
-          pname = "hyprland-uwsm-session";
+    #
+    # Wrap the stock package instead of overriding it, so the Hyprland binary
+    # still comes from cache.nixos.org and only this tiny wrapper is built.
+    hyprlandSession = let
+      base =
+        pkgs.runCommand "hyprland-session" {
+          version = pkgs.hyprland.version;
+          passthru = {
+            providedSessions = ["hyprland-uwsm"];
+          };
+        } ''
+          mkdir -p $out/share/wayland-sessions
 
-          postInstall =
-            (old.postInstall or "")
-            + ''
-              # Hide the non-UWSM session entry.
-              rm -f $out/share/wayland-sessions/hyprland.desktop
+          # Link everything from the stock package except its session directory.
+          for entry in ${pkgs.hyprland}/*; do
+            name=$(basename "$entry")
+            if [ "$name" = "share" ]; then
+              mkdir -p $out/share
+              for sub in ${pkgs.hyprland}/share/*; do
+                subname=$(basename "$sub")
+                if [ "$subname" = "wayland-sessions" ]; then
+                  continue
+                fi
+                ln -s "$sub" "$out/share/$subname"
+              done
+            else
+              ln -s "$entry" "$out/$name"
+            fi
+          done
 
-              # Rename the UWSM entry. The stock entry launches hyprland.desktop,
-              # which no longer exists in the session list, so point UWSM at
-              # start-hyprland directly.
-              substituteInPlace $out/share/wayland-sessions/hyprland-uwsm.desktop \
-                --replace-fail "Name=Hyprland (uwsm-managed)" "Name=Hyprland" \
-                --replace-fail "hyprland.desktop" "-- ${pkgs.hyprland}/bin/start-hyprland"
-            '';
+          # Keep only the UWSM entry, renamed to plain "Hyprland".
+          cp ${pkgs.hyprland}/share/wayland-sessions/hyprland-uwsm.desktop \
+            $out/share/wayland-sessions/hyprland-uwsm.desktop
 
-          passthru =
-            (old.passthru or {})
-            // {
-              providedSessions = ["hyprland-uwsm"];
-            };
-        });
+          substituteInPlace $out/share/wayland-sessions/hyprland-uwsm.desktop \
+            --replace-fail "Name=Hyprland (uwsm-managed)" "Name=Hyprland" \
+            --replace-fail "hyprland.desktop" "-- ${pkgs.hyprland}/bin/start-hyprland"
+        '';
     in
-      pkg
+      base
       // {
-        # The NixOS Hyprland module applies genFinalPackage, which may call
-        # pkg.override and regenerate the stock package. Return pkg directly so
-        # the session filtering above survives.
-        override = _: pkg;
+        # The NixOS Hyprland module calls genFinalPackage, which expects an
+        # override function. Return the wrapper unchanged.
+        override = _: hyprlandSession;
       };
   in {
     programs.hyprland = {
       enable = true;
       withUWSM = true;
       xwayland.enable = true;
-      package = hyprlandUwsmOnly;
+      package = hyprlandSession;
     };
 
     home-manager.users.${username}.imports = [hm.hyprland];
@@ -58,7 +67,8 @@ in {
       TERMINAL = "ghostty";
       BROWSER = "zen";
       FILE_MANAGER = "thunar";
-      HYPR_GAME_WORKSPACE = 10;
+      HYPR_GAME_WORKSPACE = 6;
+      HYPR_GAME_WORKSPACE_ICON = "󰊴";
     };
   in {
     home = {
