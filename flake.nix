@@ -5,6 +5,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 
+    amethyst.url = "github:ChrisDKN/Amethyst-Mod-Manager";
+
     claude-desktop = {
       url = "github:aaddrick/claude-desktop-debian";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

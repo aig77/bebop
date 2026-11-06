@@ -4,27 +4,37 @@
   hm = config.flake.modules.homeManager;
 in {
   flake.modules = {
-    nixos.gaming = _: {
-      imports = [nixos.screen-record];
-      programs = {
-        steam.enable = true;
-        steam.gamescopeSession = {
-          enable = true;
-          args = [
-            "-f"
-            "-w 2560"
-            "-h 1440"
-            "--cursor-lock-enabled"
-          ];
+    nixos = {
+      gaming = _: {
+        imports = [nixos.screen-record];
+        programs = {
+          steam.enable = true;
+          steam.gamescopeSession = {
+            enable = true;
+            args = [
+              "-f"
+              "-w 2560"
+              "-h 1440"
+              "--cursor-lock-enabled"
+            ];
+          };
+          gamemode.enable = true;
         };
-        gamemode.enable = true;
+
+        environment.sessionVariables = {
+          STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\\\${HOME}/.steam/root/compatibilitytools.d";
+        };
+
+        home-manager.users.${username}.imports = [hm.gaming];
       };
 
-      environment.sessionVariables = {
-        STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\\\${HOME}/.steam/root/compatibilitytools.d";
+      gaming-mods = {
+        inputs,
+        pkgs,
+        ...
+      }: {
+        environment.systemPackages = [inputs.amethyst.packages.${pkgs.system}.default];
       };
-
-      home-manager.users.${username}.imports = [hm.gaming];
     };
 
     homeManager.gaming = {pkgs, ...}: {

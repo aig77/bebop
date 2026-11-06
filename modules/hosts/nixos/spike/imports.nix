@@ -13,6 +13,7 @@
         niri
         amdgpu
         gaming
+        gaming-mods
         docker
         volt
       ]);
