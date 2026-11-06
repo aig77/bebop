@@ -5,21 +5,22 @@
 in {
   flake.modules = {
     nixos = {
-      gaming = _: {
+      gaming = {pkgs, ...}: {
         imports = [nixos.screen-record];
         programs = {
-          steam.enable = true;
-          steam.gamescopeSession = {
+          steam = {
             enable = true;
-            args = [
-              "-f"
-              "-w 2560"
-              "-h 1440"
-              "--cursor-lock-enabled"
+            remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+            dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server hosting
+            gamescopeSession.enable = true;
+            extraCompatPackages = with pkgs; [
+              proton-ge-bin
             ];
           };
           gamemode.enable = true;
         };
+
+        hardware.xone.enable = true;
 
         environment.sessionVariables = {
           STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\\\${HOME}/.steam/root/compatibilitytools.d";
@@ -34,6 +35,7 @@ in {
         ...
       }: {
         environment.systemPackages = [inputs.amethyst.packages.${pkgs.system}.default];
+        home-manager.users.${username}.imports = [hm.gaming-mods];
       };
     };
 
@@ -70,6 +72,21 @@ in {
           wine = true;
           toggle_hud = "Shift_R+F2";
           position = "top-left";
+        };
+      };
+    };
+
+    homeManager.gaming-mods = {pkgs, ...}: {
+      home = {
+        packages = [
+          pkgs.protontricks
+          (pkgs.writeShellScriptBin "me3" ''
+            unset LD_LIBRARY_PATH LD_PRELOAD LD_AUDIT
+            exec ${pkgs.steam-run}/bin/steam-run "$HOME/.local/bin/me3" "$@"
+          '')
+        ];
+        sessionVariables = {
+          AMM_STEAM_OVERLAY = "0";
         };
       };
     };
