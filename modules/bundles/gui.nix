@@ -42,6 +42,7 @@ in {
         spotify
         zathura
         zen
+        zen-sync
       ];
     };
   };

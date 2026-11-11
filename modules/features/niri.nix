@@ -243,6 +243,7 @@ in {
 
             "Super+Return" = withTitle "Open Terminal" {spawn = [sessionVariables.TERMINAL];};
             "Super+B" = withTitle "Open Browser" {spawn = [sessionVariables.BROWSER];};
+            "Super+Shift+B" = withTitle "Zen Sync" {spawn = ["zen-sync-menu"];};
             "Super+Shift+F" = withTitle "Open File Manager" {spawn = [sessionVariables.FILE_MANAGER];};
 
             "Super+Q" = withTitleAndProps "Close Window" {repeat = false;} {close-window = {};};

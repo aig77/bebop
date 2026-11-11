@@ -5,15 +5,23 @@ _: {
     pkgs,
     lib,
     ...
-  }: {
+  }: let
+    zenPkg = config.programs.zen-browser.package;
+    realZen = "${zenPkg}/bin/${zenPkg.meta.mainProgram}";
+  in {
     imports = [inputs.zen-browser.homeModules.beta];
 
     stylix.targets.zen-browser.enable = false;
 
-    # Strips strange binary path name
+    # Strips the strange binary path name. If the zen-sync feature is imported,
+    # its launcher is in PATH and takes over the lifecycle.
     home.packages = [
       (pkgs.writeShellScriptBin "zen" ''
-        exec ${config.programs.zen-browser.package}/bin/${config.programs.zen-browser.package.meta.mainProgram} "$@"
+        if command -v zen-sync-run >/dev/null 2>&1; then
+          exec zen-sync-run "$@"
+        fi
+
+        exec ${realZen} "$@"
       '')
     ];
 
@@ -136,33 +144,10 @@ _: {
           };
         };
 
-        pinsForce = true;
-        pins = {
-          "GitHub" = {
-            id = "d472f2f7-836e-4bd5-8144-6555137d4704";
-            url = "https://github.com";
-            position = 100;
-            isEssential = true;
-          };
-          "Nix Docs" = {
-            id = "a08c0df0-0af9-4326-843c-93f79caa2fa6";
-            url = "https://nix.dev";
-            position = 102;
-            isEssential = true;
-          };
-          "Vim Cheat Sheet" = {
-            id = "0d8f97b9-86ae-4563-8082-18b1aec0570d";
-            url = "https://vim.rtorr.com";
-            position = 201;
-            isEssential = true;
-          };
-          "Tmux Cheat Sheet" = {
-            id = "32f6fd7e-9bdc-4bb4-8244-4114f27a57df";
-            url = "https://tmuxcheatsheet.com/";
-            position = 202;
-            isEssential = true;
-          };
-        };
+        # Spaces, pins, containers, and open tabs are runtime state owned by
+        # R2 through zen-sync. Do not declare them here: the zen-browser
+        # module would rewrite zen-sessions.jsonlz4 at activation and fight
+        # the synced session.
       };
     };
 

@@ -285,6 +285,7 @@ in {
             # Apps
             "SUPER,Return,spawn,${sessionVariables.TERMINAL}"
             "SUPER,B,spawn,${sessionVariables.BROWSER}"
+            "SUPER+SHIFT,B,spawn,zen-sync-menu"
             "SUPER+SHIFT,F,spawn,${sessionVariables.FILE_MANAGER}"
 
             # Window management
