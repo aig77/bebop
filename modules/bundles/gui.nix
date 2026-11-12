@@ -36,6 +36,7 @@ in {
 
         alacritty
         discord
+        firefox
         ghostty
         nixcord
         obsidian

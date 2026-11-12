@@ -30,6 +30,7 @@ _: {
         base = 4050;
         names = ["webUI" "redis"];
       };
+      syncserver = 4060;
       postgres = config.mkPortGroup {
         base = 5432; # default
         names = ["server" "exporter"];

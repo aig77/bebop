@@ -13,6 +13,7 @@
 
         backup
         dbgate
+        firefox-sync
         grafana-dashboards-postgres
         grafana-dashboards-unbound
         hermes-readonly

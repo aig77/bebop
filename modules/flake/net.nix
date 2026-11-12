@@ -11,6 +11,10 @@
             type = lib.types.nullOr lib.types.str;
             default = "192.168.68.0/24";
           };
+          tailnet = lib.mkOption {
+            type = lib.types.str;
+            default = "ribbon-blues.ts.net";
+          };
           addrOf = lib.mkOption {
             type = lib.types.functionTo lib.types.str;
             default = name:

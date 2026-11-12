@@ -5,6 +5,7 @@ _: {
     ...
   }: {
     home-manager.users.${config.var.username} = {
+      imports = [];
       home = {
         homeDirectory = "/home/${config.var.username}";
         stateVersion = "25.05";
