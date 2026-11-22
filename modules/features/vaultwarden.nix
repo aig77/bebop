@@ -1,29 +1,29 @@
-_: {
-  flake.modules.nixos.vaultwarden = {config, ...}: {
-    serviceRegistry.vaultwarden = {
-      port = config.ports.vaultwarden;
-      category = "Productivity";
-      expose = {subdomain = "vault";};
-      backup = {
-        paths = ["/var/lib/vaultwarden/attachments"];
-        database = {
-          type = "sqlite";
-          path = "/var/lib/vaultwarden/db.sqlite3";
-        };
-      };
-      monitor = {
-        enable = true;
-        interval = "1m";
-        failureThreshold = 1;
-        successThreshold = 1;
-        tcp = {};
-      };
-      homepage = {
-        enable = true;
-        icon = "di:vaultwarden";
+{config, ...}: {
+  fleet.services.vaultwarden = {
+    module = config.flake.modules.nixos.vaultwarden;
+    category = "Productivity";
+    expose = {subdomain = "vault";};
+    backup = {
+      paths = ["/var/lib/vaultwarden/attachments"];
+      database = {
+        type = "sqlite";
+        path = "/var/lib/vaultwarden/db.sqlite3";
       };
     };
+    monitor = {
+      enable = true;
+      interval = "1m";
+      failureThreshold = 1;
+      successThreshold = 1;
+      tcp = {};
+    };
+    homepage = {
+      enable = true;
+      icon = "di:vaultwarden";
+    };
+  };
 
+  flake.modules.nixos.vaultwarden = {config, ...}: {
     sops = {
       secrets = {
         "vaultwarden/admin-token" = {};

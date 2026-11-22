@@ -1,26 +1,26 @@
-_: {
+{config, ...}: {
+  fleet.services.grafana = {
+    module = config.flake.modules.nixos.grafana;
+    category = "Observability";
+    backup.paths = ["/var/lib/grafana"];
+    monitor = {
+      enable = true;
+      http = {
+        path = "/api/health";
+      };
+    };
+    homepage = {
+      enable = true;
+      icon = "di:grafana";
+    };
+  };
+
   flake.modules.nixos.grafana = {
     config,
     pkgs,
     lib,
     ...
   }: {
-    serviceRegistry.grafana = {
-      port = config.ports.grafana;
-      category = "Observability";
-      backup.paths = ["/var/lib/grafana"];
-      monitor = {
-        enable = true;
-        http = {
-          path = "/api/health";
-        };
-      };
-      homepage = {
-        enable = true;
-        icon = "di:grafana";
-      };
-    };
-
     services.grafana = {
       enable = true;
       settings = {
@@ -44,14 +44,14 @@ _: {
           {
             name = "Prometheus";
             type = "prometheus";
-            url = "http://127.0.0.1:${toString config.ports.prometheus.server}";
+            url = "http://127.0.0.1:${toString config.ports.prometheus}";
             isDefault = true;
           }
           {
             name = "Loki";
             type = "loki";
             uid = "loki";
-            url = "http://${config.net.addrOf config.observability.lokiHost}:${toString config.ports.loki}";
+            url = "http://${config.net.addrOf config.serviceRegistry.loki.host}:${toString config.serviceRegistry.loki.port}";
             access = "proxy";
           }
         ];

@@ -1,17 +1,17 @@
-_: {
-  flake.modules.nixos.loki = {config, ...}: {
-    serviceRegistry.loki = {
-      port = config.ports.loki;
-      category = "Observability";
-      backup.paths = ["/var/lib/loki"];
-      monitor = {
-        enable = true;
-        http = {
-          path = "/ready";
-        };
+{config, ...}: {
+  fleet.services.loki = {
+    module = config.flake.modules.nixos.loki;
+    category = "Observability";
+    backup.paths = ["/var/lib/loki"];
+    monitor = {
+      enable = true;
+      http = {
+        path = "/ready";
       };
     };
+  };
 
+  flake.modules.nixos.loki = {config, ...}: {
     services.loki = {
       enable = true;
       configuration = {
@@ -59,13 +59,14 @@ _: {
     pkgs,
     ...
   }: let
-    lokiHost = config.observability.lokiHost;
+    lokiHost = config.serviceRegistry.loki.host;
+    lokiPort = config.serviceRegistry.loki.port;
     # The stack host talks to Loki on loopback; agents reach it through
     # tailscale-http, which terminates TLS on the tailnet name.
     lokiUrl =
       if config.var.hostname == lokiHost
-      then "http://127.0.0.1:${toString config.ports.loki}/loki/api/v1/push"
-      else "https://${lokiHost}.${config.sops.placeholder."tailscale/tailnet"}:${toString config.ports.loki}/loki/api/v1/push";
+      then "http://127.0.0.1:${toString lokiPort}/loki/api/v1/push"
+      else "https://${lokiHost}.${config.sops.placeholder."tailscale/tailnet"}:${toString lokiPort}/loki/api/v1/push";
   in {
     sops = {
       secrets."tailscale/tailnet" = {};

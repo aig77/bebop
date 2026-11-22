@@ -27,8 +27,8 @@ modules/flake/
 ├── systems.nix               # Supported platforms
 ├── formatter.nix             # nix fmt (alejandra)
 ├── pre-commit.nix            # Git hooks
-├── ports.nix                 # Per-host port registry option + collision assertion
-├── network.nix               # Network constants (subnet)
+├── fleet.nix                 # Fleet inventory: per-host ports, services, derived registry
+├── net.nix                   # Network constants (subnet)
 ├── nixpkgs.nix               # Channel policy + overlay bridge
 ├── perSystem.nix             # perSystem pkgs for dev tools
 ├── deploy.nix                # deploy-rs nodes (servers) + fleet app
@@ -106,11 +106,21 @@ Same, contributed to `flake.modules.darwin.base`. Smaller set: `username`, `host
 
 ---
 
-## Ports
+## Fleet inventory
 
-### `flake/ports.nix`
+### `flake/fleet.nix`
 
-Contributes `options.ports` and `options.mkPortGroup` to `flake.modules.nixos.base`, plus a collision assertion. The registry is **per host**: each host declares its own ports in `modules/hosts/nixos/<host>/ports.nix`, including any remote ports it reads. Features reference them via `config.ports.<name>` (a group is a nested attrset, e.g. `config.ports.prometheus.nodeExporter`). `mkPortGroup` derives a sequential group from a base. NixOS only, no Darwin equivalent.
+Contributes the flake-level `fleet` option and the NixOS views derived from it:
+
+- `fleet.ports.<host>` - the readable port table for each machine. A plain number is the bound port; `{port; https;}` also sets the tailnet HTTPS port. The host block is the placement: a key matching a service name means that host runs the service.
+- `fleet.services.<name>` - the service catalogue (category, expose, serve, backup, monitor, homepage) plus the `module` that provides it. No host or port; both are inferred from `fleet.ports`.
+- `fleet.portOf host name` - resolve another host's port with a readable error.
+
+`flake.modules.nixos.base` derives `config.ports` (this host's numbers) and `config.serviceRegistry` (the whole fleet, with `host`, `port` and `servePort` filled in). It also imports the `module` of every service whose port lives on this host. That makes the port table the service manifest: adding a port and a catalogue entry enables the service, and `imports.nix` only lists non-service infrastructure. `moduleKey` lets two services share one module (adguard and adguard-ui) without importing it twice.
+
+Assertions cover: known hosts, duplicate bound ports per host, exactly one owning host per service, category, and a single monitor probe. There is no `mkPortGroup`: numbers are literal, so the table reads as an inventory and renaming a key cannot shift other ports.
+
+NixOS only, no Darwin equivalent.
 
 See [Server Services](modules/server.md) for how services consume it.
 

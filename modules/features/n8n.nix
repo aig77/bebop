@@ -1,26 +1,26 @@
-_: {
+{config, ...}: {
+  fleet.services.n8n = {
+    module = config.flake.modules.nixos.n8n;
+    category = "AI";
+    backup.paths = ["/var/lib/n8n"];
+    monitor = {
+      enable = true;
+      http = {
+        path = "/healthz";
+      };
+    };
+    homepage = {
+      enable = true;
+      title = "n8n";
+      icon = "di:n8n";
+    };
+  };
+
   flake.modules.nixos.n8n = {
     config,
     pkgs,
     ...
   }: {
-    serviceRegistry.n8n = {
-      port = config.ports.n8n;
-      category = "AI";
-      backup.paths = ["/var/lib/n8n"];
-      monitor = {
-        enable = true;
-        http = {
-          path = "/healthz";
-        };
-      };
-      homepage = {
-        enable = true;
-        title = "n8n";
-        icon = "di:n8n";
-      };
-    };
-
     sops = {
       secrets = {
         "discord/daily-stoic-bot-token" = {};

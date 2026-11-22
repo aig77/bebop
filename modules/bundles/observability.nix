@@ -10,13 +10,11 @@
 
     # The observability stack: metrics, logs, dashboards, health checks. Runs
     # on one host, which also observes itself through observability-agent.
+    # prometheus, grafana, loki and gatus are services: they are imported by
+    # `base` because their ports are in the stack host's ports.nix.
     observability = {
       imports = with config.flake.modules.nixos; [
         observability-agent
-        prometheus
-        grafana
-        loki
-        gatus
         grafana-dashboards-node-exporter
         grafana-dashboards-loki
       ];

@@ -39,7 +39,7 @@ outputs = inputs @ {flake-parts, ...}:
   (inputs.import-tree ./modules);
 ```
 
-`import-tree` recursively collects every `.nix` file in `modules/` and merges them as a single flake-parts module. Every file is always imported. Whether a file's configuration takes effect depends entirely on whether the host imports the relevant named profile.
+`import-tree` recursively collects every `.nix` file in `modules/` and merges them as a single flake-parts module. Every file is always imported. Whether a file's configuration takes effect depends on the host: profiles take effect when the host imports them, and a service module takes effect when its port is in the host's `fleet.ports` table.
 
 **Critical:** `import-tree` uses git to enumerate files. New `.nix` files must be `git add`ed before they are visible to Nix evaluation.
 
@@ -141,7 +141,7 @@ net = {                  # network constants (modules/flake/network.nix)
 };
 ```
 
-Every machine is on the tailnet and resolves by MagicDNS, so there is no address book. `config.net.addrOf "<name>"` returns `"localhost"` for this host and the hostname itself otherwise; consumers use it instead of hardcoding addresses. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`, and an assertion rejects a `serviceRegistry.<name>.host` that is not a known host.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book. `config.net.addrOf "<name>"` returns `"localhost"` for this host and the hostname itself otherwise; consumers use it instead of hardcoding addresses. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`. Cross-host service and port facts live in `fleet` (`modules/flake/fleet.nix`), passed down as a specialArg, so a consumer never copies another machine's numbers. A service's port in `fleet.ports.<host>` also enables its module: `base` imports it on the owning host, so host `imports.nix` files list infrastructure only.
 
 ---
 

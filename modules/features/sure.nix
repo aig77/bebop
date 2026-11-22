@@ -1,33 +1,33 @@
-_: {
+{config, ...}: {
+  fleet.services.sure = {
+    module = config.flake.modules.nixos.sure;
+    category = "Productivity";
+    monitor = {
+      enable = true;
+      http = {
+        path = "/up";
+        conditions = ["[STATUS] == 200"];
+      };
+    };
+    homepage = {
+      enable = true;
+      title = "Sure";
+      icon = "di:sure";
+    };
+    backup = {
+      paths = ["/var/lib/sure"];
+      database = {
+        type = "postgres";
+        name = "sure_production";
+      };
+    };
+  };
+
   flake.modules.nixos.sure = {
     config,
     lib,
     ...
   }: {
-    serviceRegistry.sure = {
-      port = config.ports.sure.webUI;
-      category = "Productivity";
-      monitor = {
-        enable = true;
-        http = {
-          path = "/up";
-          conditions = ["[STATUS] == 200"];
-        };
-      };
-      homepage = {
-        enable = true;
-        title = "Sure";
-        icon = "di:sure";
-      };
-      backup = {
-        paths = ["/var/lib/sure"];
-        database = {
-          type = "postgres";
-          name = "sure_production";
-        };
-      };
-    };
-
     sops = {
       secrets = {
         "sure/secret-key-base" = {};
@@ -46,7 +46,7 @@ _: {
           POSTGRES_DB=sure_production
           DB_HOST=10.88.0.1
           DB_PORT=5432
-          REDIS_URL=redis://:${config.sops.placeholder."sure/redis-password"}@10.88.0.1:${toString config.ports.sure.redis}/1
+          REDIS_URL=redis://:${config.sops.placeholder."sure/redis-password"}@10.88.0.1:${toString config.ports.sureRedis}/1
           SELF_HOSTED=true
           RAILS_ASSUME_SSL=true
           RAILS_FORCE_SSL=false
@@ -60,7 +60,7 @@ _: {
       oci-containers.containers = {
         sure-web = {
           image = "ghcr.io/we-promise/sure:stable";
-          ports = ["127.0.0.1:${toString config.ports.sure.webUI}:3000"];
+          ports = ["127.0.0.1:${toString config.ports.sure}:3000"];
           volumes = ["/var/lib/sure/storage:/rails/storage"];
           environmentFiles = [config.sops.templates."sure.env".path];
         };
@@ -87,7 +87,7 @@ _: {
 
     services.redis.servers."sure" = {
       enable = true;
-      port = config.ports.sure.redis;
+      port = config.ports.sureRedis;
       bind = "0.0.0.0";
       requirePassFile = config.sops.secrets."sure/redis-password".path;
       settings = {
@@ -98,7 +98,7 @@ _: {
       };
     };
 
-    networking.firewall.interfaces.podman0.allowedTCPPorts = [config.ports.sure.redis];
+    networking.firewall.interfaces.podman0.allowedTCPPorts = [config.ports.sureRedis];
 
     systemd = {
       services = {

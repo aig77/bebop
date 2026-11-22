@@ -12,7 +12,7 @@ Handles network services. No GUI, no desktop stack. Runs DNS and monitoring only
 - AdGuard Home DNS server with ad-blocking ([HaGeZi Multi PRO](https://github.com/hagezi/dns-blocklists) + TIF); its `/control/stats` JSON feeds glance's native DNS widget on jet
 - AdGuard Home admin UI, served over the tailnet at `https://ed.<tailnet>/` (tailscale serve on 443 -> the plain-HTTP API port); glance shows it as the `AdGuard Home` card
 - Unbound recursive resolver with DNSSEC
-- Prometheus metrics collection
+- Node exporter and Unbound exporter, scraped by jet's Prometheus over the tailnet
 - Glance agent: exposes CPU / memory / disk on `ports.glanceAgent`, read by jet's server-stats widget over the tailnet
 - Tailscale subnet router: advertises `net.subnet` (`192.168.68.0/24`); jet health-checks and scrapes it over the tailnet via `net.addrOf "ed"`
 - Auto-expanding root partition, watchdog for auto-reboot

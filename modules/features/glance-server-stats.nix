@@ -1,9 +1,11 @@
 _: {
   # Server stats for glance: the local machine directly, every other monitored
   # host through its glance-agent. Monitored hosts come from the observability
-  # scrape targets, so adding a machine to the stack adds it here too.
+  # scrape targets, so adding a machine to the stack adds it here too. The
+  # agent port is read from that host's fleet table.
   flake.modules.nixos.glance-server-stats = {
     config,
+    fleet,
     lib,
     ...
   }: let
@@ -14,7 +16,7 @@ _: {
     mkRemote = host: {
       type = "remote";
       name = host;
-      url = "http://${config.net.addrOf host}:${toString config.ports.glanceAgent}";
+      url = "http://${config.net.addrOf host}:${toString (fleet.portOf host "glanceAgent")}";
     };
   in {
     glance.extraWidgets.servers = [

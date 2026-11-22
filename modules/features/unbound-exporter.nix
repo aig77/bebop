@@ -5,7 +5,7 @@ _: {
     pkgs,
     ...
   }: let
-    port = config.ports.dns.unboundExporter;
+    port = config.ports.unboundExporter;
     stateDir = config.services.unbound.stateDir or "/var/lib/unbound";
   in {
     systemd.services.prometheus-unbound-exporter = lib.mkIf (config.services.unbound.enable or false) {

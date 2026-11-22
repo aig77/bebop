@@ -1,4 +1,35 @@
-_: {
+{config, ...}: {
+  fleet.services.forgejo = {
+    module = config.flake.modules.nixos.forgejo;
+    category = "Development";
+    expose = {subdomain = "git";};
+    backup = {
+      paths = [
+        "/var/lib/forgejo/repositories"
+        "/var/lib/forgejo/data"
+        "/var/lib/forgejo/custom"
+      ];
+      database = {
+        type = "postgres";
+        name = "forgejo";
+      };
+    };
+    monitor = {
+      enable = true;
+      http = {
+        path = "/api/healthz";
+        conditions = [
+          "[STATUS] == 200"
+          "[BODY].status == pass"
+        ];
+      };
+    };
+    homepage = {
+      enable = true;
+      icon = "di:forgejo";
+    };
+  };
+
   flake.modules.nixos.forgejo = {
     config,
     pkgs,
@@ -7,13 +38,14 @@ _: {
   }: let
     subdomain = "git";
     domain = config.sops.placeholder."cloudflare/service-domain";
-    stateDir = config.services.forgejo.stateDir;
     customDir = config.services.forgejo.customDir;
     configPath = "${customDir}/conf/app.ini";
     forgejo = config.services.forgejo.package;
-    catppuccinTheme = pkgs.fetchzip {
-      url = "https://git.bros.ninja/mike/neptune-forgejo/archive/v0.6.0.tar.gz";
-      hash = "sha256-8Hf8uML7X7r1h3L18CKI2LL2wVHBN466tI4lE6I0COI=";
+    catppuccinTheme = pkgs.fetchgit {
+      url = "https://git.bros.ninja/mike/neptune-forgejo";
+      rev = "v0.7.1";
+      fetchSubmodules = false;
+      hash = "sha256-gn4qTmet6hZtBWNOaXL4U3tLkdMZbESGBYKmdfmT29E=";
     };
     mauveIcon = pkgs.fetchurl {
       url = "https://files.svgcdn.io/catppuccin/forgejo.svg";
@@ -53,37 +85,6 @@ _: {
         ++ map (a: "catppuccin-${a}-auto") catppuccinAccents
         ++ lib.concatMap (f: map (a: "catppuccin-${f}-${a}") catppuccinAccents) catppuccinFlavors);
   in {
-    serviceRegistry.forgejo = {
-      port = config.ports.forgejo;
-      category = "Development";
-      expose = {inherit subdomain;};
-      backup = {
-        paths = [
-          "${stateDir}/repositories"
-          "${stateDir}/data"
-          customDir
-        ];
-        database = {
-          type = "postgres";
-          name = config.services.forgejo.database.name;
-        };
-      };
-      monitor = {
-        enable = true;
-        http = {
-          path = "/api/healthz";
-          conditions = [
-            "[STATUS] == 200"
-            "[BODY].status == pass"
-          ];
-        };
-      };
-      homepage = {
-        enable = true;
-        icon = "di:forgejo";
-      };
-    };
-
     sops = {
       secrets = {
         "cloudflare/service-domain" = {};
@@ -115,7 +116,10 @@ _: {
 
     services.forgejo = {
       enable = true;
+      stateDir = "/var/lib/forgejo";
+      customDir = "/var/lib/forgejo/custom";
       database.type = "postgres";
+      database.name = "forgejo";
       lfs.enable = true;
       settings = {
         server = {

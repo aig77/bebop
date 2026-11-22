@@ -1,4 +1,9 @@
-_: {
+{config, ...}: {
+  fleet.services.glance = {
+    module = config.flake.modules.nixos.glance;
+    category = "Infrastructure";
+  };
+
   flake.modules.nixos.glance = {
     config,
     lib,
@@ -69,12 +74,6 @@ _: {
       '';
     };
   in {
-    serviceRegistry.glance = {
-      port = config.ports.glance;
-      servePort = 443;
-      category = "Infrastructure";
-    };
-
     sops = {
       secrets = {
         "tailscale/tailnet" = {};

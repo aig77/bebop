@@ -1,34 +1,34 @@
-_: {
+{config, ...}: {
+  fleet.services.daily-stoic = {
+    module = config.flake.modules.nixos.daily-stoic;
+    category = "Productivity";
+    expose = {subdomain = "stoic";};
+    backup = {
+      paths = ["/var/lib/daily-stoic/database.json"];
+      database = {
+        type = "sqlite";
+        path = "/var/lib/daily-stoic/stoic.db";
+      };
+    };
+    monitor = {
+      enable = true;
+      http = {
+        path = "/health";
+      };
+    };
+    homepage = {
+      enable = true;
+      title = "Daily Stoic";
+      icon = "si:bookstack";
+    };
+  };
+
   flake.modules.nixos.daily-stoic = {
     config,
     inputs,
     ...
   }: {
     imports = [inputs.daily-stoic.nixosModules.default];
-
-    serviceRegistry.daily-stoic = {
-      port = config.ports.dailyStoic;
-      category = "Productivity";
-      expose = {subdomain = "stoic";};
-      backup = {
-        paths = ["/var/lib/daily-stoic/database.json"];
-        database = {
-          type = "sqlite";
-          path = "/var/lib/daily-stoic/stoic.db";
-        };
-      };
-      monitor = {
-        enable = true;
-        http = {
-          path = "/health";
-        };
-      };
-      homepage = {
-        enable = true;
-        title = "Daily Stoic";
-        icon = "si:bookstack";
-      };
-    };
 
     sops = {
       secrets = {
@@ -53,7 +53,7 @@ _: {
 
     services.daily-stoic = {
       enable = true;
-      port = config.ports.dailyStoic;
+      port = config.ports.daily-stoic;
       environmentFile = config.sops.templates."daily-stoic.env".path;
     };
   };

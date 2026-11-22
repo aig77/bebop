@@ -1,25 +1,25 @@
-_: {
+{config, ...}: {
+  fleet.services.dbgate = {
+    module = config.flake.modules.nixos.dbgate;
+    category = "Development";
+    backup.paths = ["/var/lib/dbgate"];
+    monitor = {
+      enable = true;
+      interval = "1m";
+      tcp = {};
+    };
+    homepage = {
+      enable = true;
+      title = "DbGate";
+      icon = "di:dbgate";
+    };
+  };
+
   flake.modules.nixos.dbgate = {
     config,
     lib,
     ...
   }: {
-    serviceRegistry.dbgate = {
-      port = config.ports.dbgate;
-      category = "Development";
-      backup.paths = ["/var/lib/dbgate"];
-      monitor = {
-        enable = true;
-        interval = "1m";
-        tcp = {};
-      };
-      homepage = {
-        enable = true;
-        title = "DbGate";
-        icon = "di:dbgate";
-      };
-    };
-
     # Allow dbgate TCP access from podman bridge (10.88.0.0/16)
     services.postgresql.authentication = lib.mkAfter ''
       host all dbgate 10.88.0.0/16 trust

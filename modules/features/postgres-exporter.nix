@@ -8,13 +8,13 @@ _: {
       enable = true;
       runAsLocalSuperUser = true;
       listenAddress = "127.0.0.1";
-      port = config.ports.postgres.exporter;
+      port = config.ports.postgresExporter;
     };
 
     services.prometheus.scrapeConfigs = lib.mkIf (config.services.postgresql.enable && config.services.prometheus.enable) [
       {
         job_name = "postgres";
-        static_configs = [{targets = ["127.0.0.1:${toString config.ports.postgres.exporter}"];}];
+        static_configs = [{targets = ["127.0.0.1:${toString config.ports.postgresExporter}"];}];
       }
     ];
   };

@@ -1,11 +1,24 @@
-_: {
+{config, ...}: {
+  fleet.services.gatus = {
+    module = config.flake.modules.nixos.gatus;
+    category = "Observability";
+    monitor = {
+      enable = true;
+      http = {};
+    };
+    homepage = {
+      enable = true;
+      icon = "di:gatus";
+    };
+  };
+
   flake.modules.nixos.gatus = {
     config,
     lib,
     ...
   }: let
     mkProbeEndpoint = name: svc: let
-      # Exactly one probe is set (asserted in the var schema).
+      # Exactly one probe is set (asserted in the fleet schema).
       hp = svc.monitor;
       displayName =
         if hp.dns != null
@@ -56,19 +69,6 @@ _: {
       lib.mapAttrsToList mkProbeEndpoint
       (lib.filterAttrs (_: s: s.monitor.enable) config.serviceRegistry);
   in {
-    serviceRegistry.gatus = {
-      port = config.ports.gatus;
-      category = "Observability";
-      monitor = {
-        enable = true;
-        http = {};
-      };
-      homepage = {
-        enable = true;
-        icon = "di:gatus";
-      };
-    };
-
     users.users.gatus = {
       isSystemUser = true;
       group = "gatus";

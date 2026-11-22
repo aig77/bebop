@@ -1,4 +1,34 @@
-_: {
+{config, ...}: {
+  fleet.services.adguard = {
+    module = config.flake.modules.nixos.adguard;
+    moduleKey = "adguard";
+    category = "Infrastructure";
+    # DNS is not an HTTPS service: routing it through tailscale serve would
+    # put an HTTPS proxy in front of the DNS protocol on port 53.
+    serve = false;
+    monitor = {
+      enable = true;
+      interval = "1m";
+      dns = {};
+    };
+  };
+
+  fleet.services.adguard-ui = {
+    module = config.flake.modules.nixos.adguard;
+    moduleKey = "adguard";
+    category = "Infrastructure";
+    monitor = {
+      enable = true;
+      interval = "1m";
+      http = {};
+    };
+    homepage = {
+      enable = true;
+      title = "AdGuard Home";
+      icon = "di:adguard-home";
+    };
+  };
+
   flake.modules.nixos.adguard = {
     config,
     lib,
@@ -9,7 +39,7 @@ _: {
       # Web UI/API on all interfaces. The LAN port is firewalled, so only the
       # tailnet reaches it (same exposure blocky's API had).
       host = "0.0.0.0";
-      port = config.ports.dns.http;
+      port = config.ports.adguard-ui;
       # Seed the config from Nix, but keep the web UI authoritative afterwards
       # so settings can still be changed from the dashboard.
       mutableSettings = true;
@@ -21,7 +51,7 @@ _: {
           bind_hosts = ["0.0.0.0"];
           port = 53;
           # unbound does local recursion + DNSSEC; cloudflare is the failover.
-          upstream_dns = ["127.0.0.1:${toString config.ports.dns.unbound}"];
+          upstream_dns = ["127.0.0.1:${toString config.ports.unbound}"];
           fallback_dns = ["https://one.one.one.one/dns-query"];
           bootstrap_dns = ["1.1.1.1:53"];
           # Not internet-facing, so no query-rate limiting.

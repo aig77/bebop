@@ -25,7 +25,7 @@
 
   config.flake.nixosConfigurations =
     lib.mapAttrs (
-      _name: cfg: let
+      name: cfg: let
         channel = config.flake.nixpkgs.channelFor cfg;
         channelModule = config.flake.nixpkgs.overlayModule channel;
         pkgsConfig = config.flake.nixpkgs.pkgsConfig;
@@ -33,6 +33,11 @@
         (config.flake.nixpkgs.srcFor channel).lib.nixosSystem {
           specialArgs = {
             inherit inputs;
+            # Fleet inventory: per-host ports and the global service
+            # catalogue. `base` derives config.ports and serviceRegistry,
+            # and imports the service modules owned by this host.
+            inherit (config) fleet;
+            fleetHost = name;
             # Fleet host names, derived from the configurations registry so no
             # separate inventory exists. Read by the var.network assertions.
             fleetHosts = builtins.attrNames config.configurations.nixos;

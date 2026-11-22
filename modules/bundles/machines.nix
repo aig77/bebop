@@ -60,10 +60,11 @@ in {
       imports = with nixos; [caddy cloudflared];
     };
 
-    # Private dashboards and metrics: homepage + the observability stack
-    # (metrics, logs, health checks) + the glance widgets fed by them.
+    # Private dashboards and metrics: the glance widgets plus the
+    # observability stack. `glance` itself is a service, so `base` imports it
+    # when the host's ports.nix lists it.
     server-private = _: {
-      imports = with nixos; [glance-widgets glance glance-dns-stats glance-server-stats observability];
+      imports = with nixos; [glance-widgets glance-dns-stats glance-server-stats observability];
     };
   };
 }

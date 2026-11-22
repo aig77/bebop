@@ -1,4 +1,17 @@
-_: {
+{config, ...}: {
+  fleet.services.syncserver = {
+    module = config.flake.modules.nixos.firefox-sync;
+    category = "Infrastructure";
+    backup.database = {
+      type = "postgres";
+      name = "firefox_syncserver";
+    };
+    monitor = {
+      enable = true;
+      tcp = {};
+    };
+  };
+
   flake.modules.nixos.firefox-sync = {
     config,
     inputs,
@@ -39,20 +52,6 @@ _: {
 
       settings.port = syncPort;
       secrets = config.sops.templates."firefox-syncserver.env".path;
-    };
-
-    serviceRegistry.syncserver = {
-      port = config.ports.syncserver;
-      servePort = config.ports.syncserver;
-      category = "Infrastructure";
-      backup.database = {
-        type = "postgres";
-        name = "firefox_syncserver";
-      };
-      monitor = {
-        enable = true;
-        tcp = {};
-      };
     };
 
     # The unstable syncserver module adds an option anchor that the stable

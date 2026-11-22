@@ -1,27 +1,27 @@
-_: {
-  flake.modules.nixos.subtrakr = {config, ...}: {
-    serviceRegistry.subtrakr = {
-      port = config.ports.subtrakr;
-      category = "Productivity";
-      backup = {
-        database = {
-          type = "sqlite";
-          path = "/var/lib/subtrakr/subtrakr.db";
-        };
-      };
-      monitor = {
-        enable = true;
-        http = {
-          path = "/healthz";
-          conditions = ["[STATUS] == 200" "[BODY].status == healthy"];
-        };
-      };
-      homepage = {
-        enable = true;
-        icon = "sh:subtrackr";
+{config, ...}: {
+  fleet.services.subtrakr = {
+    module = config.flake.modules.nixos.subtrakr;
+    category = "Productivity";
+    backup = {
+      database = {
+        type = "sqlite";
+        path = "/var/lib/subtrakr/subtrakr.db";
       };
     };
+    monitor = {
+      enable = true;
+      http = {
+        path = "/healthz";
+        conditions = ["[STATUS] == 200" "[BODY].status == healthy"];
+      };
+    };
+    homepage = {
+      enable = true;
+      icon = "sh:subtrackr";
+    };
+  };
 
+  flake.modules.nixos.subtrakr = {config, ...}: {
     # Unlike docker, podman errors instead of auto-creating a missing bind-mount source dir.
     systemd.tmpfiles.rules = ["d /var/lib/subtrakr 0755 root root -"];
 

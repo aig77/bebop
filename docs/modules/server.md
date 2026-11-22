@@ -2,35 +2,47 @@
 
 How self-hosted services get declared, exposed, authenticated, and backed up. The heavy lifting lives in a handful of modules; this page explains how they fit together.
 
-## The `serviceRegistry` registry
+## The fleet inventory and `serviceRegistry`
 
-Every service feature registers itself in `serviceRegistry` (schema in `modules/flake/service-registry.nix`). A service entry looks like:
+Cross-host facts live in two flake-level tables in `modules/flake/fleet.nix`:
+
+- `fleet.ports.<host>` - that machine's ports, as one readable list.
+- `fleet.services.<name>` - what a service is: the module that provides it, category, exposure, backup, health check, homepage link.
+
+The host block in `fleet.ports` is the placement. A key that matches a service name means that host runs the service on that port:
 
 ```nix
-serviceRegistry.vaultwarden = {
-  port = config.ports.vaultwarden;
+# modules/hosts/nixos/jet/ports.nix
+fleet.ports.jet.searx = 4020;
+
+# modules/features/searx.nix
+fleet.services.searx = {
+  module = config.flake.modules.nixos.searx;
   category = "Productivity";
-  expose = {subdomain = "vault";};   # public; omit for tailnet-only
-  backup = {
-    paths = ["/var/lib/vaultwarden/attachments"];
-    database = {type = "sqlite"; path = "/var/lib/vaultwarden/db.sqlite3";};
-  };
+  monitor = {enable = true; http = {path = "/healthz";};};
+  homepage = {enable = true; title = "SearXNG"; icon = "di:searxng";};
 };
+
+# modules/hosts/nixos/ed/ports.nix
+fleet.ports.ed."adguard-ui" = {port = 4000; https = 443;};
 ```
 
-Fields:
+`serviceRegistry` is derived: every host sees the whole fleet with `host`, `port` and `servePort` filled in. The host that owns the port also imports the service's `module` automatically. Consumers such as glance, gatus and the Firefox module read the registry, so no consumer registers a remote entry.
 
-- `host` - the machine the service runs on; defaults to this host, so a co-located service omits it
-- `port` - where the service listens; pull it from this host's port registry, never invent your own number
+Fields on `fleet.services.<name>`:
+
+- `module` - the NixOS module that provides the service. `base` imports it on the host that owns the port.
+- `moduleKey` - optional; set it when several services share one module (adguard and adguard-ui) so the module is imported once.
 - `category` - functional grouping; glance renders one section per category, gatus groups endpoints by the same name (see [Categories](#categories))
 - `expose` - `null` (default) for a tailnet-only service, or `{subdomain; basicAuth ? false;}` to publish it through Caddy + Cloudflare
-- `servePort` - optional; HTTPS port the tailnet serves a private service on, defaults to `port` (glance sets 443)
-- `serve` - `true` (default) routes a private service over the tailnet with `tailscale serve`; set `false` for entries that are monitored or backed up but are not web services (a database), where an HTTPS proxy in front of the backend protocol makes no sense. Ignored when `expose` is set
+- `serve` - `true` (default) routes a private service over the tailnet with `tailscale serve`; set `false` for entries that are monitored or backed up but are not web services (DNS on 53, a database). Ignored when `expose` is set
 - `backup` - optional; `paths` for raw files, plus `database` for a dumpable database
 - `monitor` - optional; gatus auto-registers a health check (http/tcp/dns, path, conditions, thresholds, interval). Alerts on Discord by default; set `alert = false` to track without alerting
 - `homepage` - optional; glance auto-links the service (title, icon)
 
-Ports are a **per-host registry** (`modules/flake/ports.nix` defines the option; each host fills it in `modules/hosts/nixos/<host>/server.nix`). Features read them via `config.ports.<name>`; a group like `prometheus.nodeExporter` is a nested attrset. A collision assertion rejects duplicate values at eval.
+`host` and `port` are inferred from the port table and cannot be set here. `servePort` comes from the port entry's `https` field, or stays `null` and falls back to `port`.
+
+Ports are declared once, in `fleet.ports.<host>`, and the host is implicit from which table the key lives in. A value is either a number or `{port; https;}`. Features read their own ports via `config.ports.<name>`; cross-host consumers call `fleet.portOf "<host>" "<name>"` or read the registry. A collision assertion rejects duplicate numbers within a host.
 
 Six modules consume the registry. None of them know about individual services:
 
@@ -43,7 +55,7 @@ Six modules consume the registry. None of them know about individual services:
 | `features/gatus.nix` | `monitor.enable` (any host) | Health-check endpoint on the Bebop dashboard |
 | `features/glance.nix` | `homepage.enable` (any host) | Homepage site entry |
 
-**Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.net.addrOf svc.host`. A non-local entry with `expose` set fails an assertion: this host's tunnel cannot reach another machine's service.
+**Locality.** Routing and backup only act on services whose `host` is this machine. Gatus and glance consume every entry, local or remote, resolving the address through `config.net.addrOf svc.host`. A remote entry that carries `expose` is informational; only the owning host's Caddy and Cloudflare tunnel publish it.
 
 ## Categories
 
@@ -67,19 +79,21 @@ The enum has one lowercase value, `other`, as the default. It sorts after every 
 - `subnet` - the LAN as a CIDR block, used by the subnet router
 - `addrOf` - `name -> "localhost"` for this host, the hostname otherwise
 
-Every machine is on the tailnet and resolves by MagicDNS, so there is no address book to maintain. Consumers call `config.net.addrOf svc.host`; resolution happens at request time. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`; an assertion rejects a `serviceRegistry.<name>.host` that is not a known host.
+Every machine is on the tailnet and resolves by MagicDNS, so there is no address book to maintain. Consumers call `config.net.addrOf svc.host`; resolution happens at request time. The fleet is the `configurations.nixos` registry, injected as `fleetHosts`; an assertion rejects a `fleet.ports.<host>` key that is not a known host.
 
-A service running on another machine is registered by the consuming host as a `serviceRegistry` entry with `host = "<name>"` (and `servePort = 443` so glance links it at `https://<name>.<tailnet>`). The entry drives monitoring and homepage only; routing and backup ignore it because it is not local.
+A service on another machine needs no registration by the consumer. Its owner lists the port in `fleet.ports.<owner>` and the feature sets `fleet.services.<name>` with the module that provides it; every host derives the same registry, and the owning host imports the module automatically. Gatus, glance and the Firefox module pick it up, while routing and backup ignore it because it is not local.
 
 ## Adding a service
 
-1. Reserve a port in `modules/hosts/nixos/<host>/server.nix` (or reuse an existing one).
-2. Create a feature that runs the app on localhost only and sets `serviceRegistry.<name>` with `port = config.ports.<name>` and `category = "..."`.
+1. Add the port to the owning host's table, `modules/hosts/nixos/<host>/ports.nix`. The key must match the service name (auxiliary ports use names that are not service names).
+2. Set `fleet.services.<name>` in the feature with `module = config.flake.modules.nixos.<feature>;` plus whatever else applies: `category`, `monitor`, `homepage`, `backup`, `expose`, `serve`. Do not set `host` or `port`. If one module provides several services (adguard and adguard-ui), give each entry the same `moduleKey` so the module is imported once.
 3. Choose exposure:
    - **Public**: set `expose = {subdomain = "...";}`. The host needs `server-public` (Caddy + Cloudflared). Add `basicAuth = true` to gate it.
    - **Private**: leave `expose = null` (the default). The host needs the `server` bundle (it wires in `tailscale-http`). Reachable over the tailnet, no Caddy involved. Bind the app to `127.0.0.1` (see [Private exposure](#private-exposure-tailscale-https)).
+   Set `serve = false` for anything that is not an HTTP service (DNS, a database).
    Optionally add a `monitor` block for an automatic gatus health check, and a `homepage` block so glance links the service. Both default to off; see the field list above. A monitored service alerts on Discord unless the block sets `alert = false`.
-4. `git add` the new file, run `nix flake check`.
+4. Do not add the service feature to `imports.nix`. `base` imports it because the port is in the host's table. `imports.nix` is for non-service infrastructure only.
+5. `git add` the new file, run `nix flake check`.
 
 ## Public exposure: Caddy + Cloudflared
 
@@ -143,7 +157,7 @@ The HTTPS port defaults to the service's own `port`; a service can claim a custo
 The observability stack aggregates systemd journal logs. Each monitored host runs `alloy` (`modules/features/loki.nix`), which scrapes its own journal and pushes to the stack host's Loki over the tailnet:
 
 - On the stack host, Alloy pushes to `http://127.0.0.1:<loki port>`.
-- On an agent host, Alloy pushes to `https://<lokiHost>.<tailnet>:<loki port>`, through the same `tailscale serve` HTTPS path as any private service. The target comes from `LOKI_URL` in a sops-rendered env file; the tailnet suffix is the `tailscale/tailnet` secret.
+- On an agent host, Alloy pushes to `https://<loki host>.<tailnet>:<loki port>`, through the same `tailscale serve` HTTPS path as any private service. The target comes from `LOKI_URL` in a sops-rendered env file; the tailnet suffix is the `tailscale/tailnet` secret.
 
 Loki listens loopback-only, is registered as a tailnet-private `serviceRegistry.loki` entry (backup + gatus monitor), and Grafana provisions it as a datasource (`uid = "loki"`, used by the supplied Loki dashboard).
 
@@ -174,12 +188,12 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 ## DNS
 
-`features/adguard.nix` plus `features/unbound.nix` are the LAN side of the self-hosted stack (bundled as `dns`):
+`features/adguard.nix` and `features/unbound.nix` are the LAN side of the self-hosted stack. AdGuard is a service enabled by ed's `ports.nix`; `unbound` and its exporter come from the `dns` bundle:
 
-- **AdGuard Home** - DNS server with ad blocking. Seeded declaratively but `mutableSettings` keeps the web UI authoritative, so most settings can still be changed from the dashboard. Filters are the [HaGeZi Multi PRO](https://github.com/hagezi/dns-blocklists) general list plus the HaGeZi TIF threat feed. The web UI/API binds on `0.0.0.0` but its port stays off the LAN (tailnet-only) and runs with no credentials. `statistics` is on, so `GET /control/stats` serves the JSON that glance's native DNS widget reads (see [Glance widgets](#glance-widgets)). No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a rewrite fed by `config.net.addrOf "ed"`.
+- **AdGuard Home** - DNS server with ad blocking. The feature registers two services: `adguard` on port 53, with `serve = false` because DNS is not an HTTP service, and `adguard-ui` for the web API, served on 443. Seeded declaratively but `mutableSettings` keeps the web UI authoritative, so most settings can still be changed from the dashboard. Filters are the [HaGeZi Multi PRO](https://github.com/hagezi/dns-blocklists) general list plus the HaGeZi TIF threat feed. The web UI/API binds on `0.0.0.0` but its port stays off the LAN (tailnet-only) and runs with no credentials. `statistics` is on, so `GET /control/stats` serves the JSON that glance's native DNS widget reads (see [Glance widgets](#glance-widgets)). No `customDNS.mapping` is configured: public hostnames resolve to the Cloudflare edge, so LAN devices reach services through the outbound tunnel with no hairpin NAT required. If LAN-direct paths are ever wanted, add a rewrite fed by `config.net.addrOf "ed"`.
 - **Unbound** - local recursive resolver with DNSSEC; AdGuard's primary upstream, so LAN queries resolve locally and stay off the wire.
 - **Cloudflare DoH** - AdGuard `fallback_dns`: queries go to Unbound first, and only hit `one.one.one.one` when Unbound doesn't respond.
-- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter and Loki dashboards provisioned by the `observability` bundle. Unbound exports metrics through the letsencrypt `prometheus-unbound-exporter` feature, scraped over the tailnet (job `unbound`) and plotted on the `grafana-dashboards-unbound` dashboard. AdGuard has no native Prometheus endpoint, so only Unbound is charted for DNS. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
+- **Prometheus + Grafana** - metrics collection and dashboards, the node exporter and Loki dashboards provisioned by the `observability` bundle. Unbound exports metrics through the letsencrypt `prometheus-unbound-exporter` feature; jet scrapes ed's node and unbound exporters over the tailnet (jobs `node` and `unbound`) and plots them on the `grafana-dashboards-unbound` dashboard. AdGuard has no native Prometheus endpoint, so only Unbound is charted for DNS. Postgres metrics come from `services.prometheus.exporters.postgres`, scraped on loopback and plotted on the provisioned Postgres dashboard.
 
 `features/blocky.nix` is the previous resolver, kept in the tree but no longer part of the `dns` bundle.
 
@@ -187,7 +201,7 @@ restic restore latest --target /tmp/restore --path /var/lib/backups/<service>
 
 Glance's page layout is generated from `serviceRegistry` (see [Categories](#categories)) plus a far-left column contributed by feature modules through the `glance.extraWidgets` hook (`features/glance-widgets.nix` defines the option; `dns` and `servers` stack in that narrow column):
 
-- **DNS** (`features/glance-dns-stats.nix`) - glance's native `dns-stats` widget in `adguard` mode, reading `GET /control/stats` from the AdGuard Home on ed over the tailnet. It only appears when an `adguard` service is registered.
-- **Servers** (`features/glance-server-stats.nix`) - glance's native `server-stats` widget. The stack host reads itself with the `local` probe; every other host in `observability.scrapeTargets` is read through its glance agent. The agent (`features/glance-agent.nix`, part of the `observability-agent` bundle) exposes CPU / memory / disk as JSON on `ports.glanceAgent`, tailnet-only with no token.
+- **DNS** (`features/glance-dns-stats.nix`) - glance's native `dns-stats` widget in `adguard` mode, reading `GET /control/stats` from the AdGuard Home on ed over the tailnet. It only appears when an `adguard-ui` service is registered, and reads its host and port from the registry.
+- **Servers** (`features/glance-server-stats.nix`) - glance's native `server-stats` widget. The stack host reads itself with the `local` probe; every other host in `observability.scrapeTargets` is read through its glance agent. The agent (`features/glance-agent.nix`, part of the `observability-agent` bundle) exposes CPU / memory / disk as JSON on that host's `glanceAgent` port, tailnet-only with no token.
 
-Ports and scrape targets come from the port registry and `net`, not from this doc.
+Ports and scrape targets come from the fleet inventory and `net`, not from this doc.

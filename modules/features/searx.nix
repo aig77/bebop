@@ -1,22 +1,22 @@
-_: {
-  flake.modules.nixos.searx = {config, ...}: {
-    serviceRegistry.searx = {
-      port = config.ports.searx;
-      category = "Productivity";
-      monitor = {
-        enable = true;
-        http = {
-          path = "/healthz";
-          conditions = ["[STATUS] == 200" "[BODY] == OK"];
-        };
-      };
-      homepage = {
-        enable = true;
-        title = "SearXNG";
-        icon = "di:searxng";
+{config, ...}: {
+  fleet.services.searx = {
+    module = config.flake.modules.nixos.searx;
+    category = "Productivity";
+    monitor = {
+      enable = true;
+      http = {
+        path = "/healthz";
+        conditions = ["[STATUS] == 200" "[BODY] == OK"];
       };
     };
+    homepage = {
+      enable = true;
+      title = "SearXNG";
+      icon = "di:searxng";
+    };
+  };
 
+  flake.modules.nixos.searx = {config, ...}: {
     sops = {
       secrets."searx/secret-key" = {};
 

@@ -3,10 +3,6 @@
     options.observability = lib.mkOption {
       type = lib.types.submodule {
         options = {
-          lokiHost = lib.mkOption {
-            type = lib.types.str;
-            default = "jet";
-          };
           scrapeTargets = lib.mkOption {
             type = lib.types.listOf (lib.types.submodule {
               options = {
@@ -15,10 +11,7 @@
                   type = lib.types.str;
                   default = "node";
                 };
-                port = lib.mkOption {
-                  type = lib.types.nullOr lib.types.port;
-                  default = null;
-                };
+                port = lib.mkOption {type = lib.types.port;};
               };
             });
             default = [];

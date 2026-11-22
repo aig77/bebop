@@ -15,7 +15,7 @@
 modules/hosts/nixos/myhostname/
 ├── imports.nix
 ├── variables.nix
-├── ports.nix           # this host's port registry (server hosts)
+├── ports.nix           # this host's fleet port table; service ports enable their features
 ├── hardware.nix        # or facter.nix + facter.json (preferred)
 ├── disko.nix
 ├── home.nix

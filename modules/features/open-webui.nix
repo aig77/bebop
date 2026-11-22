@@ -1,23 +1,23 @@
-_: {
-  flake.modules.nixos.open-webui = {config, ...}: {
-    serviceRegistry.open-webui = {
-      port = config.ports.open-webui;
-      category = "AI";
-      backup.paths = ["/var/lib/open-webui"];
-      monitor = {
-        enable = true;
-        http = {
-          path = "/health";
-          conditions = ["[STATUS] == 200" "[BODY].status == true"];
-        };
-      };
-      homepage = {
-        enable = true;
-        title = "Open WebUI";
-        icon = "di:open-webui";
+{config, ...}: {
+  fleet.services.open-webui = {
+    module = config.flake.modules.nixos.open-webui;
+    category = "AI";
+    backup.paths = ["/var/lib/open-webui"];
+    monitor = {
+      enable = true;
+      http = {
+        path = "/health";
+        conditions = ["[STATUS] == 200" "[BODY].status == true"];
       };
     };
+    homepage = {
+      enable = true;
+      title = "Open WebUI";
+      icon = "di:open-webui";
+    };
+  };
 
+  flake.modules.nixos.open-webui = {config, ...}: {
     sops = {
       secrets = {
         "open-webui/openrouter-api-key" = {};

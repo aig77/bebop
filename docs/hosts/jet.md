@@ -21,7 +21,7 @@ Exposed either publicly through Cloudflare-proxied subdomains with TLS handled b
 or privately accessible via Tailnet.
 Service data backups are handled by restic which upload updated versions of critical data files to a Cloudflare R2 bucket.
 
-List of services located in server [imports](../modules/hosts/nixos/jet/imports.nix)
+Services are enabled by [ports.nix](../modules/hosts/nixos/jet/ports.nix) and the `fleet.services` catalogue; [imports.nix](../modules/hosts/nixos/jet/imports.nix) lists infrastructure only (backup, exporters, dashboards).
 Deploying this host: see [deploying](../howto/deploying.md) and [age keys](../howto/age-keys.md).
 
 Monitors ed over the tailnet: gatus health checks and prometheus scrape targets resolve ed through `config.net.addrOf "ed"` (MagicDNS), no hardcoded IPs.

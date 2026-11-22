@@ -5,7 +5,7 @@ _: {
       localControlSocketPath = "/run/unbound/unbound.ctl";
       settings = {
         server = {
-          port = config.ports.dns.unbound;
+          port = config.ports.unbound;
           interface = "127.0.0.1";
           extended-statistics = true;
           access-control = [
