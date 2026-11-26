@@ -45,7 +45,7 @@
       # output. Remove once NixOS/nixpkgs#580585 is in the pinned stable.
       package = pkgs.n8n.overrideAttrs (old: {
         pnpmDeps = old.pnpmDeps.override {
-          hash = "sha256-kSv/8YxvwCFxrSRTqYHP+TAmDgu5OPbcwolHVIqCGDA=";
+          hash = "sha256-yL95w+Jd5I5R6r/qNihvAJ4MX2LMyS9ICZzJnLxHR4s=";
         };
       });
       environment = {
